@@ -7,36 +7,108 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
  */
 public class OI {
-  //// CREATING BUTTONS
-  // One type of button is a joystick button which is any button on a
-  //// joystick.
-  // You create one by telling it which joystick it's on and which button
-  // number it is.
-  // Joystick stick = new Joystick(port);
-  // Button button = new JoystickButton(stick, buttonNumber);
 
-  // There are a few additional built in buttons you can use. Additionally,
-  // by subclassing Button you can create custom triggers and bind those to
-  // commands the same as any other Button.
+  private Joystick driverVertical;
+  private Joystick driverHorizontal;
+  private Joystick gamepad;
 
-  //// TRIGGERING COMMANDS WITH BUTTONS
-  // Once you have a button, it's trivial to bind it to a button in one of
-  // three ways:
+  public Driver driver;
+  public Gamepad gamePad;
 
-  // Start the command when the button is pressed and let it run the command
-  // until it is finished as determined by it's isFinished method.
-  // button.whenPressed(new ExampleCommand());
+  public OI() {
+    driverHorizontal = new Joystick(RobotMap.JOYSTICK_DRIVE_HORIZONTAL);
+    driverVertical = new Joystick(RobotMap.JOYSTICK_DRIVE_VERTICAL);
+    gamepad = new Joystick(RobotMap.JOYSTICK_GAMEPAD);
 
-  // Run the command while the button is being held down and interrupt it once
-  // the button is released.
-  // button.whileHeld(new ExampleCommand());
+    driver = new Driver();
+    gamePad = new Gamepad();
+  }
 
-  // Start the command when the button is released and let it run the command
-  // until it is finished as determined by it's isFinished method.
-  // button.whenReleased(new ExampleCommand());
+  public class Driver {
+    public double getDriverVertical() {
+      return driverVertical.getY();
+    }
+
+    public double getDriverHorizontal() {
+      return driverHorizontal.getX();
+    }
+  }
+
+  public class Gamepad {
+    public boolean getButtonA() {
+      return gamepad.getRawButton(1);
+    }
+
+    public boolean getButtonB() {
+      return gamepad.getRawButton(2);
+    }
+
+    public boolean getButtonX() {
+      return gamepad.getRawButton(3);
+    }
+
+    public boolean getButtonY() {
+      return gamepad.getRawButton(4);
+    }
+
+    public boolean getLeftButton() {
+      return gamepad.getRawButton(5);
+    }
+
+    public boolean getRightButton() {
+      return gamepad.getRawButton(6);
+    }
+
+    public boolean getBackButton() {
+      return gamepad.getRawButton(7);
+    }
+
+    public boolean getStartButton() {
+      return gamepad.getRawButton(8);
+    }
+
+    public boolean getLeftJoystickButton() {
+      return gamepad.getRawButton(9);
+    }
+
+    public boolean getRightJoystickButton() {
+      return gamepad.getRawButton(10);
+    }
+
+    public double getRightJoystickX() {
+      return gamepad.getRawAxis(4);
+    }
+
+    public double getRightJoystickY() {
+      return -gamepad.getRawAxis(5);
+    }
+
+    public double getLeftJoystickX() {
+      return gamepad.getRawAxis(0);
+    }
+
+    public double getLeftJoystickY() {
+      return -gamepad.getRawAxis(1);
+    }
+
+    public double getRightTrigger() {
+      return gamepad.getRawAxis(3);
+    }
+
+    public double getLeftTrigger() {
+      return gamepad.getRawAxis(2);
+    }
+
+    public int getPOV() {
+      return gamepad.getPOV();
+    }
+  }
+  
 }

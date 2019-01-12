@@ -15,8 +15,17 @@ package frc.robot;
  */
 public class RobotMap {
 
+  public static final int JOYSTICK_DRIVE_VERTICAL = 0;
+  public static final int JOYSTICK_DRIVE_HORIZONTAL = 1;
+  public static final int JOYSTICK_GAMEPAD = 2;
+
   public static class Drivetrain {
     public static final int[] DRIVETRAIN_MOTOR_PORTS = { 12, 13, 15, 16 };
+  }
+
+  public static class CargoDeploy {
+    public static final int rightMotor = 12;
+    public static final int leftMotor = 13;
   }
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.

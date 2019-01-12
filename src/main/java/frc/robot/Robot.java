@@ -11,6 +11,11 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotMap.CargoDeploy;
+import frc.robot.commands.RunCargoDeployCommand;
+import frc.robot.subsystems.CargoDeploySubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,6 +30,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  public static OI oi;
+  public static CargoDeploySubsystem cargoDeploy;
+  public static DrivetrainSubsystem drive;
+  public static LedSubsystem led;
+
   public static Preferences prefs;
 
   public static int timeoutMs = 20;
@@ -38,6 +48,11 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    oi = new OI();
+    drive = new DrivetrainSubsystem();
+    cargoDeploy = new CargoDeploySubsystem();
+    led = new LedSubsystem();
 
     prefs = Preferences.getInstance();
   }
@@ -93,6 +108,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    // FOR CONNOR
+    // new RunCargoDeployCommand().start();
   }
 
   /**
