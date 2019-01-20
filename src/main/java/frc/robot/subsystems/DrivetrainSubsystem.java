@@ -104,7 +104,7 @@ public class DrivetrainSubsystem extends Subsystem {
     motors[2].set(ControlMode.PercentOutput, right);
   }
   
-  public int convert(double d) {
+  public int convertDistanceToTicks(double d) {
     int i = (int)((scalingFactor*d*50*4096)/(Math.PI*wheelSize*24));
     return i;
   }

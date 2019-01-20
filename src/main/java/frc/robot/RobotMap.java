@@ -23,6 +23,12 @@ public class RobotMap {
     public static final int[] DRIVETRAIN_MOTOR_PORTS = { 12, 13, 15, 16 };
   }
 
+  public static class Lift {
+    public static final int LIFT_MOTOR_1_PORT = 17;
+    public static final int LIFT_MOTOR_2_PORT = 18;
+    public static final int LIFT_MOTOR_3_PORT = 19;
+  }
+
   public static class CargoDeploy {
     public static final int rightMotor = 12;
     public static final int leftMotor = 13;
