@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import edu.wpi.cscore.AxisCamera;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -55,6 +58,15 @@ public class Robot extends TimedRobot {
     led = new LedSubsystem();
 
     prefs = Preferences.getInstance();
+
+    //microsoft camera
+    UsbCamera microsoft = CameraServer.getInstance().startAutomaticCapture();
+
+    //jevois
+    UsbCamera jevois = CameraServer.getInstance().startAutomaticCapture();
+
+    //axis
+    AxisCamera axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
   }
 
   /**
