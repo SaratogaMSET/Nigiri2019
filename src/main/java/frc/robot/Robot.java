@@ -62,10 +62,11 @@ public class Robot extends TimedRobot {
 
     //microsoft camera
     UsbCamera microsoft = CameraServer.getInstance().startAutomaticCapture();
-    
+    microsoft.setResolution(320, 240);
 
     //jevois
     UsbCamera jevois = CameraServer.getInstance().startAutomaticCapture();
+    jevois.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
 
     //axis
     AxisCamera axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
