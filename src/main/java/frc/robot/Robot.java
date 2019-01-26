@@ -48,8 +48,7 @@ public class Robot extends TimedRobot {
 
   public static int timeoutMs = 20;
 
-  public static TalonSRX motor1;
-  public static TalonSRX motor2;
+ 
 
   /**
    * This function is run when the robot is first started up and should be
@@ -60,12 +59,11 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    // motor1 = new TalonSRX(0);
-    // motor2 = new TalonSRX(0);
+    
 
 
     oi = new OI();
-    //drive = new DrivetrainSubsystem();
+    drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
     camera = new CameraSubsystem();
@@ -86,8 +84,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("bandwidth", camera.max);
-    System.out.println(camera.max);
   }
 
   /**
@@ -134,9 +130,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // FOR CONNOR
     // new RunCargoDeployCommand().start();
-    // motor1.set(ControlMode.PercentOutput, .5);
-    // motor2.set(ControlMode.PercentOutput, .5);
     
+    //SmartDashboard.putNumber("bandwidth", camera.max);
     
 
   }
