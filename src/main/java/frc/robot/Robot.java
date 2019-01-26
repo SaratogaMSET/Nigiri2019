@@ -7,6 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.cscore.AxisCamera;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
+import edu.wpi.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -35,6 +40,9 @@ public class Robot extends TimedRobot {
   public static DrivetrainSubsystem drive;
   public static LedSubsystem led;
 
+  public static int resWidth;
+  public static int resHeight;
+
   public static Preferences prefs;
 
   public static int timeoutMs = 20;
@@ -50,14 +58,23 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     oi = new OI();
-    drive = new DrivetrainSubsystem();
+    //drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
 
     prefs = Preferences.getInstance();
-  }
 
-  /**
+    //UsbCamera micCam = CameraServer.getInstance().startAutomaticCapture();
+    //micCam.setResolution(1280, 720);
+
+    AxisCamera axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
+    axis.setResolution(1280, 720);
+
+    //UsbCamera cam = CameraServer.getInstance().startAutomaticCapture();
+
+    //cam.setVideoMode(new VideoMode(PixelFormat.kYUYV, 640, 480, 30));
+  }
+   /**
    * This function is called every robot packet, no matter the mode. Use
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
