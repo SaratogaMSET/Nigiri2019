@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
 
 
     oi = new OI();
-    //drive = new DrivetrainSubsystem();
+    drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
     camera = new CameraSubsystem();
@@ -137,7 +137,9 @@ public class Robot extends TimedRobot {
     // motor1.set(ControlMode.PercentOutput, .5);
     // motor2.set(ControlMode.PercentOutput, .5);
     
-    
+    int motorNumber = prefs.getInt("MotorNumber", 0);
+
+    drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
 
   }
 
@@ -146,5 +148,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  public void smartdashboard() {
+    SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
+    SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
   }
 }

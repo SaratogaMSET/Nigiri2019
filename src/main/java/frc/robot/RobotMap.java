@@ -20,7 +20,10 @@ public class RobotMap {
   public static final int JOYSTICK_GAMEPAD = 2;
 
   public static class Drivetrain {
-    public static final int[] DRIVETRAIN_MOTOR_PORTS = { 12, 13, 15, 16 };
+    // Right: 15, 16, 17 Left: 6, 7, 11
+    public static final int[] DRIVETRAIN_MOTOR_PORTS = {15, 16, 17, 6, 7, 11 };
+    public static final int[] DRIVE_RIGHT_ENCODER = { 2, 3 };
+    public static final int[] DRIVE_LEFT_ENCODER = { 0, 1 };
   }
 
   public static class Lift {
