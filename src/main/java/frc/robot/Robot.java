@@ -12,6 +12,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.CargoDeploy;
@@ -59,7 +62,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     // motor1 = new TalonSRX(0);
     // motor2 = new TalonSRX(0);
-
+    Shuffleboard.getTab("Drive").add("Time Left", Timer.getFPGATimestamp()).withSize(2, 4).withPosition(2,4)
+                        .withWidget(BuiltInWidgets.kNumberBar).getEntry();
 
     oi = new OI();
     //drive = new DrivetrainSubsystem();
@@ -68,20 +72,6 @@ public class Robot extends TimedRobot {
     camera = new CameraSubsystem();
 
     prefs = Preferences.getInstance();
-
-    //microsoft camera
-    
-    
-    
-    UsbCamera microsoft = CameraServer.getInstance().startAutomaticCapture();
-    microsoft.setResolution(320, 240);
-
-    //jevois
-    UsbCamera jevois = CameraServer.getInstance().startAutomaticCapture();
-    jevois.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
-
-    //axis
-    AxisCamera axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
   }
 
   /**
@@ -141,9 +131,6 @@ public class Robot extends TimedRobot {
     // new RunCargoDeployCommand().start();
     // motor1.set(ControlMode.PercentOutput, .5);
     // motor2.set(ControlMode.PercentOutput, .5);
-    
-    
-
   }
 
   /**

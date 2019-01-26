@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.Spark;
 /**
  * Add your docs here.
  */
-public class LedSubsystem extends Subsystem {
+public class LedSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -35,5 +35,15 @@ public class LedSubsystem extends Subsystem {
 
   public void chase(){
     led.set(.31); //lightchase red
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
   }
 }
