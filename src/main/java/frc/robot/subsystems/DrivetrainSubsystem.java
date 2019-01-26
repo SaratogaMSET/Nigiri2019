@@ -10,8 +10,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -24,64 +26,35 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   // here. Call these from Commands.
 
   public TalonSRX[] motors;
-
+  Encoder rightEncoder;
+  Encoder leftEncoder;
   public double wheelSize = 4;
   public double scalingFactor = 4;
 
   public double kP, kI, kD, kF;
 
   public DrivetrainSubsystem() {
-    motors = new TalonSRX[4];
+    motors = new TalonSRX[6];
     
     for (int i = 0; i < motors.length; i++) {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
     }
 
-    kP = Robot.prefs.getDouble("kP", 0.0);
-    kI = Robot.prefs.getDouble("kI", 0.0);
-    kD = Robot.prefs.getDouble("kD", 0.0);
-    kF = Robot.prefs.getDouble("kF", 0.0);
-
-    motors[0].configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
-    motors[0].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[0].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[0].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[0].configPeakOutputReverse(-1, Robot.timeoutMs);
-		motors[0].configMotionCruiseVelocity(20000, Robot.timeoutMs);
-    motors[0].configMotionAcceleration(11000, Robot.timeoutMs);
-    motors[0].config_kP(0, kP, Robot.timeoutMs);
-    motors[0].config_kI(0, kI, Robot.timeoutMs);
-    motors[0].config_kP(0, kP, Robot.timeoutMs);
-    motors[0].config_kF(0, kF, Robot.timeoutMs);
-    motors[0].setInverted(false);
-
-    motors[1].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[1].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[1].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[1].configPeakOutputReverse(-1, Robot.timeoutMs);
-    motors[1].setInverted(false);
-    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1]);
+    leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1]);
     
-		motors[2].configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
-    motors[2].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[2].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[2].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[2].configPeakOutputReverse(-1, Robot.timeoutMs);
-		motors[2].configMotionCruiseVelocity(20000, Robot.timeoutMs);
-		motors[2].configMotionAcceleration(11000, Robot.timeoutMs);
-    motors[2].config_kP(0, kP, Robot.timeoutMs);
-    motors[2].config_kI(0, kI, Robot.timeoutMs);
-    motors[2].config_kP(0, kP, Robot.timeoutMs);
-    motors[2].config_kF(0, kF, Robot.timeoutMs);
-    motors[2].setInverted(true);
+    kP = 0.0;
+    kI = 0.0;
+    kD = 0.0;
+    kF = 0.0;
 
-    motors[3].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[3].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[3].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[3].configPeakOutputReverse(-1, Robot.timeoutMs);
-    motors[3].setInverted(true);
-    motors[3].set(ControlMode.Follower, motors[2].getDeviceID());
+    
 
+    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());  
+
+    motors[4].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[5].set(ControlMode.Follower, motors[0].getDeviceID());
   }
 
   public void changeBrakeCoast(boolean isBrake) {
@@ -90,23 +63,35 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       motors[1].setNeutralMode(NeutralMode.Brake);
       motors[2].setNeutralMode(NeutralMode.Brake);
       motors[3].setNeutralMode(NeutralMode.Brake);
+      motors[4].setNeutralMode(NeutralMode.Brake);
+      motors[5].setNeutralMode(NeutralMode.Brake);
     }
     else {
       motors[0].setNeutralMode(NeutralMode.Coast);
       motors[1].setNeutralMode(NeutralMode.Coast);
       motors[2].setNeutralMode(NeutralMode.Coast);
       motors[3].setNeutralMode(NeutralMode.Coast);
+      motors[4].setNeutralMode(NeutralMode.Coast);
+      motors[5].setNeutralMode(NeutralMode.Coast);
     }
   }
 
   public void rawDrive(double left, double right) {
-    motors[0].set(ControlMode.PercentOutput, left);
-    motors[2].set(ControlMode.PercentOutput, right);
+    motors[0].set(ControlMode.PercentOutput, right);
+    motors[3].set(ControlMode.PercentOutput, left);
   }
   
-  public int convert(double d) {
+  public int convertDistanceToTicks(double d) {
     int i = (int)((scalingFactor*d*50*4096)/(Math.PI*wheelSize*24));
     return i;
+  }
+
+  public int getLeftEncoder() {
+    return leftEncoder.get();
+  }
+
+  public int getRightEncoder() {
+    return rightEncoder.get();
   }
 
   public void resetEncoders() {

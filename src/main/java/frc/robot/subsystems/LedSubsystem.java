@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Add your docs here.
@@ -25,16 +26,22 @@ public class LedSubsystem extends Subsystem implements ILogger {
     // setDefaultCommand(new MySpecialCommand());
   }
 
-  public void blink(){
+  public void blink(int seconds){
     led.set(.11); //green
+    Timer.delay(seconds);
+    led.set(.99);
   }
 
-  public void solid(){
+  public void solid(int seconds){
     led.set(.59); //solid color lime
+    Timer.delay(seconds);
+    led.set(.99);
   }
 
-  public void chase(){
+  public void chase(int seconds){
     led.set(.31); //lightchase red
+    Timer.delay(seconds);
+    led.set(.99);
   }
 
   @Override
@@ -46,4 +53,5 @@ public class LedSubsystem extends Subsystem implements ILogger {
   public void essentialShuffleboard() {
     
   }
+
 }
