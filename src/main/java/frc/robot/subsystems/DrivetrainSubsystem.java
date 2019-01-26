@@ -37,10 +37,10 @@ public class DrivetrainSubsystem extends Subsystem {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
     }
 
-    kP = Robot.prefs.getDouble("kP", 0.0);
-    kI = Robot.prefs.getDouble("kI", 0.0);
-    kD = Robot.prefs.getDouble("kD", 0.0);
-    kF = Robot.prefs.getDouble("kF", 0.0);
+    kP = 0.0;
+    kI = 0.0;
+    kD = 0.0;
+    kF = 0.0;
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
     motors[0].configNominalOutputForward(0, Robot.timeoutMs);
@@ -60,7 +60,7 @@ public class DrivetrainSubsystem extends Subsystem {
     motors[1].configPeakOutputForward(1, Robot.timeoutMs);
     motors[1].configPeakOutputReverse(-1, Robot.timeoutMs);
     motors[1].setInverted(false);
-    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[1].set(ControlMode.Follower, RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[0]);
     
 		motors[2].configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
     motors[2].configNominalOutputForward(0, Robot.timeoutMs);
@@ -80,7 +80,7 @@ public class DrivetrainSubsystem extends Subsystem {
     motors[3].configPeakOutputForward(1, Robot.timeoutMs);
     motors[3].configPeakOutputReverse(-1, Robot.timeoutMs);
     motors[3].setInverted(true);
-    motors[3].set(ControlMode.Follower, motors[2].getDeviceID());
+    motors[3].set(ControlMode.Follower, RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[2]);
 
   }
 
@@ -107,6 +107,14 @@ public class DrivetrainSubsystem extends Subsystem {
   public int convertDistanceToTicks(double d) {
     int i = (int)((scalingFactor*d*50*4096)/(Math.PI*wheelSize*24));
     return i;
+  }
+
+  public int getLeftEncoder() {
+    return motors[0].getSelectedSensorPosition();
+  }
+
+  public int getRightEncoder() {
+    return motors[2].getSelectedSensorPosition();
   }
 
   public void resetEncoders() {

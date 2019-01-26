@@ -7,15 +7,22 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.CargoDeploy;
+import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.RunCargoDeployCommand;
+import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,10 +41,15 @@ public class Robot extends TimedRobot {
   public static CargoDeploySubsystem cargoDeploy;
   public static DrivetrainSubsystem drive;
   public static LedSubsystem led;
+  public static CameraSubsystem camera;
+  public static GyroSubsystem gyro;
 
   public static Preferences prefs;
 
   public static int timeoutMs = 20;
+
+  public static TalonSRX motor1;
+  public static TalonSRX motor2;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -48,13 +60,20 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    // motor1 = new TalonSRX(0);
+    // motor2 = new TalonSRX(0);
+
 
     oi = new OI();
-    drive = new DrivetrainSubsystem();
+    //drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
+    camera = new CameraSubsystem();
+    gyro = new GyroSubsystem();
 
     prefs = Preferences.getInstance();
+
+ 
   }
 
   /**
@@ -67,6 +86,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("bandwidth", camera.max);
+    System.out.println(camera.max);
   }
 
   /**
@@ -85,6 +106,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    // Drivetrain Testing Commands
+    //new DrivetrainTest().start();
+    //new DriveTest().start();
   }
 
   /**
@@ -110,6 +134,11 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // FOR CONNOR
     // new RunCargoDeployCommand().start();
+    // motor1.set(ControlMode.PercentOutput, .5);
+    // motor2.set(ControlMode.PercentOutput, .5);
+    
+    
+
   }
 
   /**
