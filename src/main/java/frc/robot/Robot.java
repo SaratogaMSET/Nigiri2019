@@ -15,10 +15,12 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.CargoDeploy;
+import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot {
   public static DrivetrainSubsystem drive;
   public static LedSubsystem led;
   public static CameraSubsystem camera;
+  public static GyroSubsystem gyro;
 
   public static Preferences prefs;
 
@@ -66,6 +69,7 @@ public class Robot extends TimedRobot {
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
     camera = new CameraSubsystem();
+    gyro = new GyroSubsystem();
 
     prefs = Preferences.getInstance();
 
@@ -102,6 +106,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    // Drivetrain Testing Commands
+    //new DrivetrainTest().start();
+    //new DriveTest().start();
   }
 
   /**
