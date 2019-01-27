@@ -18,12 +18,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.CargoDeploy;
+import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 
@@ -45,6 +48,7 @@ public class Robot extends TimedRobot {
   public static DrivetrainSubsystem drive;
   public static LedSubsystem led;
   public static CameraSubsystem camera;
+  public static GyroSubsystem gyro;
 
   public static int resWidth;
   public static int resHeight;
@@ -56,6 +60,7 @@ public class Robot extends TimedRobot {
    public static TalonSRX motor1;
    public static TalonSRX motor2;
    Joystick joy = new Joystick(0);
+ 
 
   /**
    * This function is run when the robot is first started up and should be
@@ -66,16 +71,18 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-     motor1 = new TalonSRX(15);
-     motor2 = new TalonSRX(16);
+    //  motor1 = new TalonSRX(15);
+    //  motor2 = new TalonSRX(16);
 
+    
 
 
     oi = new OI();
-    //drive = new DrivetrainSubsystem();
+    drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
     camera = new CameraSubsystem();
+    gyro = new GyroSubsystem();
 
     prefs = Preferences.getInstance();
 
@@ -113,6 +120,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    // Drivetrain Testing Commands
+    //new DrivetrainTest().start();
+    //new DriveTest().start();
   }
 
   /**
@@ -140,11 +150,15 @@ public class Robot extends TimedRobot {
     // new RunCargoDeployCommand().start();
 
     
-    motor1.set(ControlMode.PercentOutput, joy.getY());
-    motor2.set(ControlMode.PercentOutput, joy.getY());
+    // motor1.set(ControlMode.PercentOutput, joy.getY());
+    // motor2.set(ControlMode.PercentOutput, joy.getY());
     
+    int motorNumber = prefs.getInt("MotorNumber", 0);
+    SmartDashboard.putNumber("MotorNumber", motorNumber);
+    drive.motors[5].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
+    //SmartDashboard.putNumber("bandwidth", camera.max);
     
-
+    smartdashboard();
   }
 
   /**
@@ -152,5 +166,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  public void smartdashboard() {
+    SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
+    SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
   }
 }

@@ -36,6 +36,14 @@ public class OI {
       return driverVertical.getY();
     }
 
+    public boolean getDriverButton1() {
+      return driverVertical.getRawButton(1);
+    }
+
+    public boolean getDriverButton2() {
+      return driverVertical.getRawButton(2);
+    }
+
     public double getDriverHorizontal() {
       return driverHorizontal.getX();
     }
