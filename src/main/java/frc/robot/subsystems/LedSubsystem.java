@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 /**
  * Add your docs here.
  */
-public class LedSubsystem extends Subsystem {
+public class LedSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -44,5 +44,14 @@ public class LedSubsystem extends Subsystem {
     led.set(.99);
   }
 
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
+  }
 
 }

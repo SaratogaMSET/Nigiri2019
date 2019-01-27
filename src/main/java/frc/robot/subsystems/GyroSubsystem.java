@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 /**
  * Add your docs here.
  */
-public class GyroSubsystem extends Subsystem {
+public class GyroSubsystem extends Subsystem implements ILogger {
   /**
    * Add your docs here.
    */
@@ -75,5 +75,15 @@ public class GyroSubsystem extends Subsystem {
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
   }
 }

@@ -22,7 +22,7 @@ import frc.robot.RobotMap;
 /**
  * Add your docs here.
  */
-public class DrivetrainSubsystem extends Subsystem {
+public class DrivetrainSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -107,5 +107,15 @@ public class DrivetrainSubsystem extends Subsystem {
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
   }
 }

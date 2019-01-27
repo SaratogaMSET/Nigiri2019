@@ -15,6 +15,9 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.CargoDeploy;
@@ -71,9 +74,16 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+<<<<<<< HEAD
     //  motor1 = new TalonSRX(15);
     //  motor2 = new TalonSRX(16);
 
+=======
+    // motor1 = new TalonSRX(0);
+    // motor2 = new TalonSRX(0);
+    Shuffleboard.getTab("Drive").add("Time Left", Timer.getFPGATimestamp()).withSize(2, 4).withPosition(2,4)
+                        .withWidget(BuiltInWidgets.kNumberBar).getEntry();
+>>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
     
 
 
@@ -85,10 +95,13 @@ public class Robot extends TimedRobot {
     gyro = new GyroSubsystem();
 
     prefs = Preferences.getInstance();
+<<<<<<< HEAD
 
 
  
   
+=======
+>>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -147,6 +160,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     // FOR CONNOR
+<<<<<<< HEAD
     // new RunCargoDeployCommand().start();
 
     
@@ -159,6 +173,15 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putNumber("bandwidth", camera.max);
     
     smartdashboard();
+=======
+    // new RunCargoDeployCommand().start
+    // motor1.set(ControlMode.PercentOutput, .5);
+    // motor2.set(ControlMode.PercentOutput, .5);
+    int motorNumber = prefs.getInt("MotorNumber", 0);
+
+    drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
+    //SmartDashboard.putNumber("bandwidth", camera.max);
+>>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
   }
 
   /**

@@ -18,7 +18,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 /**
  * Add your docs here.
  */
-public class CameraSubsystem extends Subsystem {
+public class CameraSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -32,6 +32,7 @@ public class CameraSubsystem extends Subsystem {
 
   public CameraSubsystem(){
 
+<<<<<<< HEAD
     //microsoft = CameraServer.getInstance().startAutomaticCapture();
     //microsoft.setResolution(320, 240);
 
@@ -39,6 +40,15 @@ public class CameraSubsystem extends Subsystem {
     jevois.setVideoMode(PixelFormat.kMJPEG, 176, 144, 30);
 
     //axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
+=======
+    // microsoft = CameraServer.getInstance().startAutomaticCapture();
+    // microsoft.setResolution(320, 240);
+
+    jevois = CameraServer.getInstance().startAutomaticCapture();
+    jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
+
+    // axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
+>>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
   }
 
   @Override
@@ -48,10 +58,24 @@ public class CameraSubsystem extends Subsystem {
   }
 
   public static double maxBandwidth(VideoCamera cam){
+<<<<<<< HEAD
     // CameraServerJNI.setTelemetryPeriod(100);
+=======
+    //CameraServerJNI.setTelemetryPeriod(100);
+>>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
     // if(cam.getActualDataRate()>max){
     //   max=cam.getActualDataRate();
     // }
     return axis.getActualDataRate();
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
   }
 }
