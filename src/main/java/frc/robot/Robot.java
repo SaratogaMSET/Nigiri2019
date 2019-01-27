@@ -41,29 +41,18 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   public static OI oi;
+
+  // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
   public static DrivetrainSubsystem drive;
   public static LedSubsystem led;
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
 
-  public static int resWidth;
-  public static int resHeight;
-
   public static Preferences prefs;
-
-  public static int timeoutMs = 20;
-
-   public static TalonSRX motor1;
-   public static TalonSRX motor2;
-   Joystick joy = new Joystick(0);
- 
+   
+  public static final int timeoutMs = 20;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -71,37 +60,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-<<<<<<< HEAD
-    //  motor1 = new TalonSRX(15);
-    //  motor2 = new TalonSRX(16);
-
-=======
-    // motor1 = new TalonSRX(0);
-    // motor2 = new TalonSRX(0);
     Shuffleboard.getTab("Drive").add("Time Left", Timer.getFPGATimestamp()).withSize(2, 4).withPosition(2,4)
                         .withWidget(BuiltInWidgets.kNumberBar).getEntry();
->>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
-    
-
-
     oi = new OI();
     drive = new DrivetrainSubsystem();
-    cargoDeploy = new CargoDeploySubsystem();
-    led = new LedSubsystem();
-    camera = new CameraSubsystem();
+    // cargoDeploy = new CargoDeploySubsystem();
+    // led = new LedSubsystem();
+    // camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
 
     prefs = Preferences.getInstance();
-<<<<<<< HEAD
 
-
- 
-  
-=======
->>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
+    drive.changeBrakeCoast(false);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -130,12 +100,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-    // Drivetrain Testing Commands
-    //new DrivetrainTest().start();
-    //new DriveTest().start();
+
+    
   }
 
   /**
@@ -143,15 +109,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    
+  }
+
+  @Override
+  public void teleopInit() {
+    drive.stopMP();
   }
 
   /**
@@ -159,29 +122,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // FOR CONNOR
-<<<<<<< HEAD
-    // new RunCargoDeployCommand().start();
-
-    
     // motor1.set(ControlMode.PercentOutput, joy.getY());
     // motor2.set(ControlMode.PercentOutput, joy.getY());
-    
-    int motorNumber = prefs.getInt("MotorNumber", 0);
-    SmartDashboard.putNumber("MotorNumber", motorNumber);
-    drive.motors[5].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
-    //SmartDashboard.putNumber("bandwidth", camera.max);
-    
-    smartdashboard();
-=======
-    // new RunCargoDeployCommand().start
-    // motor1.set(ControlMode.PercentOutput, .5);
-    // motor2.set(ControlMode.PercentOutput, .5);
-    int motorNumber = prefs.getInt("MotorNumber", 0);
-
-    drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
-    //SmartDashboard.putNumber("bandwidth", camera.max);
->>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
+    double[] drivePower = oi.driver.getArcadePower();
+    drive.rawDrive(drivePower[0], drivePower[1]);
   }
 
   /**

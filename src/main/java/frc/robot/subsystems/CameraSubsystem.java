@@ -32,15 +32,6 @@ public class CameraSubsystem extends Subsystem implements ILogger {
 
   public CameraSubsystem(){
 
-<<<<<<< HEAD
-    //microsoft = CameraServer.getInstance().startAutomaticCapture();
-    //microsoft.setResolution(320, 240);
-
-    jevois = CameraServer.getInstance().startAutomaticCapture();
-    jevois.setVideoMode(PixelFormat.kMJPEG, 176, 144, 30);
-
-    //axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
-=======
     // microsoft = CameraServer.getInstance().startAutomaticCapture();
     // microsoft.setResolution(320, 240);
 
@@ -48,7 +39,6 @@ public class CameraSubsystem extends Subsystem implements ILogger {
     jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
 
     // axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
->>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
   }
 
   @Override
@@ -58,11 +48,7 @@ public class CameraSubsystem extends Subsystem implements ILogger {
   }
 
   public static double maxBandwidth(VideoCamera cam){
-<<<<<<< HEAD
-    // CameraServerJNI.setTelemetryPeriod(100);
-=======
     //CameraServerJNI.setTelemetryPeriod(100);
->>>>>>> 5a288e2772560c8f6c64ad081dc80d9c9bb3129e
     // if(cam.getActualDataRate()>max){
     //   max=cam.getActualDataRate();
     // }
