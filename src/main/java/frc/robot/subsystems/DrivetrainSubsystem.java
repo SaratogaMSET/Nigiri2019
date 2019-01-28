@@ -167,8 +167,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public void stopMP(){
     followerNotifier.stop();
     rawDrive(0,0);
-    leftEncoder.reset();
-    rightEncoder.reset();
   }
   
   @Override
