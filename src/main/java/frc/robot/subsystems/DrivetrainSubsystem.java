@@ -125,11 +125,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void resetEncoders() {
-    motors[0].setSelectedSensorPosition(0, 0, Robot.timeoutMs);
-    motors[3].setSelectedSensorPosition(0, 0, Robot.timeoutMs);
+    leftEncoder.reset();
+    rightEncoder.reset();
   }
 
-  public void setTrajectory(String pathName, double p, double i, double d, double v, turnVal){
+  public void setTrajectory(String pathName, double p, double i, double d, double v, double turnVal){
     leftTraj = PathfinderFRC.getTrajectory(pathName + ".left");
     rightTraj = PathfinderFRC.getTrajectory(pathName + ".right");
 
@@ -167,6 +167,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public void stopMP(){
     followerNotifier.stop();
     rawDrive(0,0);
+    leftEncoder.reset();
+    rightEncoder.reset();
   }
   
   @Override
