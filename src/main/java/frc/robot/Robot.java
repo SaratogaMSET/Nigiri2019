@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,6 +29,8 @@ import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -49,6 +52,7 @@ public class Robot extends TimedRobot {
   public static LedSubsystem led;
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
+  public static VisionSubsystem vision;
 
   public static Preferences prefs;
    
@@ -64,10 +68,16 @@ public class Robot extends TimedRobot {
                         .withWidget(BuiltInWidgets.kNumberBar).getEntry();
     oi = new OI();
     drive = new DrivetrainSubsystem();
-    // cargoDeploy = new CargoDeploySubsystem();
-    // led = new LedSubsystem();
-    // camera = new CameraSubsystem();
+    cargoDeploy = new CargoDeploySubsystem();
+    led = new LedSubsystem();
+    camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
+    try {
+      vision = new VisionSubsystem();
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
 
     prefs = Preferences.getInstance();
 
@@ -109,7 +119,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    
+    Scheduler.getInstance().run();
   }
 
   @Override
@@ -124,6 +134,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // motor1.set(ControlMode.PercentOutput, joy.getY());
     // motor2.set(ControlMode.PercentOutput, joy.getY());
+    Scheduler.getInstance().run();
     double[] drivePower = oi.driver.getArcadePower();
     drive.rawDrive(drivePower[0], drivePower[1]);
   }
