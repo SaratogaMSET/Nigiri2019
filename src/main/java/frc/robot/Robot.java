@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;;
 import frc.robot.RobotMap.CargoDeploy;
 import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.RunCargoDeployCommand;
@@ -54,6 +56,9 @@ public class Robot extends TimedRobot {
   public static GyroSubsystem gyro;
   public static VisionSubsystem vision;
 
+  public static AnalogInput ultrasonic;
+  public static DigitalInput button;
+
   public static Preferences prefs;
 
   public static int timeoutMs = 20;
@@ -86,6 +91,9 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
     }
 
+    ultrasonic = new AnalogInput(0);
+    button = new DigitalInput(5);
+
     prefs = Preferences.getInstance();
 
     drive.changeBrakeCoast(false);
@@ -95,13 +103,16 @@ public class Robot extends TimedRobot {
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
+   * <p>This runs after the mode specififc periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
+    SmartDashboard.putNumber("ultrasonic", ultrasonic.getVoltage());
+    SmartDashboard.putBoolean("button", button.get());
+
   }
 
   /**
