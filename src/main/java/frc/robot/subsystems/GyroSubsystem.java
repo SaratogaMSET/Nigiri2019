@@ -26,6 +26,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
   public double lastPos;
   public double lastAccelX;
   public double lastAccelY;
+  public boolean collision;
   public AHRS gyro;
 
   // PID
@@ -37,6 +38,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     lastPos = getGyroAngle();
     lastAccelX = getLinearAccelX();
     lastAccelY = getLinearAccelY();
+    collision = false;
 
     gyroPIDController = new PIDController(0.0, 0.0, 0.0, gyro, this);
     gyroPIDController.setInputRange(-180.0f, 180.0f);
@@ -63,7 +65,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
   }
 
   public double getLinearAccelX() {
-    return gyro.getWorldLinearAccelX();
+    return gyro.getWorldLinearAccelY();
   }
 
   public double getJerkX() {
@@ -73,7 +75,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
   }
 
   public double getLinearAccelY() {
-    return gyro.getWorldLinearAccelY();
+    return gyro.getWorldLinearAccelX();
   }
 
   public double getJerkY() {
@@ -83,7 +85,16 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
   }
 
   public boolean collision(double threshold) {
-    return getJerkX() > threshold || getJerkY() > threshold;
+    if (!collision) {
+      collision = getJerkX() > threshold || getJerkY() > threshold;
+    }
+    return collision;
+  }
+
+  public void resetCollision() {
+    lastAccelX = getLinearAccelX();
+    lastAccelY = getLinearAccelY();
+    collision = false;
   }
 
   @Override
