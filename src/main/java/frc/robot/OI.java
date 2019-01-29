@@ -37,7 +37,7 @@ public class OI {
     }
 
     public boolean getDriverButton1() {
-      return driverVertical.getRawButton(1);
+      return driverVertical.getRawButton(1) || driverHorizontal.getRawButton(1);
     }
 
     public boolean getDriverButton2() {

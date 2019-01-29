@@ -34,7 +34,25 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
   public double kP, kI, kD, kF;
 
-  public DrivetrainSubsystem() {
+  //TESTING PRIDEBOT
+  TalonSRX leftDriveA;
+	TalonSRX leftDriveB;
+	TalonSRX rightDriveA;
+  TalonSRX rightDriveB;
+  //
+	
+	public DrivetrainSubsystem() {
+    //TESTING PRIDEBOT
+		leftDriveA = new TalonSRX(13);
+		leftDriveA.setInverted(true);
+		leftDriveB = new TalonSRX(14);
+		//leftDriveB.setInverted(true);
+		rightDriveA = new TalonSRX(15);
+		rightDriveB = new TalonSRX(16);
+	  rightDriveB.set(ControlMode.Follower, 15);
+    leftDriveB.set(ControlMode.Follower, 13);
+    //
+
     motors = new TalonSRX[6];
     
     for (int i = 0; i < motors.length; i++) {
@@ -84,6 +102,18 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[0].set(ControlMode.PercentOutput, right);
     motors[3].set(ControlMode.PercentOutput, left);
   }
+
+  //TESTING PRIDEBOT
+  public void arcadeDrive(double power, double rotation) {
+		double leftPower = power-rotation;
+		double rightPower = power+rotation;
+		double maxe = Math.max(1, Math.max(Math.abs(leftPower), Math.abs(rightPower)));
+		leftPower/=maxe;
+		rightPower/=maxe;
+		leftDriveA.set(ControlMode.PercentOutput, leftPower);
+	  rightDriveA.set(ControlMode.PercentOutput, rightPower);
+  }
+  //
   
   public int convertDistanceToTicks(double d) {
     int i = (int)((scalingFactor*d*50*4096)/(Math.PI*wheelSize*24));
@@ -98,9 +128,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     return rightEncoder.get();
   }
 
+  
+
   public void resetEncoders() {
-    motors[0].setSelectedSensorPosition(0, 0, Robot.timeoutMs);
-    motors[2].setSelectedSensorPosition(0, 0, Robot.timeoutMs);
+    rightEncoder.reset();
+    leftEncoder.reset();
   }
   
   @Override
