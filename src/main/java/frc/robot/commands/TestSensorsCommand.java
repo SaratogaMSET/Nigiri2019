@@ -8,11 +8,27 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.DigitalInput;
 
-public class TestSensors extends Command {
-  public TestSensors() {
+import java.nio.ByteBuffer;
+
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.I2C;
+
+public class TestSensorsCommand extends Command {
+
+  AnalogInput ultrasonic;
+  DigitalInput button;
+  I2C colorSensor;
+
+  public TestSensorsCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    ultrasonic = new AnalogInput(0);
+    button = new DigitalInput(5);
+    colorSensor = new I2C(I2C.Port.kOnboard, 0x39);
+    
   }
 
   // Called just before this Command runs the first time
@@ -23,6 +39,9 @@ public class TestSensors extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    SmartDashboard.putNumber("ultrasonic", ultrasonic.getVoltage());
+    SmartDashboard.putBoolean("button", button.get());
+    //colorSensor.read(0x39, 24, new ByteBuffer());
   }
 
   // Make this return true when this Command no longer needs to run execute()
