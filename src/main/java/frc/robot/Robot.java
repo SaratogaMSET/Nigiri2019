@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,6 +29,8 @@ import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -41,29 +44,24 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   public static OI oi;
+
+  // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
   public static DrivetrainSubsystem drive;
   public static LedSubsystem led;
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
-
-  public static int resWidth;
-  public static int resHeight;
+  public static VisionSubsystem vision;
 
   public static Preferences prefs;
 
   public static int timeoutMs = 20;
 
-   public static TalonSRX motor1;
-   public static TalonSRX motor2;
-   Joystick joy1 = new Joystick(0);
-   Joystick joy2 = new Joystick(1);
+  public static TalonSRX motor1;
+  public static TalonSRX motor2;
+  Joystick joy1 = new Joystick(0);
+  Joystick joy2 = new Joystick(1);
 
  
 
@@ -73,24 +71,24 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-    // motor1 = new TalonSRX(0);
-    // motor2 = new TalonSRX(0);
     Shuffleboard.getTab("Drive").add("Time Left", Timer.getFPGATimestamp()).withSize(2, 4).withPosition(2,4)
                         .withWidget(BuiltInWidgets.kNumberBar).getEntry();
-    
-
-
     oi = new OI();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
     camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
+    try {
+      vision = new VisionSubsystem();
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
 
     prefs = Preferences.getInstance();
+
+    drive.changeBrakeCoast(false);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -119,12 +117,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-    // Drivetrain Testing Commands
-    //new DrivetrainTest().start();
-    //new DriveTest().start();
+
+    
   }
 
   /**
@@ -132,15 +126,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    Scheduler.getInstance().run();
+  }
+
+  @Override
+  public void teleopInit() {
+    drive.stopMP();
   }
 
   /**
@@ -155,13 +146,17 @@ public class Robot extends TimedRobot {
     int motorNumber = prefs.getInt("MotorNumber", 0);
     smartdashboard();
 
-    drive.arcadeDrive(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
 
     if (oi.driver.getDriverButton1()) {
       drive.resetEncoders();
     }
     //drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
     //SmartDashboard.putNumber("bandwidth", camera.max);
+    // motor1.set(ControlMode.PercentOutput, joy.getY());
+    // motor2.set(ControlMode.PercentOutput, joy.getY());
+    Scheduler.getInstance().run();
+
   }
 
   /**

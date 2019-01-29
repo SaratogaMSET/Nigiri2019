@@ -39,6 +39,13 @@ public class CameraSubsystem extends Subsystem implements ILogger {
     //jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
 
     axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
+    // microsoft = CameraServer.getInstance().startAutomaticCapture();
+    // microsoft.setResolution(320, 240);
+
+    jevois = CameraServer.getInstance().startAutomaticCapture();
+    jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
+
+    // axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
   }
 
   @Override
