@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.RobotMap.CargoDeploy;
 import frc.robot.commands.DrivetrainTest;
+import frc.robot.commands.GyroStraightDistancePID;
 import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.commands.VisionFixCommand;
 import frc.robot.subsystems.CameraSubsystem;
@@ -38,6 +39,8 @@ import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightConstants;
+import frc.robot.subsystems.GyroSubsystem.GyroStraightConstants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -88,6 +91,15 @@ public class Robot extends TimedRobot {
 
   public double max_vel = 0.0;
   public double max_accel = 0.0;
+  public double lastLeftEncoder;
+  public double lastRightEncoder;
+  public double xLoc;
+  public double yLoc;
+  public double targX;
+  public double targY;
+  public double targH;
+
+ 
 
   /**
    * This function is run when the robot is first started up and should be
@@ -176,33 +188,11 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
 
     // FOR CONNOR
-    // new RunCargoDeployCommand().start
-    // motor1.set(ControlMode.PercentOutput, .5);
-    // motor2.set(ControlMode.PercentOutput, .5);
+    // new RunCargoDeployCommand().start();
+    
 
-    // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    if(oi.visionFixButton.get()){
-      visionFixCommand.start();
-      return;
-    }
-    else {
-      visionFixCommand.cancel();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    }
-
-    int motorNumber = prefs.getInt("MotorNumber", 0);
-    sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
-
-
-    if (oi.driver.getDriverButton1()) {
-      drive.resetEncoders();
-    }
-    //drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
     //SmartDashboard.putNumber("bandwidth", camera.max);
-    // motor1.set(ControlMode.PercentOutput, joy.getY());
-    // motor2.set(ControlMode.PercentOutput, joy.getY());
-
-
+    gyroStraightTest();
 
   }
 
@@ -241,8 +231,62 @@ public class Robot extends TimedRobot {
       sub.diagnosticShuffleboard();
     }
     */
-    SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
-    SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
+    SmartDashboard.putNumber("Right Encoder", drive.getRawRightEncoder());
+    SmartDashboard.putNumber("Left Encoder", drive.getRawLeftEncoder());
+  }
+  
+  public void smartdashboard() {
+    SmartDashboard.putNumber("Right Encoder", drive.getRawRightEncoder());
+    SmartDashboard.putNumber("Left Encoder", drive.getRawLeftEncoder());
+  }
+
+  public void gyroStraightTestInit() {
+    targX = prefs.getDouble("target X", 0);
+    targY = prefs.getDouble("target Y", 0);
+    targH = prefs.getDouble("target H", 0);
+    DriveStraightConstants.kp = prefs.getDouble("Drive kp", 0);
+    DriveStraightConstants.ki = prefs.getDouble("Drive ki", 0);
+    DriveStraightConstants.kd = prefs.getDouble("Drive kd", 0);
+    GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
+    GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
+    GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
+
+    SmartDashboard.putNumber("targX", targX);
+    SmartDashboard.putNumber("targY", targY);
+    SmartDashboard.putNumber("targH", targH);
+    SmartDashboard.putNumber("Drive kp", DriveStraightConstants.kp);
+    SmartDashboard.putNumber("Drive ki", DriveStraightConstants.ki);
+    SmartDashboard.putNumber("Drive kd", DriveStraightConstants.kd);
+    SmartDashboard.putNumber("Gyro kp", GyroStraightConstants.kp);
+    SmartDashboard.putNumber("Gyro ki", GyroStraightConstants.ki);
+    SmartDashboard.putNumber("Gyro kd", GyroStraightConstants.kd);
+  }
+
+  public void gyroStraightTest() {
+    double distance = (drive.getLeftEncoderDistance() - lastLeftEncoder) + (drive.getRightEncoderDistance() - lastRightEncoder);
+    distance /= 2;
+
+    double heading = gyro.getGyroAngle() * Math.PI / 180.0;
+    xLoc += distance * Math.cos(heading);
+    yLoc += distance * Math.sin(heading);
+
+    SmartDashboard.putNumber("xLoc", xLoc);
+    SmartDashboard.putNumber("yLoc", yLoc);
+
+    double deltaX = targX - xLoc;
+    double deltaY = targY - yLoc;
+
+    if(oi.driver.getDriverVerticalB1()) {
+      SmartDashboard.putBoolean("Is running PID", true);
+      new GyroStraightDistancePID(oi.driver.getDriverVertical(), targH, deltaX, deltaY).start();
+    } else {
+      SmartDashboard.putBoolean("Is running PID", false);
+      drive.driveFwdRot(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    }
+
+    if(oi.driver.getDriverB2()) {
+      drive.resetEncoders();
+    }
   }
 
   @Override

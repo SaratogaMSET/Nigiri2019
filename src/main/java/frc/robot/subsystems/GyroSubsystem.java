@@ -22,6 +22,14 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
    * Add your docs here.
    */
 
+  public static class GyroStraightConstants {
+    public static double kp = 0;
+    public static double ki = 0;
+    public static double kd = 0;
+    public static double cumError = 0;
+    public static double lastError = 0;
+  }
+
   public double lastPos;
   public double lastAccelX;
   public double lastAccelY;
@@ -101,6 +109,16 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     collision = false;
   }
 
+  public double getGyroStraightPIDOutput(double error) {
+    double p = GyroStraightConstants.kp * error;
+    GyroStraightConstants.cumError += error;
+    double i = GyroStraightConstants.ki * GyroStraightConstants.cumError;
+    double dError = error - GyroStraightConstants.lastError;
+    GyroStraightConstants.lastError = error;
+    double d = GyroStraightConstants.kd * dError;
+
+    return p + i + d;
+  }
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

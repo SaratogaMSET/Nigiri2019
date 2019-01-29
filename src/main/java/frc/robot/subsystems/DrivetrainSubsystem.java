@@ -54,10 +54,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     public static double cumError = 0;
     public static double lastError = 0;
   }
-
-  // motors[0] is the right master
-  // motors[3] is the left master
-
   public TalonSRX[] motors;
   public Encoder rightEncoder;
   public Encoder leftEncoder;
@@ -279,6 +275,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       motors[i].set(ControlMode.PercentOutput, 0);
     }
   }
+
+  
   
   public double getGyroStraightPIDOutput(double error) {
     double p = DriveStraightGyroConstants.kp * error;

@@ -53,7 +53,7 @@ public class OI {
       return driverVertical.getRawButton(2);
     }
 
-    public boolean getDriverB1() {
+    public boolean getDriverVerticalB1() {
       return driverVertical.getRawButton(1);
     }
     
