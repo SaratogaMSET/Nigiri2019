@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.RobotMap.CargoDeploy;
 import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.RunCargoDeployCommand;
@@ -108,13 +110,14 @@ public class Robot extends TimedRobot {
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
+   * <p>This runs after the mode specififc periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
+
   }
 
   /**
