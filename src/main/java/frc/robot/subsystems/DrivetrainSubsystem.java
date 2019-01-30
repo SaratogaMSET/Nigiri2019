@@ -15,10 +15,13 @@ import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
@@ -32,8 +35,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  // motors[0] is the right master
-  // motors[3] is the left master
+  // motors[0] is the right master, motors [1,2] right followers
+  // motors[3] is the left master, motors [4,5] left followers
   public TalonSRX[] motors;
   public Encoder rightEncoder;
   public Encoder leftEncoder;
@@ -138,8 +141,9 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void setTrajectory(String pathName, double p, double i, double d, double v, double turnVal){
-    leftTraj = PathfinderFRC.getTrajectory(pathName + ".left");
-    rightTraj = PathfinderFRC.getTrajectory(pathName + ".right");
+    //TODO: When WPI changes it, change the left and right trajectories
+    rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
+    leftTraj = PathfinderFRC.getTrajectory(pathName + ".right");
 
     leftFollower = new EncoderFollower(leftTraj);
     rightFollower = new EncoderFollower(rightTraj);
@@ -185,11 +189,15 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
   @Override
   public void diagnosticShuffleboard() {
-    
+    ShuffleboardTab drive = Shuffleboard.getTab("Drive");
+    drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
+    drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
   }
 
   @Override
   public void essentialShuffleboard() {
-    
+    ShuffleboardTab drive = Shuffleboard.getTab("Drive");
+    drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
+    drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
   }
 }

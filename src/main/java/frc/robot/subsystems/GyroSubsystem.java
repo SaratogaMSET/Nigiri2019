@@ -12,7 +12,6 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 /**

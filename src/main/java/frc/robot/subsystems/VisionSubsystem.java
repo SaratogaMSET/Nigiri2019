@@ -10,7 +10,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -74,5 +73,15 @@ public class VisionSubsystem extends Subsystem {
 
     public Double getAngleDisplacement() {
         return angleDisplacement;
+    }
+
+    @Override
+    public void diagnosticShuffleboard() {
+        
+    }
+
+    @Override
+    public void essentialShuffleboard() {
+        
     }
 }

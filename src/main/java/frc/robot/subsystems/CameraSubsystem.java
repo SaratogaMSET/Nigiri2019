@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.cscore.AxisCamera;
 import edu.wpi.cscore.CameraServerJNI;
 import edu.wpi.cscore.UsbCamera;

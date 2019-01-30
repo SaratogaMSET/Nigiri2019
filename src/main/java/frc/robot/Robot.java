@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.*;
+
 import edu.wpi.cscore.AxisCamera;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
@@ -19,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap.CargoDeploy;
@@ -29,6 +32,7 @@ import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -53,6 +57,15 @@ public class Robot extends TimedRobot {
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
   public static VisionSubsystem vision;
+
+  public final static Map<SubsystemEnum, Subsystem> loggingArr = new HashMap<>() {{
+      put(SubsystemEnum.Drive, drive);
+      put(SubsystemEnum.CargoDeploy, cargoDeploy);
+      put(SubsystemEnum.LED, led);
+      put(SubsystemEnum.Camera, camera);
+      put(SubsystemEnum.Gyro, gyro);
+      put(SubsystemEnum.Vision, vision);
+  }};
 
   public static Preferences prefs;
 
@@ -144,7 +157,7 @@ public class Robot extends TimedRobot {
     // motor1.set(ControlMode.PercentOutput, .5);
     // motor2.set(ControlMode.PercentOutput, .5);
     int motorNumber = prefs.getInt("MotorNumber", 0);
-    smartdashboard();
+    sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
 
     drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
 
@@ -166,8 +179,22 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
   }
 
-  public void smartdashboard() {
+  
+  public void sendShuffleboard(SubsystemEnum[] subs) {
+    if(subs[0].equals(SubsystemEnum.AllEssentials)) {
+      for(Subsystem s : loggingArr.values()) {
+        s.essentialShuffleboard();
+      }
+    }
+    for(SubsystemEnum s : subs) {
+      Subsystem sub = loggingArr.get(s);
+      sub.diagnosticShuffleboard();
+    }
     SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
     SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
   }
+}
+
+enum SubsystemEnum {
+  AllEssentials, Drive, Camera, Gyro, LED, Lift, Vision, Arm, CargoDeploy;
 }
