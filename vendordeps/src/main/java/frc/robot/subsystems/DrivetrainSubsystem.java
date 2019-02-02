@@ -30,7 +30,6 @@ import jaci.pathfinder.PathfinderJNI;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.EncoderFollower;
 
-
 /**
  * Add your docs here.
  */
