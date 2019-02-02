@@ -31,11 +31,11 @@ public class VisionSubsystem extends Subsystem {
     private NetworkTable visionTable;
 
     public VisionSubsystem() throws Exception {
-        // The vision module on Jevois runs at YUV 640x480 @ 20fps.
+        // The vision module on Jevois runs at YUV 640x480 @ 30fps.
         // TODO: comment this out. Streaming from the Jevois camera is not needed for production/comp-level purposes, only for debugging.
         // TODO: Create a NONE output module for vision on the jevois.
         jevoisCamera = CameraServer.getInstance().startAutomaticCapture();
-        jevoisCamera.setVideoMode(PixelFormat.kYUYV, 640, 480, 20);
+        jevoisCamera.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
 
         // To read angle data, open serial-over-USB port @ 115200 baud rate.
         jevoisSerial = new SerialPort(115200, SerialPort.Port.kUSB);
@@ -64,11 +64,11 @@ public class VisionSubsystem extends Subsystem {
         }
         if(angleDisplacement != null) {
             jevoisAngleEntry.setNumber(angleDisplacement);
+            angleEntry.setNumber(angleDisplacement);
         }
         else {
             jevoisAngleEntry.delete();
         }
-        angleEntry.setNumber(angleDisplacement);
     }
 
     public Double getAngleDisplacement() {

@@ -9,7 +9,9 @@ package frc.robot;
 
 
 import edu.wpi.first.wpilibj.Joystick;
-
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.*;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -19,6 +21,8 @@ public class OI {
   private Joystick driverVertical;
   private Joystick driverHorizontal;
   private Joystick gamepad;
+
+  public Button autoAim;
 
   public Driver driver;
   public Gamepad gamePad;
@@ -30,12 +34,15 @@ public class OI {
 
     driver = new Driver();
     gamePad = new Gamepad();
+
+    autoAim = new JoystickButton(driverHorizontal, 1);
   }
 
   public class Driver {
     public double getDriverVertical() {
       return -driverVertical.getY();
     }
+    
 
     public boolean getDriverButton1() {
       return driverVertical.getRawButton(1) || driverHorizontal.getRawButton(1);
