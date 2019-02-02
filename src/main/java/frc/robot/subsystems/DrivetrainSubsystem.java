@@ -44,6 +44,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public Encoder rightEncoder;
   public Encoder leftEncoder;
   public boolean isPathRunning;
+  public int motor;
 
 
   private static final double wheelDiameter = (4.1/12.0); // feet
@@ -91,6 +92,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[0].setInverted(InvertType.InvertMotorOutput);
     motors[1].setInverted(InvertType.InvertMotorOutput);
     motors[2].setInverted(InvertType.InvertMotorOutput);
+
+    motor = 0;
   }
 
   public void changeBrakeCoast(boolean isBrake) {
@@ -192,6 +195,41 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       followerNotifier.stop();
     }
     rawDrive(0,0);
+  }
+
+  public void testDrivetrain(double fwd, boolean changeMotor, boolean resetEncoders) {
+    if (resetEncoders) {
+      resetEncoders();
+    }
+    if (changeMotor) {
+      if (motor < 6) {
+        motor++;
+      }
+      else {
+        motor = 0;
+      }
+    }
+    if (motor < 6) {
+      SmartDashboard.putNumber("Motor", motor);
+      testMotor(fwd);
+    }
+    else {
+      SmartDashboard.putString("Motor", "all");
+      testAllMotors(fwd);
+    }
+    SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
+    SmartDashboard.putNumber("Right Encoder", getRightEncoder());
+  }
+
+  public void testMotor(double fwd) {
+    motors[motor].set(ControlMode.PercentOutput, fwd);
+  }
+
+  public void testAllMotors(double fwd) {
+    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[2].set(ControlMode.Follower, motors[1].getDeviceID());
+    motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
+    motors[5].set(ControlMode.Follower, motors[4].getDeviceID());
   }
   
   @Override
