@@ -12,7 +12,7 @@ import frc.robot.RobotMap;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import frc.robot.RobotMap;
+import frc.robot.RobotMap.*;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import frc.robot.Robot;
 
@@ -28,7 +28,7 @@ public class JackSubsystem extends Subsystem {
   private TalonSRX jackMotor;
 
   public JackSubsystem(){
-    jackMotor = new TalonSRX(RobotMap.Jacks);
+    jackMotor = new TalonSRX(RobotMap.Jacks.JACK_MOTOR);
     jackMotor.setInverted(false);
     jackMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
   }
