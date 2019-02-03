@@ -187,6 +187,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
+    // testMotors();
+
     // FOR CONNOR
     // new RunCargoDeployCommand().start();
     
@@ -200,7 +202,8 @@ public class Robot extends TimedRobot {
   public void testInit() {
     this.gyro.resetGyro();
     this.drive.resetEncoders();
-    //drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.095);
+    drive.changeBrakeCoast(true);
+    drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.01); //0.095
   }
 
   /**
@@ -306,20 +309,29 @@ public class Robot extends TimedRobot {
     if(oi.driverVertical.getRawButton(7)){
       drive.motors[0].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(8)){
+    else if(oi.driverVertical.getRawButton(8)){
       drive.motors[1].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(9)){
+    else if(oi.driverVertical.getRawButton(9)){
       drive.motors[2].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(10)){
+    else if(oi.driverVertical.getRawButton(10)){
       drive.motors[3].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(11)){
+    else if(oi.driverVertical.getRawButton(11)){
       drive.motors[4].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(12)){
+    else if(oi.driverVertical.getRawButton(12)){
       drive.motors[5].set(ControlMode.PercentOutput, 0.6);
+    }
+    else{
+      drive.motors[0].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[1].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[2].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[3].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[4].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[5].set(ControlMode.PercentOutput, 0.0);
+
     }
   }
 }
