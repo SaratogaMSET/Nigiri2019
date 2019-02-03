@@ -210,7 +210,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       }
     }
     if (motor < 6) {
-      SmartDashboard.putNumber("Motor", motor);
+      SmartDashboard.putNumber("Motor", motors[motor].getDeviceID());
       testMotor(fwd);
     }
     else {
@@ -226,10 +226,18 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void testAllMotors(double fwd) {
-    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
-    motors[2].set(ControlMode.Follower, motors[1].getDeviceID());
-    motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
-    motors[5].set(ControlMode.Follower, motors[4].getDeviceID());
+    motors[0].set(ControlMode.PercentOutput, fwd);    
+    motors[1].set(ControlMode.PercentOutput, fwd);
+    motors[2].set(ControlMode.PercentOutput, fwd);
+    motors[3].set(ControlMode.PercentOutput, fwd);
+    motors[4].set(ControlMode.PercentOutput, fwd);
+    motors[5].set(ControlMode.PercentOutput, fwd);
+  }
+
+  public void resetControlMode() {
+    for (int i = 0; i < motors.length; i++) {
+      motors[i].set(ControlMode.PercentOutput, 0);
+    }
   }
   
   @Override

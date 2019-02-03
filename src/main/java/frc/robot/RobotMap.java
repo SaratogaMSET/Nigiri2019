@@ -20,8 +20,8 @@ public class RobotMap {
   public static final int JOYSTICK_GAMEPAD = 2;
 
   public static class Drivetrain {
-    // Right: 15, 16, 17 Left: 6, 7, 12
-    public static final int[] DRIVETRAIN_MOTOR_PORTS = {15, 16, 17, 6, 7, 12};
+    // Right: 16, 17, 20 Left: 6, 7, 11
+    public static final int[] DRIVETRAIN_MOTOR_PORTS = {16, 17, 20, 6, 7, 11};
     public static final int[] DRIVE_RIGHT_ENCODER = { 2, 3 };
     public static final int[] DRIVE_LEFT_ENCODER = { 0, 1 };
   }
@@ -35,6 +35,9 @@ public class RobotMap {
   public static class CargoDeploy {
     public static final int rightMotor = 12;
     public static final int leftMotor = 13;
+  }
+  public static class Jacks {
+    public static final int JACK_MOTOR = 0;
   }
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.
