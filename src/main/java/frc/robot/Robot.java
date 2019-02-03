@@ -176,7 +176,7 @@ public class Robot extends TimedRobot {
     // new RunCargoDeployCommand().start
     // motor1.set(ControlMode.PercentOutput, .5);
     // motor2.set(ControlMode.PercentOutput, .5);
-    if(oi.autoAim.get()){
+    if(oi.visionFixButton.get()){
       visionFixCommand.start();
     }
     else {

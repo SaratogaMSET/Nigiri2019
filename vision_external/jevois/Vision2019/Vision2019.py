@@ -2,12 +2,12 @@ import libjevois as jevois
 import cv2
 import numpy as np
 import math
-## Angle displacement to tape.
+## Angle displacement & distance to vision targets.
 #
 #
 # @author Dhruv Shah
 #
-# @videomapping YUYV 640 480 30 YUYV 640 480 30 MSET649 FollowTheTape
+# @videomapping YUYV 640 480 30 YUYV 640 480 30 MSET649 Vision2019
 # @email dhruv.shah@gmail.com
 # @address 123 first street, Los Angeles CA 90012, USA
 # @copyright Copyright (C) 2018 by Dhruv Shah
@@ -20,6 +20,9 @@ import math
 # @ingroup modules
 
 DEBUG = 0
+FOCAL_LENGTH = 1732.050808
+TARGET_WIDTH_FT = (3.25/12.0)
+FOV = 60.0
 
 class Vision2019:
     # ###################################################################################################
@@ -30,7 +33,7 @@ class Vision2019:
         # H: 0=red/do not use because of wraparound, 30=yellow, 45=light green, 60=green, 75=green cyan, 90=cyan,
         #      105=light blue, 120=blue, 135=purple, 150=pink
         # S: 0 for unsaturated (whitish discolored object) to 255 for fully saturated (solid color)
-        # V: 0 for dark to 255 for maximally bright
+        # L: 0 for dark to 255 for maximally bright
         self.HLSmin = np.array([ 35, 50, 200], dtype=np.uint8)
         self.HLSmax = np.array([ 70, 255, 255], dtype=np.uint8)
         # Other processing parameters:
@@ -120,7 +123,7 @@ class Vision2019:
                 continue
             else:
                 match += "H" # Hull is quadrilateral
-            
+
 
             huarea = cv2.contourArea(hull, oriented = False)
             self.logMessage(huarea, "huarea ")
@@ -131,7 +134,7 @@ class Vision2019:
                 continue
             else:
                 match += "A" # Hull area ok
-            
+
             cost += pow((2000 / huarea), 3.0)
 
             hufill = area / huarea * 100.0
@@ -168,9 +171,9 @@ class Vision2019:
                 match += ""
             else:
                 match += "B" # Bounding ratio error is ok
-                
+
             cost += math.sqrt(bound_ratio_err)
-                            
+
             # Get bounding box for rotated rectangle
             rot_box = cv2.minAreaRect(c) # ((x,y), (w, h), theta)
             rot_w,rot_h = rot_box[1]
@@ -178,7 +181,7 @@ class Vision2019:
             rot_h = float(rot_h)
             theta = rot_box[2]
             self.logMessage((rot_w/rot_h, theta), "ROT RECT ")
-            
+
             rot_aspect_ratio = float(rot_w)/float(rot_h)
             rot_ratio_err = round(abs(min(rot_aspect_ratio - self.rot_target_ratio[0], rot_aspect_ratio - self.rot_target_ratio[1]))/rot_aspect_ratio * 100)
             self.logMessage(rot_ratio_err, "rotation aspect ratio error ")
@@ -186,10 +189,10 @@ class Vision2019:
                 match += ""
             else:
                 match += "R" # Rot rect ratio error is ok
-                
+
             cost += rot_ratio_err
 
-                
+
             # Calculate the center of the contour
             M = cv2.moments(c)
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
@@ -198,27 +201,38 @@ class Vision2019:
             self.logMessage(cost, "cost ")
 
             cost += (10 - len(match))
-            
-            contour_matches.append((match, center))
-            contour_costs.append((cost, center))
-            
+
+            contour_matches.append((match, center, bound_rect_w))
+            contour_costs.append((cost, center, bound_rect_w))
+
         if len(contour_matches) == 0:
             jevois.LERROR("NO CONTOUR DETECTED")
             return None, None
         contour_costs.sort(key=self.cms)
-        centers = np.array([center for (match, center) in contour_matches[:2]]) # two lowest cost contours
+
+        centers = np.array([center for (_, center, _) in contour_matches[:2]]) # two lowest cost contours
+        target_widths = np.array([calculateDistance(w, target_w) for (_, _, target_w) in contour_matches[:2]]) # two lowest cost contours
+
         center = tuple(np.mean(centers, axis=0, dtype=np.float64).astype(np.int))
         center = [a.item() for a in center]
-        return centers, center
+
+        avg_d = np.mean(target_widths, axis=0, dtype=np.float64)
+        return centers, center, avg_d
     # ###################################################################################################
-    ## Send angle over serial
+    ## Caclulate angle displacement
     def calculateAngle(self, w, h, center):
         if center == None:
             return
         stdCenterX = self.stdX(float(center[0]), float(w))
-        angle = round(math.degrees(math.atan(stdCenterX/1732.050808)), 2) # 60 degree lens
+        angle = round(math.degrees(math.atan(stdCenterX/FOCAL_LENGTH)), 2) # 60 degree lens
         #jevois.sendSerial("ANGLE {}".format(angle))
         return angle
+
+    def calculateDistance(self, w, target_width):
+        if target_width == None:
+            return 0.0
+        d = TARGET_WIDTH_FT * w / (2.0 * target_width * math.tan(math.radians(FOV / 2.0)))
+        return d
 
     def logMessage(self, msg, prefix_msg = ""):
         if DEBUG != 1: return

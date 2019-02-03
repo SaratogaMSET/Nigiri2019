@@ -22,7 +22,7 @@ public class OI {
   private Joystick driverHorizontal;
   private Joystick gamepad;
 
-  public Button autoAim;
+  public Button visionFixButton;
 
   public Driver driver;
   public Gamepad gamePad;
@@ -35,7 +35,7 @@ public class OI {
     driver = new Driver();
     gamePad = new Gamepad();
 
-    autoAim = new JoystickButton(driverHorizontal, 1);
+    visionFixButton = new JoystickButton(driverHorizontal, 1);
   }
 
   public class Driver {
