@@ -146,7 +146,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-    
+    drive.setTrajectory("TestPath.path", 1, 0, 0, 16.0, 0.8 * (-1.0/80.0));
   }
 
   /**
@@ -154,6 +154,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    
     Scheduler.getInstance().run();
   }
 
@@ -176,21 +177,27 @@ public class Robot extends TimedRobot {
     // new RunCargoDeployCommand().start
     // motor1.set(ControlMode.PercentOutput, .5);
     // motor2.set(ControlMode.PercentOutput, .5);
-    if(oi.visionFixButton.get()){
-      visionFixCommand.start();
-    }
-    else {
-      visionFixCommand.cancel();
-    }
+   
+   
+   
+    // if(oi.autoAim.get()){
+    //   visionFixCommand.start();
+    // }
+    // else {
+    //   visionFixCommand.cancel();
+    // }
 
-    int motorNumber = prefs.getInt("MotorNumber", 0);
-    sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
+    // int motorNumber = prefs.getInt("MotorNumber", 0);
+    // sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
 
-    drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    // drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
 
-    if (oi.driver.getDriverButton1()) {
-      drive.resetEncoders();
-    }
+    // if (oi.driver.getDriverButton1()) {
+    //   drive.resetEncoders();
+    // }
+    
+    motorTest();
+ 
     //drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
     //SmartDashboard.putNumber("bandwidth", camera.max);
     // motor1.set(ControlMode.PercentOutput, joy.getY());
@@ -246,7 +253,8 @@ public class Robot extends TimedRobot {
     drive.stopMP();
     drive.rawDrive(0, 0);
   }
-  public void testMotors(){
+  
+  public void motorTest(){
     if(oi.driverVertical.getRawButton(7)){
       drive.motors[0].set(ControlMode.PercentOutput, 0.6);
     }

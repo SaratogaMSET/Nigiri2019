@@ -38,7 +38,7 @@ deploy {
             // Deploy to RoboRIO target, into /home/lvuser/deploy
             targets << "roborio"
             directory = '/home/lvuser/deploy/paths'
-        }*/
+        }
     }
 }
 
