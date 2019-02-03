@@ -61,6 +61,7 @@ public class VisionSubsystem extends Subsystem {
         }
         else {
             SmartDashboard.delete("FOUND VISION TARGET");
+            angleDisplacement = null;
         }
         if(angleDisplacement != null) {
             jevoisAngleEntry.setNumber(angleDisplacement);

@@ -27,7 +27,6 @@ public class VisionFixCommand extends Command {
   protected void initialize() {
     time.start();
     Robot.drive.changeBrakeCoast(false);
-    Robot.drive.resetEncoders();
     Robot.drive.rawDrive(0, 0);
   }
 

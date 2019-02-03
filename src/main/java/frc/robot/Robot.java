@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     try {
-      // vision = new VisionSubsystem();
+      vision = new VisionSubsystem();
     }
     catch(Exception e){
       SmartDashboard.putString("VISION FAILED", "1");
@@ -176,17 +176,20 @@ public class Robot extends TimedRobot {
     // new RunCargoDeployCommand().start
     // motor1.set(ControlMode.PercentOutput, .5);
     // motor2.set(ControlMode.PercentOutput, .5);
+
+    // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
     if(oi.visionFixButton.get()){
       visionFixCommand.start();
+      return;
     }
     else {
       visionFixCommand.cancel();
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
     }
 
     int motorNumber = prefs.getInt("MotorNumber", 0);
     sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
 
-    drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
 
     if (oi.driver.getDriverButton1()) {
       drive.resetEncoders();
