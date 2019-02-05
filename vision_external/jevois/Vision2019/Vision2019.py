@@ -21,8 +21,9 @@ import math
 
 DEBUG = 0
 FOCAL_LENGTH = 1732.050808
-TARGET_WIDTH_FT = (3.25/12.0)
-FOV = 60.0
+ANGLE_MULTIPLIER = math.cos(math.radians(14.5))
+TARGET_WIDTH_FT = (2.0/12.0)*ANGLE_MULTIPLIER
+FOV = 15.0
 
 class Vision2019:
     # ###################################################################################################
@@ -34,20 +35,18 @@ class Vision2019:
         #      105=light blue, 120=blue, 135=purple, 150=pink
         # S: 0 for unsaturated (whitish discolored object) to 255 for fully saturated (solid color)
         # L: 0 for dark to 255 for maximally bright
-        self.HLSmin = np.array([ 35, 50, 200], dtype=np.uint8)
+        self.HLSmin = np.array([ 30, 0, 230], dtype=np.uint8)
         self.HLSmax = np.array([ 70, 255, 255], dtype=np.uint8)
         # Other processing parameters:
         self.epsilon = 0.02              # Shape smoothing factor (higher for smoother)
-        self.hullarea = ( 2*5.5, 160*120 ) # Range of object area (in pixels) to track
-        self.hullfill = 97                 # Min fill ratio of the convex hull (percent)
+        self.hullarea = ( 10*10, 300*200 ) # Range of object area (in pixels) to track
+        self.hullfill = 97                # Min fill ratio of the convex hull (percent)
         self.ethresh = 5                 # Shape error threshold (lower is stricter for exact shape)
         self.margin = 0                    # Margin from from frame borders (pixels)
-        self.bound_ratio_error = 80        # % error on bounding aspect ratio
+        self.bound_ratio_error = 60        # % error on bounding aspect ratio
         self.bound_target_ratio = (0.52419)    # target on bounding aspect ratio
         self.rot_ratio_error = 20           # % error on rotated bounding aspect ratio
         self.rot_target_ratio = (0.444, 2.333) # the two rotated rectangle aspect ratios (one horizontal, one for vertical)
-
-        self.angle_data = np.array([])
 
         # Instantiate a JeVois Timer to measure our processing framerate:
         self.timer = jevois.Timer("Vision2019", 100, jevois.LOG_INFO)
@@ -73,7 +72,7 @@ class Vision2019:
     # ###################################################################################################
     ## Detect objects within our HSV range
     def detect(self, imgbgr, outimg = None):
-        maxn = 3 # max number of objects we will consider
+        maxn = 5 # max number of objects we will consider
         h, w, chans = imgbgr.shape
         # Convert input image to HSV:
         imghls = cv2.cvtColor(imgbgr, cv2.COLOR_BGR2HLS)
@@ -89,12 +88,7 @@ class Vision2019:
 
         # Isolate pixels inside our desired HLS range:
         imgth = cv2.inRange(imghls, self.HLSmin, self.HLSmax)
-        imgth = cv2.blur(imgth, (3, 3))
-
-        # display threshold
-        #resultBGR = cv2.bitwise_and(imgbgr, imgbgr, mask = imgth)
-        #display = cv2.cvtColor(resultBGR, cv2.COLOR_BGR2RGB)
-        jevois.convertCvGRAYtoRawImage(imgth, outimg, 100)
+        imgth = cv2.blur(imgth, (5, 5))
 
         # Detect objects by finding contours:
         contours, hierarchy = cv2.findContours(imgth, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -120,7 +114,7 @@ class Vision2019:
             # Is it the right shape?
             if (hull.shape != (4,1,2)):
                 match += "" # 4 vertices for the rectangular convex outline (shows as a trapezoid)
-                continue
+                cost += 20
             else:
                 match += "H" # Hull is quadrilateral
 
@@ -131,6 +125,7 @@ class Vision2019:
                 continue
             elif (huarea < self.hullarea[0] or huarea > self.hullarea[1]):
                 match += ""
+                cost += 1
                 continue
             else:
                 match += "A" # Hull area ok
@@ -141,7 +136,7 @@ class Vision2019:
             self.logMessage(hufill, "hullfill ")
             if hufill < self.hullfill:
                 match += ""
-                continue
+                cost += 30
             else:
                 match += "F" # Fill is ok
 
@@ -175,22 +170,32 @@ class Vision2019:
             cost += math.sqrt(bound_ratio_err)
 
             # Get bounding box for rotated rectangle
-            rot_box = cv2.minAreaRect(c) # ((x,y), (w, h), theta)
+            rot_box = cv2.minAreaRect(hull) # ((x,y), (w, h), theta)
             rot_w,rot_h = rot_box[1]
             rot_w = float(rot_w)
             rot_h = float(rot_h)
             theta = rot_box[2]
+
+            box = cv2.boxPoints(rot_box)
+            box = np.int0(box)
+            rectArea = cv2.contourArea(box)
+
+            rect_fill = area/rectArea * 100.0
+            if rect_fill < self.hullfill:
+                continue
+
             self.logMessage((rot_w/rot_h, theta), "ROT RECT ")
+            jevois.LINFO("theta {}".format(theta))
 
             rot_aspect_ratio = float(rot_w)/float(rot_h)
-            rot_ratio_err = round(abs(min(rot_aspect_ratio - self.rot_target_ratio[0], rot_aspect_ratio - self.rot_target_ratio[1]))/rot_aspect_ratio * 100)
+            rot_ratio_err = round(min(abs(rot_aspect_ratio - self.rot_target_ratio[0]), abs(rot_aspect_ratio - self.rot_target_ratio[1])))/rot_aspect_ratio * 100
             self.logMessage(rot_ratio_err, "rotation aspect ratio error ")
             if rot_ratio_err > self.rot_ratio_error:
                 match += ""
             else:
                 match += "R" # Rot rect ratio error is ok
 
-            cost += rot_ratio_err
+            cost += 10 * rot_ratio_err
 
 
             # Calculate the center of the contour
@@ -202,16 +207,41 @@ class Vision2019:
 
             cost += (10 - len(match))
 
-            contour_matches.append((match, center, bound_rect_w))
-            contour_costs.append((cost, center, bound_rect_w))
+            contour_matches.append((match, center, min(rot_w, rot_h)*ANGLE_MULTIPLIER, theta))
+            contour_costs.append((cost, center, min(rot_w, rot_h)*ANGLE_MULTIPLIER, theta))
+
+        # display threshold
+        #resultBGR = cv2.bitwise_and(imgbgr, imgbgr, mask = imgth)
+        #display = cv2.cvtColor(resultBGR, cv2.COLOR_BGR2RGB)
+        jevois.convertCvGRAYtoRawImage(imgth, outimg, 100)
 
         if len(contour_matches) == 0:
-            jevois.LERROR("NO CONTOUR DETECTED")
-            return None, None
-        contour_costs.sort(key=self.cms)
+            #jevois.LERROR("NO CONTOUR DETECTED")
+            return None, None, None
 
-        centers = np.array([center for (_, center, _) in contour_matches[:2]]) # two lowest cost contours
-        target_widths = np.array([calculateDistance(w, target_w) for (_, _, target_w) in contour_matches[:2]]) # two lowest cost contours
+        if len(contour_costs) == 1:
+            # TODO
+            return None, None, None
+
+        contour_costs.sort(key=self.cms)
+        contour_costs = contour_costs[:5]
+        contour_costs.sort(key=self.contourX)
+
+
+        # loop through ordered pairs by X coordinate
+        found = []
+        for i in range(0, len(contour_costs)):
+            for j in range (i+1, len(contour_costs)):
+                if abs(contour_costs[i][3]) > 70 and abs(contour_costs[j][3]) < 70:
+                    found.append((contour_costs[i], contour_costs[j]))
+
+        found.sort(key=self.doubleContourSort)
+        try:
+            found = found[0]
+        except:
+            return None, None, None
+        centers = np.array([center for (_, center, _, _) in found]) # two lowest cost contours
+        target_widths = np.array([self.calculateDistance(w, target_w) for (_, _, target_w, _) in found]) # two lowest cost contours
 
         center = tuple(np.mean(centers, axis=0, dtype=np.float64).astype(np.int))
         center = [a.item() for a in center]
@@ -231,7 +261,7 @@ class Vision2019:
     def calculateDistance(self, w, target_width):
         if target_width == None:
             return 0.0
-        d = TARGET_WIDTH_FT * w / (2.0 * target_width * math.tan(math.radians(FOV / 2.0)))
+        d = TARGET_WIDTH_FT * w / (2.0 * target_width * math.tan(math.radians(FOV)))
         return d
 
     def logMessage(self, msg, prefix_msg = ""):
@@ -289,17 +319,16 @@ class Vision2019:
         jevois.paste(inimg, outimg, 0, 0)
 
         # Get the centers of the vision targets and the center of the pair
-        centers, center = self.detect(imgbgr, outimg)
-
+        centers, center, dist = self.detect(imgbgr, outimg)
+        angle = None
         if center != None:
             # Send serial messages
             angle = self.calculateAngle(w, h, center)
-            self.angle_data = np.append(self.angle_data, angle)
             # Draw detections on image
             self.drawDetections(outimg, centers, center)
-        while len(self.angle_data) > 5:
-                self.angle_data = np.delete(self.angle_data, 0)
-        jevois.sendSerial("ANGLE {}".format(np.median(self.angle_data)))
+        if angle != None and dist != None:
+            jevois.sendSerial("ANGLE {}".format(angle))
+            jevois.sendSerial("DISTANCE {}".format(dist))
         # Write frames/s info from our timer into the edge map (NOTE: does not account for output conversion time):
         fps = self.timer.stop()
 
@@ -317,3 +346,9 @@ class Vision2019:
 
     def cms(self, item):
         return item[0]
+
+    def contourX(self, item):
+        return item[1][0]
+
+    def doubleContourSort(self, item):
+        return item[0][0] * item[1][0]

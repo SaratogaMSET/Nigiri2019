@@ -207,7 +207,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     this.gyro.resetGyro();
     this.drive.resetEncoders();
-    drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.095);
+    //drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.095);
   }
 
   /**
@@ -216,6 +216,12 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
     Scheduler.getInstance().run();
+
+    // TEST GYRO PID
+    gyro.gyroPIDController.enable();
+    double pidOut = gyro.getGyroPIDOutput();
+    drive.rawDrive(pidOut, -pidOut);
+
   }
 
   

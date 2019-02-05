@@ -15,6 +15,7 @@ import frc.robot.Robot;
 public class VisionFixCommand extends Command {
   
   Timer time;
+  int numUpdates = 0;
 
   public VisionFixCommand() {
     // Use requires() here to declare subsystem dependencies
@@ -27,7 +28,9 @@ public class VisionFixCommand extends Command {
   protected void initialize() {
     time.start();
     Robot.drive.changeBrakeCoast(false);
-    Robot.drive.rawDrive(0, 0);
+    numUpdates = 0;
+    Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.gyro.getAngle());
+    Robot.gyro.gyroPIDController.enable(); // doesn't actuate motors, only writes to gyroPIDOutput variables
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -37,16 +40,26 @@ public class VisionFixCommand extends Command {
     // Activate vision target hold
     Robot.vision.readData();
     Double angle = Robot.vision.getAngleDisplacement();
-    if(angle != null) {
+    if(numUpdates < 3) {
+      if(angle != null) {
         Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.gyro.getAngle() + angle);
+        numUpdates += 1;
+      }
+      else {
+        numUpdates = 0;
         double[] drivePower = Robot.oi.driver.getArcadePower();
-        drivePower[0] += Robot.gyro.getGyroPIDOutput();
-        drivePower[1] -= Robot.gyro.getGyroPIDOutput();
-        double normalizer = Math.max(1, Math.max(Math.abs(drivePower[0]), Math.abs(drivePower[1])));
-        drivePower[0] /= normalizer;
-        drivePower[1] /= normalizer;
         Robot.drive.rawDrive(drivePower[0], drivePower[1]);
+        return;
+      }
     }
+    double[] drivePower = {Robot.oi.driver.getDriverVertical(), Robot.oi.driver.getDriverVertical()};
+    drivePower[0] += Robot.gyro.getGyroPIDOutput();
+    drivePower[1] -= Robot.gyro.getGyroPIDOutput();
+    double normalizer = Math.max(1, Math.max(Math.abs(drivePower[0]), Math.abs(drivePower[1])));
+    drivePower[0] /= normalizer;
+    drivePower[1] /= normalizer;
+    Robot.drive.rawDrive(drivePower[0], drivePower[1]);
+    
   }
 
   // Make this return true when this Command no longer needs to run execute()
