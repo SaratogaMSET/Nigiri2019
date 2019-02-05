@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -40,6 +39,25 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
   // motors[0] is the right master, motors [1,2] right followers
   // motors[3] is the left master, motors [4,5] left followers
+  public static class DriveStraightGyroConstants {
+    public static double kp = 0;
+    public static double ki = 0;
+    public static double kd = 0;
+    public static double cumError = 0;
+    public static double lastError = 0;
+  }
+
+  public static class DriveStraightConstants {
+    public static double kp = 0;
+    public static double ki = 0;
+    public static double kd = 0;
+    public static double cumError = 0;
+    public static double lastError = 0;
+  }
+
+  // motors[0] is the right master
+  // motors[3] is the left master
+
   public TalonSRX[] motors;
   public Encoder rightEncoder;
   public Encoder leftEncoder;
@@ -70,11 +88,12 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1]);
     leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0]);
     
-    rightEncoder.setDistancePerPulse(0.0010226538585612); // ft
-    leftEncoder.setDistancePerPulse(0.0010226538585612); // ft
 
     
+    rightEncoder.setDistancePerPulse(4.0 * Math.PI / 1024.0);
+    leftEncoder.setDistancePerPulse(4.0 * Math.PI/ 1024.0);
 
+    leftEncoder.setReverseDirection(true);
     kP = 0.0;
     kI = 0.0;
     kD = 0.0;
@@ -116,8 +135,24 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void rawDrive(double left, double right) {
-    motors[3].set(ControlMode.PercentOutput, left);
     motors[0].set(ControlMode.PercentOutput, right);
+    motors[3].set(ControlMode.PercentOutput, left);
+  }
+
+  public void driveFwdRot(double fwd, double rot) {
+    double right = fwd - rot;
+    double left = fwd + rot;
+
+    double max = Math.max(1, Math.max(Math.abs(left), Math.abs(right)));
+
+    left/=max;
+    right/=max;
+
+    rawDrive(left, right);
+  }
+  
+  public int getRawLeftEncoder() {
+    return leftEncoder.get();
   }
 
   public void driveFwdRotate(double fwd, double roti){
@@ -131,14 +166,18 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 		right /= max;
 		
 		rawDrive(left, right);
-	}
-
-  public int getLeftEncoder() {
-    return leftEncoder.get(); // the left encoder is reversed
+  }
+  
+  public int getRawRightEncoder() {
+    return rightEncoder.get();
   }
 
-  public int getRightEncoder() {
-    return rightEncoder.get();
+  public double getRightEncoderDistance() {
+    return rightEncoder.getDistance();
+  }
+
+  public double getLeftEncoderDistance() {
+    return leftEncoder.getDistance();
   }
 
   public void resetEncoders() {
@@ -155,8 +194,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     leftFollower = new EncoderFollower(leftTraj);
     rightFollower = new EncoderFollower(rightTraj);
 
-    leftFollower.configureEncoder(getLeftEncoder(), tickPerRev, wheelDiameter);
-    rightFollower.configureEncoder(getRightEncoder(), tickPerRev, wheelDiameter);
+    leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
+    rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
 
     leftFollower.configurePIDVA(p, i, d, 1.0/v, 0.0);
     rightFollower.configurePIDVA(p, i, d, 1.0/v, 0.0);
@@ -173,8 +212,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       followerNotifier.stop();
       rawDrive(0, 0);
     }else{
-      double leftSpeed = leftFollower.calculate(getLeftEncoder());
-      double rightSpeed = rightFollower.calculate(getRightEncoder());
+      double leftSpeed = leftFollower.calculate(getRawLeftEncoder());
+      double rightSpeed = rightFollower.calculate(getRawRightEncoder());
 
       double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle()); //add when we put in gyro
       double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
@@ -209,6 +248,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
         motor = 0;
       }
     }
+    
     if (motor < 6) {
       SmartDashboard.putNumber("Motor", motors[motor].getDeviceID());
       testMotor(fwd);
@@ -217,8 +257,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       SmartDashboard.putString("Motor", "all");
       testAllMotors(fwd);
     }
-    SmartDashboard.putNumber("Left Encoder", getLeftEncoder());
-    SmartDashboard.putNumber("Right Encoder", getRightEncoder());
+    SmartDashboard.putNumber("Left Encoder", getRawLeftEncoder());
+    SmartDashboard.putNumber("Right Encoder", getRawRightEncoder());
   }
 
   public void testMotor(double fwd) {
@@ -240,6 +280,28 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     }
   }
   
+  public double getGyroStraightPIDOutput(double error) {
+    double p = DriveStraightGyroConstants.kp * error;
+    DriveStraightGyroConstants.cumError += error;
+    double i = DriveStraightGyroConstants.ki * DriveStraightGyroConstants.cumError;
+    double dError = error - DriveStraightGyroConstants.lastError;
+    DriveStraightGyroConstants.lastError = error;
+    double d = DriveStraightGyroConstants.kd * dError;
+
+    return p + i + d;
+  }
+
+  public double getStraightPIDOutput(double error) {
+    double p = DriveStraightConstants.kp * error;
+    DriveStraightConstants.cumError += error;
+    double i = DriveStraightConstants.ki * DriveStraightConstants.cumError;
+    double dError = error - DriveStraightConstants.lastError;
+    DriveStraightConstants.lastError = error;
+    double d = DriveStraightConstants.kd * dError;
+
+    return p + i + d;
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

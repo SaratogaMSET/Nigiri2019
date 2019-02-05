@@ -40,6 +40,7 @@ public class OI {
 
   public class Driver {
     public double getDriverVertical() {
+      
       return -driverVertical.getY();
     }
     
@@ -48,10 +49,14 @@ public class OI {
       return driverVertical.getRawButton(1) || driverHorizontal.getRawButton(1);
     }
 
-    public boolean getDriverButton2() {
+    public boolean getDriverB2() {
       return driverVertical.getRawButton(2);
     }
 
+    public boolean getDriverB1() {
+      return driverVertical.getRawButton(1);
+    }
+    
     public double getDriverHorizontal() {
       return driverHorizontal.getX();
     }

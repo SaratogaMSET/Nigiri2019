@@ -51,8 +51,8 @@ public class DriveTestCommand extends Command {
   @Override
   protected void end() {
     Robot.drive.rawDrive(0, 0);
-    SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoder());
-    SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoder());
+    SmartDashboard.putNumber("Left Encoder", Robot.drive.getRawLeftEncoder());
+    SmartDashboard.putNumber("Right Encoder", Robot.drive.getRawRightEncoder());
   }
 
   // Called when another command which requires one or more of the same

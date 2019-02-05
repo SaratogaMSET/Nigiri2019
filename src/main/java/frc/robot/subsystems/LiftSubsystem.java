@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import frc.robot.RobotMap;
@@ -15,7 +16,7 @@ import frc.robot.RobotMap;
 /**
  * Add your docs here.
  */
-public class LiftSubsystem extends Subsystem {
+public class LiftSubsystem extends Subsystem implements ILogger{
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   public static enum LiftPositions {
@@ -50,6 +51,7 @@ public class LiftSubsystem extends Subsystem {
     motor2.set(ControlMode.Follower, motor1.getDeviceID());
     motor3.set(ControlMode.Follower, motor1.getDeviceID());
 
+    motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     currentPosition = LiftPositions.low;
   }
 
@@ -59,6 +61,14 @@ public class LiftSubsystem extends Subsystem {
 
   public void motionMagicLift(int pos) {
     motor1.set(ControlMode.MotionMagic, pos);
+  }
+
+  public void resetEncoder() {
+    motor1.setSelectedSensorPosition(0);
+  }
+
+  public int getRawEncoder() {
+    return motor1.getSelectedSensorPosition();
   }
 
   public void moveLiftToPos(LiftPositions pos) {
