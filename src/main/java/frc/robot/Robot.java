@@ -32,6 +32,7 @@ import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.commands.VisionFixCommand;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem;
+import frc.robot.subsystems.CargoIntakeSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
   public static LedSubsystem led;
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
+  public static CargoIntakeSubsystem cargoIntake;
 
   // Vision
   public static VisionSubsystem vision;
@@ -98,6 +100,7 @@ public class Robot extends TimedRobot {
     oi = new OI();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
+    cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
