@@ -46,11 +46,18 @@ public class RobotMap {
     public static final int backIntake = 0;
     public static final int[] intakeSol = {0,0,0};
   }
-  
+
+  public static class Hatch {
+    public static final int[] HATCH_PISTON_1 = {0, 0};
+    public static final int[] HATCH_PISTON_2 = {0, 0};
+    public static final int HATCH_SWITCH = 0;
+  }
+
   public static class Ultrasonic {
     public static final int ULTRASONIC_LEFT = 0;
     public static final int ULTRASONIC_RIGHT = 1;
   }
+
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.
   // public static int leftMotor = 1;
