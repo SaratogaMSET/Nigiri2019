@@ -8,16 +8,30 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
 
 public class IntakeMotorsTest extends Command {
-  public IntakeMotorsTest() {
+  
+  double power;
+
+  public IntakeMotorsTest(double power) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    this.power = power;
+    Robot.prefs.putString("motor", "left");
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    String motor = Robot.prefs.getString("motor", "left");
+    
+    if(motor.equals("left"))
+      Robot.cargoIntake.testLeft(.5);
+    else if(motor.equals("right"))
+      Robot.cargoIntake.testRight(.5);
+    else
+      Robot.cargoIntake.testBack(.5);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -28,7 +42,7 @@ public class IntakeMotorsTest extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return true;
   }
 
   // Called once after isFinished returns true

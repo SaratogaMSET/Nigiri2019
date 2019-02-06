@@ -41,10 +41,10 @@ public class RobotMap {
   }
 
   public static class CargoIntake {
-    public static final int rightIntake = 0;
-    public static final int leftIntake = 0;
-    public static final int backIntake = 0;
-    public static final int[] intakeSol = {0,0,0};
+    public static final int RIGHT_INTAKE = 0;
+    public static final int LEFT_INTAKE = 0;
+    public static final int BACK_INTAKE = 0;
+    public static final int[] INTAKE_SOL = {0,0,0};
   }
 
   public static class Hatch {

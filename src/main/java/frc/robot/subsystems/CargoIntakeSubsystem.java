@@ -22,15 +22,16 @@ public class CargoIntakeSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   public TalonSRX leftIntake, rightIntake, backIntake;
-  public DoubleSolenoid sol;
+  public DoubleSolenoid intakeSol;
+  boolean isOut;
 
   public CargoIntakeSubsystem(){
 
-    leftIntake = new TalonSRX(RobotMap.CargoIntake.leftIntake);
-    rightIntake = new TalonSRX(RobotMap.CargoIntake.rightIntake);
-    backIntake = new TalonSRX(RobotMap.CargoIntake.backIntake);
+    leftIntake = new TalonSRX(RobotMap.CargoIntake.LEFT_INTAKE);
+    rightIntake = new TalonSRX(RobotMap.CargoIntake.RIGHT_INTAKE);
+    backIntake = new TalonSRX(RobotMap.CargoIntake.BACK_INTAKE);
 
-    sol = new DoubleSolenoid(RobotMap.CargoIntake.intakeSol[0],RobotMap.CargoIntake.intakeSol[1],RobotMap.CargoIntake.intakeSol[2]);
+    intakeSol = new DoubleSolenoid(RobotMap.CargoIntake.INTAKE_SOL[0],RobotMap.CargoIntake.INTAKE_SOL[1],RobotMap.CargoIntake.INTAKE_SOL[2]);
 
     leftIntake.configNominalOutputForward(0, Robot.timeoutMs);
     leftIntake.configNominalOutputReverse(0, Robot.timeoutMs);
@@ -47,6 +48,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     backIntake.configPeakOutputForward(1, Robot.timeoutMs);
     backIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
 
+    isOut = false;
   }
 
   public void testLeft(double power){
@@ -61,8 +63,11 @@ public class CargoIntakeSubsystem extends Subsystem {
     backIntake.set(ControlMode.PercentOutput, power);
   }
 
-  public void setSolenoid(boolean isOut){
-    sol.set(DoubleSolenoid.Value.kForward);
+  public void switchSol(){
+    if(isOut)
+      intakeSol.set(DoubleSolenoid.Value.kReverse);
+    else
+      intakeSol.set(DoubleSolenoid.Value.kForward);
   }
 
   @Override
