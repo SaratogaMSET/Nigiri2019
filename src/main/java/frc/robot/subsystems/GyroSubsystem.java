@@ -119,6 +119,11 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
 
     return p + i + d;
   }
+
+  public void PIDReset() {
+    GyroStraightConstants.cumError = 0;
+    GyroStraightConstants.lastError = 0;
+  }
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

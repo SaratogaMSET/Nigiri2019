@@ -49,12 +49,36 @@ public class OI {
       return driverVertical.getRawButton(1) || driverHorizontal.getRawButton(1);
     }
 
-    public boolean getDriverB2() {
-      return driverVertical.getRawButton(2);
+    public boolean getDriverButton2() {
+      return driverVertical.getRawButton(2) || driverHorizontal.getRawButton(2);
     }
 
     public boolean getDriverVerticalB1() {
       return driverVertical.getRawButton(1);
+    }
+    
+    public boolean getDriverButton3() {
+      return driverVertical.getRawButton(3) || driverHorizontal.getRawButton(3);
+    }
+
+    public boolean getDriverButton4() {
+      return driverVertical.getRawButton(4) || driverHorizontal.getRawButton(4);
+    }
+
+    public boolean getDriverButton5() {
+      return driverVertical.getRawButton(5) || driverHorizontal.getRawButton(5);
+    }
+
+    public boolean getDriverButton6() {
+      return driverVertical.getRawButton(6) || driverHorizontal.getRawButton(6);
+    }
+
+    public boolean getDriverButton7() {
+      return driverVertical.getRawButton(7) || driverHorizontal.getRawButton(7);
+    }
+
+    public boolean getDriverButton8() {
+      return driverVertical.getRawButton(8) || driverHorizontal.getRawButton(8);
     }
     
     public double getDriverHorizontal() {

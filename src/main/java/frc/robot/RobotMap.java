@@ -27,9 +27,11 @@ public class RobotMap {
   }
 
   public static class Lift {
-    public static final int LIFT_MOTOR_1_PORT = 17;
+    public static final int LIFT_MOTOR_1_PORT = 23;
     public static final int LIFT_MOTOR_2_PORT = 18;
     public static final int LIFT_MOTOR_3_PORT = 19;
+    public static final int BOTTOM_HAL_EFFECT = 9;
+    public static final int TOP_HAL_EFFECT = 8;
   }
 
   public static class CargoDeploy {

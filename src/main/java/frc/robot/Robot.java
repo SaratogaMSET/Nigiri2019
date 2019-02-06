@@ -29,17 +29,20 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.RobotMap.CargoDeploy;
 import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.GyroStraightDistancePID;
+import frc.robot.commands.LiftTest;
 import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.commands.VisionFixCommand;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.CargoIntakeSubsystem;
+import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightConstants;
+import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightGyroConstants;
 import frc.robot.subsystems.GyroSubsystem.GyroStraightConstants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -64,19 +67,20 @@ public class Robot extends TimedRobot {
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
   public static CargoIntakeSubsystem cargoIntake;
+  public static LiftSubsystem lift;
 
   // Vision
   public static VisionSubsystem vision;
   public static VisionFixCommand visionFixCommand;
 
-  public final static Map<SubsystemEnum, Subsystem> loggingArr = new HashMap<>() {{
-      put(SubsystemEnum.Drive, drive);
-      put(SubsystemEnum.CargoDeploy, cargoDeploy);
-      put(SubsystemEnum.LED, led);
-      put(SubsystemEnum.Camera, camera);
-      put(SubsystemEnum.Gyro, gyro);
-      put(SubsystemEnum.Vision, vision);
-  }};
+  // public final static Map<SubsystemEnum, Subsystem> loggingArr = new HashMap<>() {{
+  //     put(SubsystemEnum.Drive, drive);
+  //     put(SubsystemEnum.CargoDeploy, cargoDeploy);
+  //     put(SubsystemEnum.LED, led);
+  //     put(SubsystemEnum.Camera, camera);
+  //     put(SubsystemEnum.Gyro, gyro);
+  //     put(SubsystemEnum.Vision, vision);
+  // }};
 
   public static Preferences prefs;
 
@@ -95,9 +99,12 @@ public class Robot extends TimedRobot {
   public double lastRightEncoder;
   public double xLoc;
   public double yLoc;
+  public double firstTargX;
+  public double firstTargY;
   public double targX;
   public double targY;
   public double targH;
+  public boolean onFirstLeg;
 
  
 
@@ -109,6 +116,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     Shuffleboard.getTab("Drive").add("Time Left", Timer.getFPGATimestamp()).withSize(2, 4).withPosition(2,4)
                         .withWidget(BuiltInWidgets.kNumberBar).getEntry();
+    //******************************************** Subsystems */
     oi = new OI();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
@@ -116,6 +124,7 @@ public class Robot extends TimedRobot {
     led = new LedSubsystem();
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
+    lift = new LiftSubsystem();
     try {
       vision = new VisionSubsystem();
     }
@@ -178,6 +187,13 @@ public class Robot extends TimedRobot {
     gyro.resetGyro();
     visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
+    // gyroStraightTestInit();
+    // drive.stopMP();
+    // drive.stopMP();
+    // gyro.resetGyro();
+    // visionFixCommand = new VisionFixCommand();
+    // drive.changeBrakeCoast(false);
+    // new LiftTest().start();
   }
 
   /**
@@ -186,16 +202,17 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-
-    // testMotors();
-
-    // FOR CONNOR
-    // new RunCargoDeployCommand().start();
-    
-
-    //SmartDashboard.putNumber("bandwidth", camera.max);
-    gyroStraightTest();
-
+    // gyroStraightTest();
+    // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
+    // if(oi.visionFixButton.get()){
+    //   visionFixCommand.start();
+    //   return;
+    // }
+    // else {
+    //   visionFixCommand.cancel();
+    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    // }
+    lift.setManualLift(oi.driver.getDriverVertical());
   }
 
   @Override
@@ -221,22 +238,22 @@ public class Robot extends TimedRobot {
   }
 
   
-  public void sendShuffleboard(SubsystemEnum[] subs) {
-    // THIS IS THROWING AN ERROR. COMMENTING OUT. - Dhruv
-    /*
-    if(subs[0].equals(SubsystemEnum.AllEssentials)) {
-      for(Subsystem s : loggingArr.values()) {
-        s.essentialShuffleboard();
-      }
-    }
-    for(SubsystemEnum s : subs) {
-      Subsystem sub = loggingArr.get(s);
-      sub.diagnosticShuffleboard();
-    }
-    */
-    SmartDashboard.putNumber("Right Encoder", drive.getRawRightEncoder());
-    SmartDashboard.putNumber("Left Encoder", drive.getRawLeftEncoder());
-  }
+  // public void sendShuffleboard(SubsystemEnum[] subs) {
+  //   // THIS IS THROWING AN ERROR. COMMENTING OUT. - Dhruv
+  //   /*
+  //   if(subs[0].equals(SubsystemEnum.AllEssentials)) {
+  //     for(Subsystem s : loggingArr.values()) {
+  //       s.essentialShuffleboard();
+  //     }
+  //   }
+  //   for(SubsystemEnum s : subs) {
+  //     Subsystem sub = loggingArr.get(s);
+  //     sub.diagnosticShuffleboard();
+  //   }
+  //   */
+  //   SmartDashboard.putNumber("Right Encoder", drive.getRawRightEncoder());
+  //   SmartDashboard.putNumber("Left Encoder", drive.getRawLeftEncoder());
+  // }
   
   public void smartdashboard() {
     SmartDashboard.putNumber("Right Encoder", drive.getRawRightEncoder());
@@ -244,9 +261,22 @@ public class Robot extends TimedRobot {
   }
 
   public void gyroStraightTestInit() {
+    lastLeftEncoder = 0;
+    lastRightEncoder = 0;
+    xLoc = 0;
+    yLoc = 0;
+    onFirstLeg = true;
+    drive.resetEncoders();
+
     targX = prefs.getDouble("target X", 0);
     targY = prefs.getDouble("target Y", 0);
-    targH = prefs.getDouble("target H", 0);
+    targH = prefs.getDouble("Angle", 0);
+    DriveStraightGyroConstants.kp = prefs.getDouble("Drive Gyro kp", 0);
+    DriveStraightGyroConstants.ki = prefs.getDouble("Drive Gyro ki", 0);
+    DriveStraightGyroConstants.kd = prefs.getDouble("Drive Gyro kd", 0);
+    GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
+    GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
+    GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
     DriveStraightConstants.kp = prefs.getDouble("Drive kp", 0);
     DriveStraightConstants.ki = prefs.getDouble("Drive ki", 0);
     DriveStraightConstants.kd = prefs.getDouble("Drive kd", 0);
@@ -263,79 +293,69 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Gyro kp", GyroStraightConstants.kp);
     SmartDashboard.putNumber("Gyro ki", GyroStraightConstants.ki);
     SmartDashboard.putNumber("Gyro kd", GyroStraightConstants.kd);
+
+    firstTargX = targX/2.0;
+    firstTargY = targH/2.0;
   }
 
   public void gyroStraightTest() {
-    double distance = (drive.getLeftEncoderDistance() - lastLeftEncoder) + (drive.getRightEncoderDistance() - lastRightEncoder);
+    double leftEncoder = drive.getLeftEncoderDistance();
+    double rightEncoder = drive.getRightEncoderDistance();
+    double distance = (leftEncoder - lastLeftEncoder) + (rightEncoder - lastRightEncoder);
     distance /= 2;
 
-    double heading = gyro.getGyroAngle() * Math.PI / 180.0;
-    xLoc += distance * Math.cos(heading);
-    yLoc += distance * Math.sin(heading);
+    SmartDashboard.putNumber("Distance", distance);
+    lastLeftEncoder = leftEncoder;
+    lastRightEncoder = rightEncoder;
+
+    double heading = Math.toRadians(gyro.getGyroAngle());
+    xLoc += distance * Math.sin(heading);
+    yLoc += distance * Math.cos(heading);
 
     SmartDashboard.putNumber("xLoc", xLoc);
     SmartDashboard.putNumber("yLoc", yLoc);
 
-    double deltaX = targX - xLoc;
-    double deltaY = targY - yLoc;
+    double deltaX, deltaY;
 
-    if(oi.driver.getDriverVerticalB1()) {
+    if(oi.driver.getDriverButton1()) {
       SmartDashboard.putBoolean("Is running PID", true);
-      new GyroStraightDistancePID(oi.driver.getDriverVertical(), targH, deltaX, deltaY).start();
+      if(onFirstLeg) {
+        deltaX = firstTargX - xLoc;
+        deltaY = firstTargY - yLoc;
+        new GyroStraightDistancePID(oi.driver.getDriverVertical(), targH, deltaX, deltaY, firstTargX, firstTargY).start();
+      } else {
+        deltaX = targX - xLoc;
+        deltaY = targY - yLoc;
+        new GyroStraightDistancePID(oi.driver.getDriverVertical(), 0, deltaX, deltaY, targX, targY).start();
+      }
+
+      if(deltaX < 0.1 || deltaY < 0.1) {
+        onFirstLeg = false;
+      }
     } else {
       SmartDashboard.putBoolean("Is running PID", false);
       drive.driveFwdRot(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+      deltaX = 0;
+      deltaY = 0;
     }
 
-    if(oi.driver.getDriverB2()) {
+    if(oi.driver.getDriverButton2()) {
+      xLoc = 0;
+      yLoc = 0;
       drive.resetEncoders();
+      drive.PIDReset();
+      gyro.resetGyro();
+      gyro.PIDReset();
+      onFirstLeg = true;
     }
-  }
 
-  @Override
-  public void disabledInit() {
-    super.disabledInit();
-    drive.stopMP();
-    drive.rawDrive(0, 0);
+    SmartDashboard.putNumber("Heading", gyro.getGyroAngle());
+    SmartDashboard.putNumber("Right Encoder", drive.getRightEncoderDistance());
+    SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoderDistance());
+    SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
+    SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
+    SmartDashboard.putNumber("Delta X", deltaX);
+    SmartDashboard.putNumber("Delta Y", deltaY);
+    SmartDashboard.putBoolean("On First Leg", onFirstLeg);
   }
-
-  @Override
-  public void disabledPeriodic() {
-    super.disabledPeriodic();
-    drive.stopMP();
-    drive.rawDrive(0, 0);
-  }
-  public void testMotors(){
-    if(oi.driverVertical.getRawButton(7)){
-      drive.motors[0].set(ControlMode.PercentOutput, 0.6);
-    }
-    else if(oi.driverVertical.getRawButton(8)){
-      drive.motors[1].set(ControlMode.PercentOutput, 0.6);
-    }
-    else if(oi.driverVertical.getRawButton(9)){
-      drive.motors[2].set(ControlMode.PercentOutput, 0.6);
-    }
-    else if(oi.driverVertical.getRawButton(10)){
-      drive.motors[3].set(ControlMode.PercentOutput, 0.6);
-    }
-    else if(oi.driverVertical.getRawButton(11)){
-      drive.motors[4].set(ControlMode.PercentOutput, 0.6);
-    }
-    else if(oi.driverVertical.getRawButton(12)){
-      drive.motors[5].set(ControlMode.PercentOutput, 0.6);
-    }
-    else{
-      drive.motors[0].set(ControlMode.PercentOutput, 0.0);
-      drive.motors[1].set(ControlMode.PercentOutput, 0.0);
-      drive.motors[2].set(ControlMode.PercentOutput, 0.0);
-      drive.motors[3].set(ControlMode.PercentOutput, 0.0);
-      drive.motors[4].set(ControlMode.PercentOutput, 0.0);
-      drive.motors[5].set(ControlMode.PercentOutput, 0.0);
-
-    }
-  }
-}
-
-enum SubsystemEnum {
-  AllEssentials, Drive, Camera, Gyro, LED, Lift, Vision, Arm, CargoDeploy;
 }

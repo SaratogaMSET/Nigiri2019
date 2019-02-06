@@ -89,7 +89,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder.setDistancePerPulse(4.0 * Math.PI / 1024.0);
     leftEncoder.setDistancePerPulse(4.0 * Math.PI/ 1024.0);
 
-    leftEncoder.setReverseDirection(true);
+    leftEncoder.setReverseDirection(false);
+
     kP = 0.0;
     kI = 0.0;
     kD = 0.0;
@@ -298,6 +299,13 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     double d = DriveStraightConstants.kd * dError;
 
     return p + i + d;
+  }
+
+  public void PIDReset() {
+    DriveStraightConstants.cumError = 0;
+    DriveStraightGyroConstants.cumError = 0;
+    DriveStraightConstants.lastError = 0;
+    DriveStraightGyroConstants.lastError = 0;
   }
 
   @Override

@@ -17,21 +17,25 @@ public class GyroStraightDistancePID extends Command {
   double vDistance;
   double targetHeading;
   double power;
-  public GyroStraightDistancePID(double power, double targetHeading, double hDistance, double vDistance) {
+  double targV;
+  double targH;
+  public GyroStraightDistancePID(double power, double targetHeading, double hDistance, double vDistance, double targH, double targV) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.hDistance = hDistance;
     this.vDistance = vDistance;
     this.targetHeading = targetHeading;
     this.power = power;
+    this.targH = targH;
+    this.targV = targV;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    double hGyroVal = 1.0/hDistance;
+    double hGyroVal = Math.abs(8.0/hDistance);
     double hGyroPID = Robot.drive.getGyroStraightPIDOutput(hGyroVal);
-    double vGyroVal = 1.0/vDistance;
+    double vGyroVal = Math.abs(5.0/vDistance);
     double vGyroPID = Robot.drive.getGyroStraightPIDOutput(vGyroVal);
     double hDistPID = Robot.drive.getStraightPIDOutput(hDistance);
     double vDistPID = Robot.drive.getStraightPIDOutput(vDistance);
@@ -39,7 +43,7 @@ public class GyroStraightDistancePID extends Command {
     double gyroPID = Robot.gyro.getGyroStraightPIDOutput(gyroError);
     double output = gyroPID * (hGyroPID + vGyroPID);
     // double output = gyroPID;
-    double driveOutput = power * (hDistPID + vDistPID);
+    double driveOutput = power;//* (hDistPID + vDistPID);
 
     double right = driveOutput + output;
     double left = driveOutput - output;
