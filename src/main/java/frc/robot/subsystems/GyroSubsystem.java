@@ -128,4 +128,8 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
   public double getGyroPIDOutput() {
     return gyroPIDOutput;
   }
+  public double getGyroStraightPIDOutput(double gyroError){
+    return 0.0;
+    //temp
+  }
 }

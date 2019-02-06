@@ -72,8 +72,8 @@ public class VisionFixCommand extends Command {
   protected void end() {
     Robot.gyro.gyroPIDController.disable();
     Robot.drive.rawDrive(0, 0);
-    SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoder());
-    SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoder());
+    // SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoder());
+    // SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoder());
   }
 
   // Called when another command which requires one or more of the same

@@ -92,8 +92,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     
     rightEncoder.setDistancePerPulse(4.0 * Math.PI / 1024.0);
     leftEncoder.setDistancePerPulse(4.0 * Math.PI/ 1024.0);
-
-    leftEncoder.setReverseDirection(true);
+    //idk why encoder was reversed
+    leftEncoder.setReverseDirection(false);
     kP = 0.0;
     kI = 0.0;
     kD = 0.0;

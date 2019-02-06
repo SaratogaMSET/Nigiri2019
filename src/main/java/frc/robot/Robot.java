@@ -27,13 +27,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.RobotMap.CargoDeploy;
+import frc.robot.RobotMap.Jacks;
 import frc.robot.commands.DrivetrainTest;
+import frc.robot.commands.JackMotionProfileCommand;
 import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.commands.VisionFixCommand;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.GyroSubsystem;
+import frc.robot.subsystems.JackSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -41,6 +44,7 @@ import frc.robot.subsystems.VisionSubsystem;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import frc.robot.commands.JackMotionProfileCommand;
 
 
 /**
@@ -59,6 +63,7 @@ public class Robot extends TimedRobot {
   public static LedSubsystem led;
   public static CameraSubsystem camera;
   public static GyroSubsystem gyro;
+  public static JackSubsystem jack;
 
   // Vision
   public static VisionSubsystem vision;
@@ -79,6 +84,7 @@ public class Robot extends TimedRobot {
 
   public static TalonSRX motor1;
   public static TalonSRX motor2;
+  Timer accelTime;
   Joystick joy1 = new Joystick(0);
   Joystick joy2 = new Joystick(1);
 
@@ -86,6 +92,9 @@ public class Robot extends TimedRobot {
 
   public double max_vel = 0.0;
   public double max_accel = 0.0;
+  public double initAccel;
+
+  public static JackMotionProfileCommand jackMpCommand;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -99,6 +108,7 @@ public class Robot extends TimedRobot {
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     led = new LedSubsystem();
+    jack = new JackSubsystem();
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     try {
@@ -109,8 +119,9 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
     }
     prefs = Preferences.getInstance();
-
+    initAccel = 0;
     drive.changeBrakeCoast(false);
+    accelTime = new Timer();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -145,8 +156,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
-    
+    jack.resetJackEncoder();
+    // jackMpCommand = new JackMotionProfileCommand(6000,true,4.0);
+    // jackMpCommand.start(); 
+    jack.setJackMPVals(true);   
   }
 
   /**
@@ -155,12 +168,16 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0).start();
+    SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
+
   }
 
   @Override
   public void teleopInit() {
     drive.stopMP();
     gyro.resetGyro();
+    jack.resetJackEncoder();
     visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
   }
@@ -172,42 +189,35 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    // FOR CONNOR
-    // new RunCargoDeployCommand().start
-    // motor1.set(ControlMode.PercentOutput, .5);
-    // motor2.set(ControlMode.PercentOutput, .5);
+    testJacks();
 
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    if(oi.visionFixButton.get()){
-      visionFixCommand.start();
-      return;
-    }
-    else {
-      visionFixCommand.cancel();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    }
+    // if(oi.visionFixButton.get()){
+    //   visionFixCommand.start();
+    //   return;
+    // }
+    // else {
+    //   visionFixCommand.cancel();
+    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    // }
 
-    int motorNumber = prefs.getInt("MotorNumber", 0);
-    sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
-
-
-    if (oi.driver.getDriverButton1()) {
-      drive.resetEncoders();
-    }
-    //drive.motors[motorNumber].set(ControlMode.PercentOutput, oi.driver.getDriverVertical());
-    //SmartDashboard.putNumber("bandwidth", camera.max);
-    // motor1.set(ControlMode.PercentOutput, joy.getY());
-    // motor2.set(ControlMode.PercentOutput, joy.getY());
+    // int motorNumber = prefs.getInt("MotorNumber", 0);
+    // sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
+    // SmartDashboard.putNumber("left e", drive.getRawLeftEncoder());
+    // SmartDashboard.putNumber("right e", drive.getRawRightEncoder());
 
 
-
+    // if (oi.driver.getDriverButton1()) {
+    //   drive.resetEncoders();
+    // }
+   
   }
 
   @Override
   public void testInit() {
     this.gyro.resetGyro();
     this.drive.resetEncoders();
-    //drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.095);
+    drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.01); //.0095
   }
 
   /**
@@ -238,8 +248,8 @@ public class Robot extends TimedRobot {
       sub.diagnosticShuffleboard();
     }
     */
-    SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
-    SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
+    // SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
+    // SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
   }
 
   @Override
@@ -255,24 +265,55 @@ public class Robot extends TimedRobot {
     drive.stopMP();
     drive.rawDrive(0, 0);
   }
+  public void testJacks(){
+    // SmartDashboard.putNumber("joy y", oi.operator.getY());
+    jack.setJackMotor(oi.operator.getY());
+    if(oi.operator.getButton7()){
+      jack.setJackDriveMotor(1.0);
+    }else if(oi.operator.getButton8()){
+      jack.setJackDriveMotor(-1.0);
+    }else{
+      jack.setJackDriveMotor(0.0);
+    }
+    SmartDashboard.putBoolean("Is Jack Down", jack.isJackAtBottom());
+    SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
+    SmartDashboard.putNumber("Jack Vel", jack.getJackVel());
+    if(accelTime.get() == 0.0){
+      initAccel = jack.getJackVel();
+      accelTime.start();
+    }else if(accelTime.get()>0.1){
+      accelTime.stop();
+      SmartDashboard.putNumber("Jack Accel", (jack.getJackVel() - initAccel) /(accelTime.get()/0.1));
+      accelTime.reset();
+    }
+
+  }
   public void testMotors(){
     if(oi.driverVertical.getRawButton(7)){
       drive.motors[0].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(8)){
+    else if(oi.driverVertical.getRawButton(8)){
       drive.motors[1].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(9)){
+    else if(oi.driverVertical.getRawButton(9)){
       drive.motors[2].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(10)){
+    else if(oi.driverVertical.getRawButton(10)){
       drive.motors[3].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(11)){
+    else if(oi.driverVertical.getRawButton(11)){
       drive.motors[4].set(ControlMode.PercentOutput, 0.6);
     }
-    if(oi.driverVertical.getRawButton(12)){
+    else if(oi.driverVertical.getRawButton(12)){
       drive.motors[5].set(ControlMode.PercentOutput, 0.6);
+    }else{
+      drive.motors[0].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[1].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[2].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[3].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[4].set(ControlMode.PercentOutput, 0.0);
+      drive.motors[5].set(ControlMode.PercentOutput, 0.0);
+
     }
   }
 }

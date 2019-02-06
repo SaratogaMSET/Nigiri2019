@@ -21,19 +21,23 @@ public class OI {
   public Joystick driverVertical;
   public Joystick driverHorizontal;
   public Joystick gamepad;
+  public Joystick operatorJoystick;
 
   public Button visionFixButton;
 
   public Driver driver;
   public Gamepad gamePad;
+  public Operator operator;
 
   public OI() {
     driverHorizontal = new Joystick(RobotMap.JOYSTICK_DRIVE_HORIZONTAL);
     driverVertical = new Joystick(RobotMap.JOYSTICK_DRIVE_VERTICAL);
     gamepad = new Joystick(RobotMap.JOYSTICK_GAMEPAD);
+    operatorJoystick = new Joystick(RobotMap.OPERATOR_JOYSTICK);
 
     driver = new Driver();
     gamePad = new Gamepad();
+    operator = new Operator();
 
     visionFixButton = new JoystickButton(driverHorizontal, 1);
   }
@@ -81,6 +85,20 @@ public class OI {
       // rightNormalized = Math.pow(rightNormalized, 3.0);
 
       return new double[] {leftNormalized, rightNormalized};
+    }
+  }
+  public class Operator{
+    public double getY(){
+      if(Math.abs(operatorJoystick.getY()) > 0.05){
+        return -operatorJoystick.getY();
+      }
+      return 0.0;
+    }
+    public boolean getButton7(){
+      return operatorJoystick.getRawButton(7);
+    }
+    public boolean getButton8(){
+      return operatorJoystick.getRawButton(8);
     }
   }
 
