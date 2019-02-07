@@ -17,7 +17,8 @@ public class RobotMap {
 
   public static final int JOYSTICK_DRIVE_VERTICAL = 0;
   public static final int JOYSTICK_DRIVE_HORIZONTAL = 1;
-  public static final int JOYSTICK_GAMEPAD = 2;
+  public static final int OPERATOR_JOYSTICK = 2; 
+  public static final int JOYSTICK_GAMEPAD = 3;
 
   public static class Drivetrain {
     // Right: 16, 17, 20 Left: 6, 7, 11
@@ -35,11 +36,13 @@ public class RobotMap {
   }
 
   public static class CargoDeploy {
-    public static final int rightMotor = 12;
-    public static final int leftMotor = 13;
+    public static final int rightMotor = 0;
+    public static final int leftMotor = 0;
   }
   public static class Jacks {
-    public static final int JACK_MOTOR = 0;
+    public static final int JACK_MOTOR = 13;
+    public static final int JACK_DRIVE_MOTOR = 14;
+    public static final int DOWN_HAL = 8;
   }
 
   public static class CargoIntake {

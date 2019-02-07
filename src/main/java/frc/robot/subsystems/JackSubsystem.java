@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 
@@ -14,6 +15,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.RobotMap.*;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import frc.robot.Robot;
 
 /**
@@ -25,16 +28,83 @@ public class JackSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
+
+  public static class JackEncoderConstatns{
+    public static int UP_STATE = 0;
+    public static int DOWN_STATE = 20000;
+    public static int ABS_TOL = 50;
+  }
+
+  public static class LiftConstants{
+    public static final double UP_kF = 0;
+    public static final double DOWN_kF = 0.22755555555;
+    public static final double UP_kP = 0;
+    public static final double DOWN_kP = 4;
+    public static final double UP_kI = 0;
+    public static final double DOWN_kI = 0;
+    public static final double UP_kD = 0;
+    public static final double DOWN_kD = 0;
+    public static final int UP_VEL = 0;
+    public static final int DOWN_VEL = 1800;//1800
+    public static final int UP_ACCEL = 0;//150
+    public static final int DOWN_ACCEL = 300;
+
+  }
+
   private TalonSRX jackMotor;
+  private TalonSRX jackDriveMotor;
+  private DigitalInput botHal;
 
   public JackSubsystem(){
     jackMotor = new TalonSRX(RobotMap.Jacks.JACK_MOTOR);
     jackMotor.setInverted(false);
-    jackMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
+    jackMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Robot.timeoutMs);
+    jackMotor.setSensorPhase(true);
+    jackMotor.setNeutralMode(NeutralMode.Brake);
+    jackMotor.selectProfileSlot(0, 0);
+    
+    jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);
+    botHal = new DigitalInput(RobotMap.Jacks.DOWN_HAL);
+  }
+
+  public void setJackDriveMotor(double pow){
+    jackDriveMotor.set(ControlMode.PercentOutput, pow);
   }
 
   public void setJackMotor(double pow){
     jackMotor.set(ControlMode.PercentOutput, pow);
+  }
+  public int getJackEncoder(){
+    return jackMotor.getSelectedSensorPosition();
+  }
+  public double getJackVel(){
+    return jackMotor.getSelectedSensorVelocity();
+  }
+  public void setJackMotorMP(double pos){
+    jackMotor.set(ControlMode.MotionMagic, pos);
+  }
+  public void resetJackEncoder(){
+    jackMotor.setSelectedSensorPosition(0);
+  }
+  public boolean isJackAtBottom(){
+    return !botHal.get();
+  }
+  public void setJackMPVals(boolean isDown){
+    if(isDown){
+      jackMotor.config_kF(0, LiftConstants.DOWN_kF,Robot.timeoutMs);
+      jackMotor.config_kP(0, LiftConstants.DOWN_kP,Robot.timeoutMs);
+      jackMotor.config_kI(0, LiftConstants.DOWN_kI,Robot.timeoutMs);
+      jackMotor.config_kD(0, LiftConstants.DOWN_kD,Robot.timeoutMs);
+      jackMotor.configMotionCruiseVelocity(LiftConstants.DOWN_VEL,Robot.timeoutMs);
+      jackMotor.configMotionAcceleration(LiftConstants.DOWN_ACCEL,Robot.timeoutMs);
+    }else{
+      jackMotor.config_kF(0, LiftConstants.UP_kF,Robot.timeoutMs);
+      jackMotor.config_kP(0, LiftConstants.UP_kP,Robot.timeoutMs);
+      jackMotor.config_kI(0, LiftConstants.UP_kI,Robot.timeoutMs);
+      jackMotor.config_kD(0, LiftConstants.UP_kD,Robot.timeoutMs);
+      jackMotor.configMotionCruiseVelocity(LiftConstants.UP_VEL,Robot.timeoutMs);
+      jackMotor.configMotionAcceleration(LiftConstants.UP_ACCEL,Robot.timeoutMs);
+    }
   }
 
   @Override
