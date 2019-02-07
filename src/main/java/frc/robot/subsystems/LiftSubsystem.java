@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 /**
@@ -40,9 +41,23 @@ public class LiftSubsystem extends Subsystem implements ILogger{
     public static final int CARGO_LOADING_STATION = 0;
     public static final int HATCH_MID = 0;
     public static final int HATCH_HIGH = 0;
-    public static final int CLIMB_HAB_TWO = 0;
-    public static final int CLIMB_HAB_THREE = 0;
+    public static final int CLIMB_HAB_TWO = 2728 + 440; //(int)(6/(1.75*Math.PI/4096) + 440-1740); //3221
+    public static final int CLIMB_HAB_THREE = 12500 + 440;
+    public static final double JACK_ENCODER_TO_LIFT_ENCODER = 1.2/1.75; //for every tick of jack go this much lift
   }
+
+  public static class LiftPidConstants {
+    public static final double HANG_kF = 0.0;//0.313859
+    public static final double HANG_kP = 0.06;
+    public static final double HANG_kI = 0.0;
+    public static final double HANG_kD = 0.0;
+    public static final int HANG_VEL = 1286;
+    public static final int HANG_ACCEL = 214;
+
+
+
+  }
+
   private TalonSRX motor1;
   private TalonSRX motor2;
   private TalonSRX motor3;
@@ -91,8 +106,21 @@ public class LiftSubsystem extends Subsystem implements ILogger{
     return 0;
   }
 
+  public void setLiftMPHang(){
+    motor1.config_kF(0, LiftPidConstants.HANG_kF, Robot.timeoutMs);
+    motor1.config_kP(0, LiftPidConstants.HANG_kP, Robot.timeoutMs);
+    motor1.config_kI(0, LiftPidConstants.HANG_kI, Robot.timeoutMs);
+    motor1.config_kD(0, LiftPidConstants.HANG_kD, Robot.timeoutMs);
+    // motor1.configMotionCruiseVelocity(LiftPidConstants.HANG_VEL, Robot.timeoutMs);
+    // motor1.configMotionAcceleration(LiftPidConstants.HANG_ACCEL, Robot.timeoutMs);
+
+  }
+
   public void motionMagicLift(int pos) {
     motor1.set(ControlMode.MotionMagic, pos);
+  }
+  public void pidLift(int pos){
+    motor1.set(ControlMode.Position, pos);
   }
 
   public void resetEncoder() {

@@ -47,6 +47,7 @@ import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightConstants;
 import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightGyroConstants;
 import frc.robot.subsystems.GyroSubsystem.GyroStraightConstants;
+import frc.robot.commands.JackMotionProfileAndLiftCommand;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -129,7 +130,7 @@ public class Robot extends TimedRobot {
     oi = new OI();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
-    cargoIntake = new CargoIntakeSubsystem();
+    // cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
     //camera = new CameraSubsystem();
@@ -182,8 +183,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     jack.resetJackEncoder();
     // jackMpCommand = new JackMotionProfileCommand(6000,true,4.0);
-    // jackMpCommand.start(); 
-    jack.setJackMPVals(true);   
+    // jackMpCommand.start();
+    lift.setLiftMPHang(); 
+    jack.setJackMPVals(true);  
+    new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0).start();
+
   }
 
   /**
@@ -192,9 +196,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0).start();
+    // lift.pidLift(100);
+    // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0).start();
     SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
-
+    // lift.motionMagicLift(LiftSubsystem.LiftEncoderConstants.INTAKE);
   }
 
   @Override
@@ -204,6 +209,7 @@ public class Robot extends TimedRobot {
     jack.resetJackEncoder();
     visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
+    lift.resetEncoder();
     // gyroStraightTestInit();
     // drive.stopMP();
     // drive.stopMP();
@@ -227,12 +233,14 @@ public class Robot extends TimedRobot {
     // if(oi.visionFixButton.get()){
     //   visionFixCommand.start();
     //   return;
+
     // }
     // else {
     //   visionFixCommand.cancel();
     //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
     // }
     lift.setManualLift(oi.driver.getDriverVertical());
+    SmartDashboard.putNumber("Lift Encoder", lift.getRawEncoder());
 
     // int motorNumber = prefs.getInt("MotorNumber", 0);
     // sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
