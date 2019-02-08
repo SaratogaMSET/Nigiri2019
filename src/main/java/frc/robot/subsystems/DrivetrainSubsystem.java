@@ -73,8 +73,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   
   private Trajectory leftTraj, rightTraj;
   
-  private static double turnMult;
-
+  private double turnMult;
+  private boolean isReversePath;
 
   public DrivetrainSubsystem() {
     motors = new TalonSRX[6];
@@ -84,13 +84,9 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1]);
     leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0]);
     
-
+    rightEncoder.setDistancePerPulse(wheelDiameter * Math.PI / (double) tickPerRev);
+    leftEncoder.setDistancePerPulse(wheelDiameter * Math.PI /  (double) tickPerRev);
     
-    rightEncoder.setDistancePerPulse(4.0 * Math.PI / 1024.0);
-    leftEncoder.setDistancePerPulse(4.0 * Math.PI/ 1024.0);
-
-    leftEncoder.setReverseDirection(false);
-
     kP = 0.0;
     kI = 0.0;
     kD = 0.0;
@@ -166,7 +162,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder.reset();
   }
 
-  public void runPath(String pathName, double p, double i, double d, double v, double turnVal) {
+  public void runPath(String pathName, double p, double i, double d, double v, double turnVal, boolean isReversePath) {
     changeBrakeCoast(true);
     //TODO: When WPI changes it, change the left and right trajectories. the current version of Wpilib-Pathfinder has a bug
     rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
@@ -181,30 +177,41 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     leftFollower.configurePIDVA(p, i, d, 1.0/v, 0.0);
     rightFollower.configurePIDVA(p, i, d, 1.0/v, 0.0);
 
-    turnMult = turnVal;
+    this.turnMult = turnVal;
+    this.isReversePath = isReversePath;
 
     followerNotifier = new Notifier(this::followPath);
     followerNotifier.startPeriodic(leftTraj.get(0).dt);
   }
 
   private void followPath(){
-    if(leftFollower.isFinished() && rightFollower.isFinished()){
+    if(leftFollower.isFinished() || rightFollower.isFinished()){
       isPathRunning = false;
       followerNotifier.stop();
       rawDrive(0, 0);
       followerNotifier = null;
     }else{
-      double leftSpeed = leftFollower.calculate(getRawLeftEncoder());
-      double rightSpeed = rightFollower.calculate(getRawRightEncoder());
-
+      double leftSpeed, rightSpeed;
+      if(!isReversePath) {
+        leftSpeed = leftFollower.calculate(leftEncoder.get());
+        rightSpeed = rightFollower.calculate(rightEncoder.get());
+      }
+      else {
+        leftSpeed = -rightFollower.calculate(rightEncoder.get());
+        rightSpeed = -leftFollower.calculate(leftEncoder.get());
+      }
+      
       double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle());
       double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
       double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
       SmartDashboard.putNumber("HEADING DIFF", headingDiff); // TODO remove -  DEBUG
       double turn = turnMult * headingDiff;
+      if(isReversePath) {
+        turn *= -1;
+      }
 
       double normalizer = Math.max(1, Math.max(Math.abs(leftSpeed + turn), Math.abs(rightSpeed - turn)));
-      SmartDashboard.putNumber("NORMALIZER", leftSpeed + turn); // TODO remove - debug
+      SmartDashboard.putNumber("NORMALIZER", normalizer); // TODO remove - debug
       double leftNormalized  = (leftSpeed + turn) / normalizer;
       double rightNormalized = (rightSpeed - turn) / normalizer;
 

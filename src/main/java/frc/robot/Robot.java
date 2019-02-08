@@ -147,6 +147,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("CURRENT ACCELERATION", curA);
     SmartDashboard.putNumber("MAX ACCELERATION", max_accel = Math.max(max_accel, Math.abs(curA)));
     prev_vel = Math.abs(drive.leftEncoder.getRate());
+    SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
+    SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
   }
 
   /**
@@ -169,9 +171,9 @@ public class Robot extends TimedRobot {
     // jack.setJackMPVals(true);  
     // (new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0)).start();
     drive.resetEncoders();
-    drive.runPath("TestPath", 1.0, 0, 0.0, 16.0, 0.01);
+    gyro.resetGyro();
+    drive.runPath("TestPath", 0.4, 0.0, 0.0, 16.0, 0.01, false);
   }
-
   /**
    * This function is called periodically during autonomous.
    */
@@ -188,10 +190,10 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     drive.stopMP();
     gyro.resetGyro();
-    jack.resetJackEncoder();
+    // jack.resetJackEncoder();
     visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
-    lift.resetEncoder();
+    // lift.resetEncoder();
     // gyroStraightTestInit();
     // drive.stopMP();
     // drive.stopMP();
@@ -209,20 +211,20 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
     // gyroStraightTest();
 
-    testJacks();
+    // testJacks();
 
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    // if(oi.visionFixButton.get()){
-    //   visionFixCommand.start();
-    //   return;
+    if(oi.visionFixButton.get()){
+      visionFixCommand.start();
+      return;
 
-    // }
-    // else {
-    //   visionFixCommand.cancel();
-    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    // }
-    lift.setManualLift(oi.driver.getDriverVertical());
-    SmartDashboard.putNumber("Lift Encoder", lift.getRawEncoder());
+    }
+    else {
+      visionFixCommand.cancel();
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    }
+    // lift.setManualLift(oi.driver.getDriverVertical());
+    // SmartDashboard.putNumber("Lift Encoder", lift.getRawEncoder());
 
     // int motorNumber = prefs.getInt("MotorNumber", 0);
     // sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
