@@ -40,8 +40,8 @@ public class JackMotionProfileAndLiftCommand extends Command {
   @Override
   protected void execute() {
     Robot.jack.setJackMotorMP(jackHeight);
-    moveLiftVal = (int)(LiftSubsystem.LiftEncoderConstants.CLIMB_HAB_THREE - Robot.jack.getJackEncoder() * LiftSubsystem.LiftEncoderConstants.JACK_ENCODER_TO_LIFT_ENCODER);
-    SmartDashboard.putNumber("where the lift should", moveLiftVal);
+    moveLiftVal = (int)(LiftSubsystem.LiftEncoderConstants.CLIMB_HAB_THREE - Robot.jack.getJackEncoder() * LiftSubsystem.LiftEncoderConstants.LIFT_TICKS_PER_JACK_TICK);
+    SmartDashboard.putNumber("LIFT SETPOINT", moveLiftVal);
     Robot.lift.pidLift(moveLiftVal);
   }
 
@@ -57,7 +57,7 @@ public class JackMotionProfileAndLiftCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    // Robot.jack.setJackMotor(0.0);
+    
   }
 
   // Called when another command which requires one or more of the same

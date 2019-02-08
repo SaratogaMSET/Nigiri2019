@@ -86,29 +86,9 @@ public class OI {
     }
     
     public double getDriverHorizontal() {
-      return driverHorizontal.getX();
-    }
-
-    /**
-     * Interprets joystick data and performs filtering/squaring/smoothing operations to feed power to the drivetrain.
-     * @return Returns a double array of length two:[0] is the normalized (-1.0 to 1.0) power of the left, [1] is of the right
-     */
-    public double[] getArcadePower() {
-      double fwd = getDriverVertical();
-      double rot = getDriverHorizontal();
-
-      double leftRaw = fwd + rot;
-      double rightRaw = fwd - rot;
-
-      double normalizer = Math.max(1, Math.max(Math.abs(leftRaw), Math.abs(rightRaw)));
-      
-      double leftNormalized  = leftRaw / normalizer;
-      double rightNormalized = rightRaw / normalizer;
-
-      // leftNormalized = Math.pow(leftNormalized, 3.0);
-      // rightNormalized = Math.pow(rightNormalized, 3.0);
-
-      return new double[] {leftNormalized, rightNormalized};
+      double rotX = driverHorizontal.getX();
+      double rot = Math.abs(rotX) * rotX; // square driver rotation input
+      return rot;
     }
   }
   public class Operator{

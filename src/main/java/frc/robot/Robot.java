@@ -7,17 +7,11 @@
 
 package frc.robot;
 
-import java.util.*;
-
-import edu.wpi.cscore.AxisCamera;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode;
-import edu.wpi.cscore.VideoMode.PixelFormat;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -28,25 +22,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.AnalogInput;
 import frc.robot.RobotMap.CargoDeploy;
 import frc.robot.RobotMap.Jacks;
-import frc.robot.commands.DrivetrainTest;
 import frc.robot.commands.GyroStraightDistancePID;
-import frc.robot.commands.LiftTest;
+import frc.robot.commands.test.*;
 import frc.robot.commands.JackMotionProfileCommand;
 import frc.robot.commands.RunCargoDeployCommand;
 import frc.robot.commands.VisionFixCommand;
-import frc.robot.subsystems.CameraSubsystem;
-import frc.robot.subsystems.CargoDeploySubsystem;
-import frc.robot.subsystems.CargoIntakeSubsystem;
-import frc.robot.subsystems.LiftSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.GyroSubsystem;
-import frc.robot.subsystems.JackSubsystem;
-import frc.robot.subsystems.LedSubsystem;
-import frc.robot.subsystems.Subsystem;
-import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightConstants;
-import frc.robot.subsystems.DrivetrainSubsystem.DriveStraightGyroConstants;
-import frc.robot.subsystems.GyroSubsystem.GyroStraightConstants;
+import frc.robot.subsystems.*;
 import frc.robot.commands.JackMotionProfileAndLiftCommand;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -140,7 +121,7 @@ public class Robot extends TimedRobot {
       vision = new VisionSubsystem();
     }
     catch(Exception e){
-      SmartDashboard.putString("VISION FAILED", "1");
+      SmartDashboard.putString("VISION INIT FAILED", "1");
       e.printStackTrace();
     }
     prefs = Preferences.getInstance();
@@ -184,10 +165,11 @@ public class Robot extends TimedRobot {
     jack.resetJackEncoder();
     // jackMpCommand = new JackMotionProfileCommand(6000,true,4.0);
     // jackMpCommand.start();
-    lift.setLiftMPHang(); 
-    jack.setJackMPVals(true);  
-    new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0).start();
-
+    // lift.setLiftMPHang(); 
+    // jack.setJackMPVals(true);  
+    // (new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0)).start();
+    drive.resetEncoders();
+    drive.runPath("TestPath", 1.0, 0, 0.0, 16.0, 0.01);
   }
 
   /**
@@ -258,8 +240,6 @@ public class Robot extends TimedRobot {
   public void testInit() {
     this.gyro.resetGyro();
     this.drive.resetEncoders();
-    // drive.changeBrakeCoast(true);
-    // drive.setTrajectory("TestPath", 1.0, 0, 0.0, 16.0, 0.01); //0.095
   }
 
   /**
@@ -305,38 +285,50 @@ public class Robot extends TimedRobot {
     targX = prefs.getDouble("target X", 0);
     targY = prefs.getDouble("target Y", 0);
     targH = prefs.getDouble("Angle", 0);
-    DriveStraightGyroConstants.kp = prefs.getDouble("Drive Gyro kp", 0);
-    DriveStraightGyroConstants.ki = prefs.getDouble("Drive Gyro ki", 0);
-    DriveStraightGyroConstants.kd = prefs.getDouble("Drive Gyro kd", 0);
-    GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
-    GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
-    GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
-    DriveStraightConstants.kp = prefs.getDouble("Drive kp", 0);
-    DriveStraightConstants.ki = prefs.getDouble("Drive ki", 0);
-    DriveStraightConstants.kd = prefs.getDouble("Drive kd", 0);
-    GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
-    GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
-    GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
+    DrivetrainSubsystem.DriveStraightGyroConstants.kp = prefs.getDouble("Drive Gyro kp", 0);
+    DrivetrainSubsystem.DriveStraightGyroConstants.ki = prefs.getDouble("Drive Gyro ki", 0);
+    DrivetrainSubsystem.DriveStraightGyroConstants.kd = prefs.getDouble("Drive Gyro kd", 0);
+    GyroSubsystem.GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
+    GyroSubsystem.GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
+    GyroSubsystem.GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
+    DrivetrainSubsystem.DriveStraightConstants.kp = prefs.getDouble("Drive kp", 0);
+    DrivetrainSubsystem.DriveStraightConstants.ki = prefs.getDouble("Drive ki", 0);
+    DrivetrainSubsystem.DriveStraightConstants.kd = prefs.getDouble("Drive kd", 0);
+    GyroSubsystem.GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
+    GyroSubsystem.GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
+    GyroSubsystem.GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
 
     SmartDashboard.putNumber("targX", targX);
     SmartDashboard.putNumber("targY", targY);
     SmartDashboard.putNumber("targH", targH);
-    SmartDashboard.putNumber("Drive kp", DriveStraightConstants.kp);
-    SmartDashboard.putNumber("Drive ki", DriveStraightConstants.ki);
-    SmartDashboard.putNumber("Drive kd", DriveStraightConstants.kd);
-    SmartDashboard.putNumber("Gyro kp", GyroStraightConstants.kp);
-    SmartDashboard.putNumber("Gyro ki", GyroStraightConstants.ki);
-    SmartDashboard.putNumber("Gyro kd", GyroStraightConstants.kd);
+    SmartDashboard.putNumber("Drive kp", DrivetrainSubsystem.DriveStraightConstants.kp);
+    SmartDashboard.putNumber("Drive ki", DrivetrainSubsystem.DriveStraightConstants.ki);
+    SmartDashboard.putNumber("Drive kd", DrivetrainSubsystem.DriveStraightConstants.kd);
+    SmartDashboard.putNumber("Gyro kp", GyroSubsystem.GyroStraightConstants.kp);
+    SmartDashboard.putNumber("Gyro ki", GyroSubsystem.GyroStraightConstants.ki);
+    SmartDashboard.putNumber("Gyro kd", GyroSubsystem.GyroStraightConstants.kd);
 
     firstTargX = targX/2.0;
     firstTargY = targH/2.0;
   }
 
   @Override
-  public void disabledPeriodic() {
-    super.disabledPeriodic();
+  public void disabledInit() {
+    // Remove all commands from queue
+    Scheduler.getInstance().removeAll();
+
+    // Stop drivetrain motion
     drive.stopMP();
     drive.rawDrive(0, 0);
+
+    // Stop lift motion
+
+    // Stop jack motion - note: robot safety is priority. Is it safe for the robot's jack to stop running?
+  }
+
+  @Override
+  public void disabledPeriodic() {
+    
   }
   public void testJacks(){
     // SmartDashboard.putNumber("joy y", oi.operator.getY());

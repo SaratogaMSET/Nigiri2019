@@ -135,28 +135,12 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[0].set(ControlMode.PercentOutput, right);
     motors[3].set(ControlMode.PercentOutput, left);
   }
-
-  public void driveFwdRot(double fwd, double rot) {
-    double right = fwd - rot;
-    double left = fwd + rot;
-
-    double max = Math.max(1, Math.max(Math.abs(left), Math.abs(right)));
-
-    left/=max;
-    right/=max;
-
-    rawDrive(left, right);
-  }
   
   public int getRawLeftEncoder() {
     return leftEncoder.get();
   }
 
-  public void driveFwdRotate(double fwd, double roti){
-		double rot = roti * roti;
-		if(roti < 0){
-			rot = -1*rot;
-		}
+  public void driveFwdRotate(double fwd, double rot){
 		double left = fwd + rot, right = fwd - rot;
 		double max = Math.max(1, Math.max(Math.abs(left), Math.abs(right)));
 		left /= max;
@@ -182,7 +166,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder.reset();
   }
 
-  public void setTrajectory(String pathName, double p, double i, double d, double v, double turnVal){
+  public void runPath(String pathName, double p, double i, double d, double v, double turnVal) {
     changeBrakeCoast(true);
     //TODO: When WPI changes it, change the left and right trajectories. the current version of Wpilib-Pathfinder has a bug
     rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
@@ -208,11 +192,12 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       isPathRunning = false;
       followerNotifier.stop();
       rawDrive(0, 0);
+      followerNotifier = null;
     }else{
       double leftSpeed = leftFollower.calculate(getRawLeftEncoder());
       double rightSpeed = rightFollower.calculate(getRawRightEncoder());
 
-      double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle()); //add when we put in gyro
+      double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle());
       double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
       double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
       SmartDashboard.putNumber("HEADING DIFF", headingDiff); // TODO remove -  DEBUG

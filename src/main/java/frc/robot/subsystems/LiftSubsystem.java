@@ -18,7 +18,7 @@ import frc.robot.RobotMap;
 /**
  * Add your docs here.
  */
-public class LiftSubsystem extends Subsystem implements ILogger{
+public class LiftSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   public static enum LiftPositions {
@@ -41,19 +41,17 @@ public class LiftSubsystem extends Subsystem implements ILogger{
     public static final int CARGO_LOADING_STATION = 0;
     public static final int HATCH_MID = 0;
     public static final int HATCH_HIGH = 0;
-    public static final int CLIMB_HAB_TWO = 2728 + 440; //(int)(6/(1.75*Math.PI/4096) + 440-1740); //3221
+    public static final int CLIMB_HAB_TWO = 2728 + 440;
     public static final int CLIMB_HAB_THREE = 12500 + 440;
-    public static final double JACK_ENCODER_TO_LIFT_ENCODER = 1.2/1.75; //for every tick of jack go this much lift
+    public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
   }
 
   public static class LiftPidConstants {
-    public static final double HANG_kF = 0.0;//0.313859
-    public static final double HANG_kP = 0.06;
-    public static final double HANG_kI = 0.0;
-    public static final double HANG_kD = 0.0;
-    public static final int HANG_VEL = 1286;
-    public static final int HANG_ACCEL = 214;
-
+    // Use feedBACK only for the downwards lift pushing for the climb.
+    public static final double CLIMB_kF = 0.0;
+    public static final double CLIMB_kP = 0.06;
+    public static final double CLIMB_kI = 0.0;
+    public static final double CLIMB_kD = 0.0;
 
 
   }
@@ -107,10 +105,10 @@ public class LiftSubsystem extends Subsystem implements ILogger{
   }
 
   public void setLiftMPHang(){
-    motor1.config_kF(0, LiftPidConstants.HANG_kF, Robot.timeoutMs);
-    motor1.config_kP(0, LiftPidConstants.HANG_kP, Robot.timeoutMs);
-    motor1.config_kI(0, LiftPidConstants.HANG_kI, Robot.timeoutMs);
-    motor1.config_kD(0, LiftPidConstants.HANG_kD, Robot.timeoutMs);
+    motor1.config_kF(0, LiftPidConstants.CLIMB_kF, Robot.timeoutMs);
+    motor1.config_kP(0, LiftPidConstants.CLIMB_kP, Robot.timeoutMs);
+    motor1.config_kI(0, LiftPidConstants.CLIMB_kI, Robot.timeoutMs);
+    motor1.config_kD(0, LiftPidConstants.CLIMB_kD, Robot.timeoutMs);
     // motor1.configMotionCruiseVelocity(LiftPidConstants.HANG_VEL, Robot.timeoutMs);
     // motor1.configMotionAcceleration(LiftPidConstants.HANG_ACCEL, Robot.timeoutMs);
 

@@ -36,7 +36,6 @@ public class VisionFixCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.gyro.gyroPIDController.enable();
     // Activate vision target hold
     Robot.vision.readData();
     Double angle = Robot.vision.getAngleDisplacement();
@@ -47,31 +46,25 @@ public class VisionFixCommand extends Command {
       }
       else {
         numUpdates = 0;
-        double[] drivePower = Robot.oi.driver.getArcadePower();
-        Robot.drive.rawDrive(drivePower[0], drivePower[1]);
+        Robot.drive.driveFwdRotate(Robot.oi.driver.getDriverVertical(), Robot.oi.driver.getDriverHorizontal());
         return;
       }
     }
-    double[] drivePower = {Robot.oi.driver.getDriverVertical(), Robot.oi.driver.getDriverVertical()};
-    drivePower[0] += Robot.gyro.getGyroPIDOutput();
-    drivePower[1] -= Robot.gyro.getGyroPIDOutput();
-    double normalizer = Math.max(1, Math.max(Math.abs(drivePower[0]), Math.abs(drivePower[1])));
-    drivePower[0] /= normalizer;
-    drivePower[1] /= normalizer;
-    Robot.drive.rawDrive(drivePower[0], drivePower[1]);
+    Robot.drive.driveFwdRotate(Robot.oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
     
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
+    // Let Command be canceled manually
     return false;
   }
+
   // Called once after isFinished returns true
   @Override
   protected void end() {
     Robot.gyro.gyroPIDController.disable();
-    Robot.drive.rawDrive(0, 0);
     // SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoder());
     // SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoder());
   }
