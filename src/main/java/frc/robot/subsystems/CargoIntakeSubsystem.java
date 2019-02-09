@@ -21,9 +21,17 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class CargoIntakeSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
+
+  public static enum MotorStatus{
+    out,
+    in,
+    off
+  }
+
   public TalonSRX leftIntake, rightIntake, backIntake;
   public DoubleSolenoid intakeSol;
-  boolean isOut;
+  boolean solIsOut;
+  public MotorStatus motorStatus;
 
   public CargoIntakeSubsystem(){
 
@@ -48,7 +56,8 @@ public class CargoIntakeSubsystem extends Subsystem {
     backIntake.configPeakOutputForward(1, Robot.timeoutMs);
     backIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
 
-    isOut = false;
+    solIsOut = false;
+    motorStatus = MotorStatus.off;
   }
 
   public void testLeft(double power){
@@ -64,10 +73,14 @@ public class CargoIntakeSubsystem extends Subsystem {
   }
 
   public void switchSol(){
-    if(isOut)
+    if(solIsOut){
       intakeSol.set(DoubleSolenoid.Value.kReverse);
-    else
+    }
+    else{
       intakeSol.set(DoubleSolenoid.Value.kForward);
+    }
+    
+    solIsOut = !solIsOut;
   }
 
   @Override
