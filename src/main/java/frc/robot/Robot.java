@@ -172,7 +172,10 @@ public class Robot extends TimedRobot {
     // (new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0)).start();
     drive.resetEncoders();
     gyro.resetGyro();
-    drive.runPath("TestPath", 0.4, 0.0, 0.0, 16.0, 0.01, false);
+
+    // drive.runPath("HAB1L-CLF", 0.6, 0.0, 0.0, 16.0, 0.035, true);
+
+    drive.runPath("CLF-LOADL", 0.05, 0.0, 0.0, 16.0, 0.0035, true);
   }
   /**
    * This function is called periodically during autonomous.
