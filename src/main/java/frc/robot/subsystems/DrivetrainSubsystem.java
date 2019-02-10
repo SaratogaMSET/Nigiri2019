@@ -228,6 +228,9 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       rawDrive(leftNormalized, rightNormalized);
     }
   }
+  public boolean isMPFinish(){
+    return leftFollower.isFinished() && rightFollower.isFinished();
+  }
   public void stopMP(){
     if(followerNotifier != null) {
       followerNotifier.stop();

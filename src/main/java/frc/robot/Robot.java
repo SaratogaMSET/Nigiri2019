@@ -7,34 +7,18 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.AnalogInput;
-import frc.robot.RobotMap.CargoDeploy;
-import frc.robot.RobotMap.Jacks;
-import frc.robot.commands.GyroStraightDistancePID;
-import frc.robot.commands.test.*;
-import frc.robot.commands.JackMotionProfileCommand;
-import frc.robot.commands.RunCargoDeployCommand;
-import frc.robot.commands.VisionFixCommand;
+import edu.wpi.first.wpilibj.shuffleboard.*;
+import edu.wpi.first.wpilibj.smartdashboard.*;
+
+import frc.robot.*;
+import frc.robot.auto.*;
+import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-import frc.robot.commands.JackMotionProfileAndLiftCommand;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import frc.robot.commands.JackMotionProfileCommand;
-
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -174,10 +158,7 @@ public class Robot extends TimedRobot {
     // (new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0)).start();
     drive.resetEncoders();
     gyro.resetGyro();
-
-    // drive.runPath("HAB1L-CLF", 0.6, 0.0, 0.0, 16.0, 0.035, true);
-
-    drive.runPath("CLF-LOADL", 0.05, 0.0, 0.0, 16.0, 0.0035, true);
+    new HAB1LxCLFxLOADLxCL1().start();
   }
   /**
    * This function is called periodically during autonomous.
@@ -194,7 +175,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     drive.stopMP();
-    gyro.resetGyro();
     // jack.resetJackEncoder();
     visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
