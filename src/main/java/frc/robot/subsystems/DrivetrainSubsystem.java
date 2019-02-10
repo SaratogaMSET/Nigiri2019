@@ -172,12 +172,12 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightFollower = new EncoderFollower(rightTraj);
 
     if(isReversePath) {
-      leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
-      rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
-    }
-    else {
       leftFollower.configureEncoder(-getRawLeftEncoder(), tickPerRev, wheelDiameter);
       rightFollower.configureEncoder(-getRawRightEncoder(), tickPerRev, wheelDiameter);
+    }
+    else {
+      leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
+      rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
     }
 
 

@@ -53,9 +53,8 @@ public class RobotMap {
   }
 
   public static class Hatch {
-    public static final int[] HATCH_PISTON = {0, 0, 0};
-    public static final int[] HATCH_DEPLOY_PISTON_1 = {0, 0, 0};
-    public static final int[] HATCH_DEPLOY_PISTON_2 = {0, 0, 0};
+    public static final int[] HATCH_PISTON_1 = {0, 0};
+    public static final int[] HATCH_PISTON_2 = {0, 0};
     public static final int HATCH_SWITCH = 0;
   }
 

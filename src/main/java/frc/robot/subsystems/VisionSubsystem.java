@@ -19,6 +19,9 @@ public class VisionSubsystem extends Subsystem {
         
     }
 
+    // Const
+    private static final Double CAMERA_OFFSET_FT = 0.5;
+
     // Sensors
     public SerialPort jevoisSerial;
     public UsbCamera jevoisCamera;
@@ -26,6 +29,7 @@ public class VisionSubsystem extends Subsystem {
     // State
     private String jevoisData;
     private Double angleDisplacement;
+    private Double distance;
 
     // Comm
     private NetworkTable visionTable;
@@ -54,26 +58,45 @@ public class VisionSubsystem extends Subsystem {
 
         // Extract angle
         Pattern angleRegex = Pattern.compile(".*(ANGLE [-\\d.]+)");
-        Matcher m = angleRegex.matcher(jevoisData);
-        if(m.find()) {
-            SmartDashboard.putNumber("FOUND VISION TARGET", 1);
-            angleDisplacement = Double.parseDouble(m.group(1).substring(5));
-        }
-        else {
-            SmartDashboard.delete("FOUND VISION TARGET");
-            angleDisplacement = null;
-        }
-        if(angleDisplacement != null) {
-            jevoisAngleEntry.setNumber(angleDisplacement);
+        Pattern distRegex = Pattern.compile(".*(DISTANCE [-\\d.]+)");
+
+        Matcher am = angleRegex.matcher(jevoisData);
+        Matcher dm = distRegex.matcher(jevoisData);
+
+        if(am.find()) {
+            SmartDashboard.putNumber("VISION TARGET", 1);
+            angleDisplacement = Double.parseDouble(am.group(1).substring(5));
             angleEntry.setNumber(angleDisplacement);
         }
         else {
-            jevoisAngleEntry.delete();
+            SmartDashboard.putNumber("VISION TARGET", 0);
+            angleDisplacement = null;
+        }
+        if(dm.find()) {
+            SmartDashboard.putNumber("VISION DIST", 1);
+            distance = Double.parseDouble(dm.group(1).substring(8));
+        }
+        else {
+            SmartDashboard.putNumber("VISION DIST", 0);
+            distance = null;
         }
     }
 
     public Double getAngleDisplacement() {
         return angleDisplacement;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public Double getOffsetCorrectedAngle() {
+        if(angleDisplacement == null || distance == null) {
+            return null;
+        }
+        Double d = Math.sqrt(distance*distance - 2 * CAMERA_OFFSET_FT * distance * Math.sin(Math.toRadians(angleDisplacement)));
+        Double correctedAngle = Math.toDegrees(Math.asin(Math.cos(Math.toRadians(angleDisplacement)) * distance/d));
+        return correctedAngle;
     }
 
     @Override

@@ -39,6 +39,7 @@ public class VisionFixCommand extends Command {
     // Activate vision target hold
     Robot.vision.readData();
     Double angle = Robot.vision.getAngleDisplacement();
+    
     if(numUpdates < 3) {
       if(angle != null) {
         Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.gyro.getAngle() + angle);

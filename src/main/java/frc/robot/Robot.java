@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
   public static CargoIntakeSubsystem cargoIntake;
   public static LiftSubsystem lift;
   public static JackSubsystem jack;
-  public static HatchSubsystem hatch;
 
   // Vision
   public static VisionSubsystem vision;
@@ -102,7 +101,6 @@ public class Robot extends TimedRobot {
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
-    hatch = new HatchSubsystem();
     try {
       vision = new VisionSubsystem();
     }
@@ -135,6 +133,7 @@ public class Robot extends TimedRobot {
     prev_vel = Math.abs(drive.leftEncoder.getRate());
     SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
     SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
+    vision.readData();
   }
 
   /**
@@ -158,7 +157,10 @@ public class Robot extends TimedRobot {
     // (new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0)).start();
     drive.resetEncoders();
     gyro.resetGyro();
-    new HAB1LxCLFxLOADLxCL1().start();
+    // drive.runPath("HAB1L-ROCKLF-1", 0.18, 0.0, 0.02, 16.0, 0.008, true);
+    drive.runPath("test-HABLI-CLF", 0.18, 0.0, 0.02, 16.0, 0.008, false);
+
+    // new HAB1LxCLFxLOADLxCL1().start();
   }
   /**
    * This function is called periodically during autonomous.
@@ -176,6 +178,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     drive.stopMP();
     // jack.resetJackEncoder();
+    gyro.resetGyro();
     visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
     // lift.resetEncoder();
