@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   public static CargoIntakeSubsystem cargoIntake;
   public static LiftSubsystem lift;
   public static JackSubsystem jack;
+  public static HatchSubsystem hatch;
 
   // Vision
   public static VisionSubsystem vision;
@@ -101,6 +102,7 @@ public class Robot extends TimedRobot {
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
+    hatch = new HatchSubsystem();
     try {
       vision = new VisionSubsystem();
     }
