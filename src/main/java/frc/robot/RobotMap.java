@@ -36,8 +36,10 @@ public class RobotMap {
   }
 
   public static class CargoDeploy {
-    public static final int rightMotor = 0;
-    public static final int leftMotor = 0;
+    public static final int bagIntake = 0;
+    public static final int cargoIRSensor = 0;
+    public static final int[] INTAKE_SOL_RIGHT = {0, 0};
+    public static final int[] INTAKE_SOL_LEFT = { 0, 0 };
   }
   public static class Jacks {
     public static final int JACK_MOTOR = 13;
