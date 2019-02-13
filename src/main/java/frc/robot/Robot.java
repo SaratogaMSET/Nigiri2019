@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 import frc.robot.*;
+import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
 import frc.robot.commands.test.IntakeMotorsTest;
@@ -68,10 +69,13 @@ public class Robot extends TimedRobot {
   Joystick joy1 = new Joystick(0);
   Joystick joy2 = new Joystick(1);
 
+  // DRIVE kinematics tracking
   public double prev_vel = 0.0; // TODO put in diagnostic
-
+  public double prev_time = 0.0;
   public double max_vel = 0.0;
   public double max_accel = 0.0;
+
+
   public double lastLeftEncoder;
   public double lastRightEncoder;
   public double xLoc;
@@ -82,10 +86,9 @@ public class Robot extends TimedRobot {
   public double targY;
   public double targH;
   public boolean onFirstLeg;
+  public double initAccel = 0.0;
 
  
-  public double initAccel;
-
   public static JackMotionProfileCommand jackMpCommand;
 
   /**
@@ -103,7 +106,7 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
-    //camera = new CameraSubsystem();
+    camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
     // hatch = new HatchSubsystem();
@@ -115,11 +118,12 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
     }
     prefs = Preferences.getInstance();
-    initAccel = 0;
     drive.changeBrakeCoast(false);
     accelTime = new Timer();
     compressor = new Compressor(4);
     time = new Timer();
+    accelTime.start();
+    prev_time = accelTime.get();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -133,14 +137,24 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
+
+    // kinematics negated b/c robot tips while driving fwd without most of robot weight.
     SmartDashboard.putNumber("GYRO HEADING", gyro.getGyroAngle());
-    SmartDashboard.putNumber("MAX VELOCITY", max_vel = Math.max(max_vel, Math.abs(drive.leftEncoder.getRate())));    
-    double curA = (Math.abs(drive.leftEncoder.getRate()) - Math.abs(prev_vel))/(0.2);
-    SmartDashboard.putNumber("CURRENT ACCELERATION", curA);
-    SmartDashboard.putNumber("MAX ACCELERATION", max_accel = Math.max(max_accel, Math.abs(curA)));
-    prev_vel = Math.abs(drive.leftEncoder.getRate());
+    SmartDashboard.putNumber("V", -drive.leftEncoder.getRate());    
+    SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, -(drive.leftEncoder.getRate())));  
+    // only calculate avg A over 0.5 seconds because instantaneous stuff is way off (? why ?)
+    if(prev_time + 0.5 <= accelTime.get()) {
+      double curA = ((drive.leftEncoder.getRate()) - prev_vel)/(accelTime.get() - prev_time);
+      SmartDashboard.putNumber("A", curA);
+      SmartDashboard.putNumber("MAX A", max_accel = Math.max(max_accel, -curA));
+      prev_vel = -(drive.leftEncoder.getRate());
+      prev_time = accelTime.get();
+      SmartDashboard.putNumber("PREV TIME", prev_time);
+    }  
     SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
     SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
+    SmartDashboard.putNumber("TIME", accelTime.get());
+
     // vision.readData();
   }
 
@@ -166,7 +180,7 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     gyro.resetGyro();
     // drive.runPath("HAB1L-ROCKLF-1", 0.18, 0.0, 0.02, 16.0, 0.008, true);
-    drive.runPath("test-HABLI-CLF", 0.18, 0.0, 0.02, 16.0, 0.008, false);
+    // drive.runPath("test-HABLI-CLF", 0.18, 0.0, 0.02, 16.0, 0.008, false);
 
     // new HAB1LxCLFxLOADLxCL1().start();
   }
@@ -251,6 +265,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     this.gyro.resetGyro();
     this.drive.resetEncoders();
+    drive.runPath("TestPath", 0.015, 0.01, 0.0, DrivetrainSubsystem.ROBOT_TRUE_MAX_VELOCITY, 0.018, 0.01, false);
   }
 
   /**
@@ -261,9 +276,9 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
 
     // TEST GYRO PID
-    gyro.gyroPIDController.enable();
-    double pidOut = gyro.getGyroPIDOutput();
-    drive.rawDrive(pidOut, -pidOut);
+    // gyro.gyroPIDController.enable();
+    // double pidOut = gyro.getGyroPIDOutput();
+    // drive.rawDrive(pidOut, -pidOut);
 
   }
 

@@ -18,6 +18,7 @@ public class MotionProfileCommand extends Command {
   double i;
   double d;
   double v;
+  double a;
   double turnVal;
   boolean revPath;
 
@@ -27,6 +28,19 @@ public class MotionProfileCommand extends Command {
     this.i = i;
     this.d = d;
     this.v = v;
+    this.a = 0.0;
+    this.turnVal = turnVal;
+    this.revPath = revPath;
+
+  }
+
+  public MotionProfileCommand(String pathName, double p, double i, double d, double v, double a, double turnVal, boolean revPath) {
+    this.pathName = pathName;
+    this.p = p;
+    this.i = i;
+    this.d = d;
+    this.v = v;
+    this.a = a;
     this.turnVal = turnVal;
     this.revPath = revPath;
 
@@ -35,7 +49,7 @@ public class MotionProfileCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.drive.runPath(pathName, p, i, d, v, turnVal, revPath);
+    Robot.drive.runPath(pathName, p, i, d, v, a, turnVal, revPath);
   }
 
   // Called repeatedly when this Command is scheduled to run

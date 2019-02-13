@@ -94,8 +94,12 @@ public class VisionSubsystem extends Subsystem {
         if(angleDisplacement == null || distance == null) {
             return null;
         }
-        Double d = Math.sqrt(distance*distance - 2 * CAMERA_OFFSET_FT * distance * Math.sin(Math.toRadians(angleDisplacement)));
-        Double correctedAngle = Math.toDegrees(Math.asin(Math.cos(Math.toRadians(angleDisplacement)) * distance/d));
+        Double d = Math.sqrt(distance*distance + CAMERA_OFFSET_FT*CAMERA_OFFSET_FT - 2 * CAMERA_OFFSET_FT * distance * Math.sin(Math.toRadians(angleDisplacement)));
+        Double correctedAngle = Math.toDegrees(Math.asin(Math.cos(Math.toRadians(angleDisplacement)) * distance/d))-90;
+        if(Math.abs(Math.sin(Math.toRadians(angleDisplacement)))*distance > CAMERA_OFFSET_FT) {
+            correctedAngle = -correctedAngle;
+        }
+        SmartDashboard.putNumber("Corrected Angle", correctedAngle);
         return correctedAngle;
     }
 

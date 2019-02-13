@@ -42,6 +42,7 @@ public class VisionFixCommand extends Command {
     
     if(numUpdates < 3) {
       if(angle != null) {
+        SmartDashboard.putNumber("VISION CA", angle);
         Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.gyro.getAngle() + angle);
         numUpdates += 1;
       }

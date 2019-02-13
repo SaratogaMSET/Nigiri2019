@@ -7,12 +7,16 @@
 
 package frc.robot.subsystems;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -27,6 +31,7 @@ import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.PathfinderJNI;
 import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.EncoderFollower;
 
 
@@ -54,6 +59,17 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     public static double cumError = 0;
     public static double lastError = 0;
   }
+
+  // NEED TO RETUNE EVERY TIME ROBOT CHANGES
+  // These are the values that go into path code PIDVA
+  public static final double ROBOT_TRUE_MAX_VELOCITY = 12.0; // ft/s
+  public static final double ROBOT_TRUE_MAX_ACCELERATION = 22.0; // ft/s^2
+
+  // wouldn't want to tip, now would we?
+  // these are the values that go into pathfinder
+  public static final double ROBOT_TARGET_MAX_VELOCITY = 12.0; // ft/s
+  public static final double ROBOT_TARGET_MAX_ACCELERATION = 15.0; // ft/s^2
+
   public TalonSRX[] motors;
   public Encoder rightEncoder;
   public Encoder leftEncoder;
@@ -75,6 +91,10 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   
   private double turnMult;
   private boolean isReversePath = false;
+
+  // Path logging
+  private double[] targetVel = new double[10000];
+  private double[] actualVel = new double[10000];
 
   public DrivetrainSubsystem() {
     motors = new TalonSRX[6];
@@ -162,8 +182,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder.reset();
   }
 
-  public void runPath(String pathName, double p, double i, double d, double v, double turnVal, boolean revPath) {
-    changeBrakeCoast(true);
+  public void runPath(String pathName, double p, double i, double d, double v, double a, double turnVal, boolean revPath) {
+    changeBrakeCoast(false);
     //TODO: When WPI changes it, change the left and right trajectories. the current version of Wpilib-Pathfinder has a bug
     rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
     leftTraj = PathfinderFRC.getTrajectory(pathName + ".right");
@@ -172,8 +192,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightFollower = new EncoderFollower(rightTraj);
 
     if(isReversePath) {
-      leftFollower.configureEncoder(-getRawLeftEncoder(), tickPerRev, wheelDiameter);
-      rightFollower.configureEncoder(-getRawRightEncoder(), tickPerRev, wheelDiameter);
+      leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
+      rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
     }
     else {
       leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
@@ -182,23 +202,31 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
 
     double kv = (v == 0.0) ? 0.0 : 1/v;
-    leftFollower.configurePIDVA(p, i, d, kv, 0.0);
-    rightFollower.configurePIDVA(p, i, d, kv, 0.0);
+    double ka = (a == 0.0) ? 0.0 : a;
+    leftFollower.configurePIDVA(p, i, d, kv, ka);
+    rightFollower.configurePIDVA(p, i, d, kv, ka);
 
     turnMult = turnVal;
     isReversePath = revPath;
 
     followerNotifier = new Notifier(this::followPath);
     followerNotifier.startPeriodic(leftTraj.get(0).dt);
+    segmentCount = 0;
+    velCount = 0;
   }
+
+  private int segmentCount = 0;
 
   private void followPath(){
     if(leftFollower.isFinished() && rightFollower.isFinished()){
+      SmartDashboard.putNumber("FINISHED", 1);
       isPathRunning = false;
       followerNotifier.stop();
       rawDrive(0, 0);
       followerNotifier = null;
+      logPathVel();
     }else{
+      SmartDashboard.putNumber("FINISHED",0);
       double leftSpeed, rightSpeed;
       if(isReversePath) {
         leftSpeed = -rightFollower.calculate(-rightEncoder.get());
@@ -220,14 +248,48 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       SmartDashboard.putNumber("REG", leftSpeed); // TODO remove - debug
       SmartDashboard.putNumber("TURN", turn); // TODO remove - debug
 
-      double normalizer = Math.max(1, Math.max(Math.abs(leftSpeed + turn), Math.abs(rightSpeed - turn)));
-      SmartDashboard.putNumber("NORMALIZER", normalizer); // TODO remove - debug
-      double leftNormalized  = (leftSpeed + turn) / normalizer;
-      double rightNormalized = (rightSpeed - turn) / normalizer;
+      NetworkTableInstance.getDefault().getTable("Paths").getEntry("TargetVelocity").setNumber(leftTraj.segments[segmentCount].velocity);
+      NetworkTableInstance.getDefault().getTable("Paths").getEntry("ActualVelocity").setNumber(leftEncoder.getRate());
+      trackVelocity(rightEncoder.getRate(), rightTraj.segments[segmentCount].velocity);
 
-      rawDrive(leftNormalized, rightNormalized);
+      segmentCount++;
+
+      rawDrive(leftSpeed + turn, rightSpeed - turn);
     }
   }
+
+  private int velCount = 0;
+  public void trackVelocity(double actual, double target) {
+    targetVel[velCount] = target;
+    actualVel[velCount] = actual;
+    velCount++;
+  }
+
+  public void logPathVel() {
+    try {
+      BufferedWriter br = new BufferedWriter(new FileWriter("/home/lvuser/path_velocity.csv"));
+      StringBuilder sb = new StringBuilder();
+      sb.append("Target Velolcity");
+      sb.append(", Actual Velocity");
+      sb.append("\n");
+      for(int i = 0; i < targetVel.length; i++) {
+        sb.append(targetVel[i]);
+        sb.append(",");
+        sb.append(actualVel[i]);
+        sb.append("\n");
+      }
+      br.write(sb.toString());
+      br.flush();
+      br.close();
+      
+    }
+    catch(Exception e) {
+      SmartDashboard.putString("FAILED LOG", e.getLocalizedMessage());
+    }
+
+  }
+
+
   public boolean isMPFinish(){
     return leftFollower.isFinished() && rightFollower.isFinished();
   }

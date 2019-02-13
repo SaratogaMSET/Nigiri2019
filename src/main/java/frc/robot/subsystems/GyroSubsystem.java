@@ -47,7 +47,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     lastAccelY = getLinearAccelY();
     collision = false;
 
-    gyroPIDController = new PIDController(0.027, 0.0, 0.054, gyro, this);
+    gyroPIDController = new PIDController(0.04, 0.0, 0.0, gyro, this);
     gyroPIDController.setInputRange(-180.0f, 180.0f);
     gyroPIDController.setOutputRange(-1.0, 1.0);
     gyroPIDController.setAbsoluteTolerance(1.0);
