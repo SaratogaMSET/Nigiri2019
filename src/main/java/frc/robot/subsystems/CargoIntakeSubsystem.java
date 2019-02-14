@@ -51,23 +51,30 @@ public class CargoIntakeSubsystem extends Subsystem {
     isOut = false;
   }
 
-  public void testLeft(double power){
-    leftIntake.set(ControlMode.PercentOutput, power);
-  }
-
-  public void testRight(double power){
-    rightIntake.set(ControlMode.PercentOutput, power);
-  }
-
-  public void testBack(double power){
-    backIntake.set(ControlMode.PercentOutput, power);
+  public void testMotor(int motor, double power){
+    switch(motor){
+      case 1:
+        leftIntake.set(ControlMode.PercentOutput, power);
+        break;
+      case 2:
+        rightIntake.set(ControlMode.PercentOutput, power);
+        break;
+      case 3:
+        backIntake.set(ControlMode.PercentOutput, power);
+        break;
+      
+    }
   }
 
   public void switchSol(){
-    if(isOut)
+    if(isOut){
       intakeSol.set(DoubleSolenoid.Value.kReverse);
-    else
+    }
+    else{
       intakeSol.set(DoubleSolenoid.Value.kForward);
+    }
+    isOut = !isOut;
+
   }
 
   @Override

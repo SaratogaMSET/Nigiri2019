@@ -18,31 +18,36 @@ public class IntakeMotorsTest extends Command {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.power = power;
-    Robot.prefs.putString("motor", "left");
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    String motor = Robot.prefs.getString("motor", "left");
     
-    if(motor.equals("left"))
-      Robot.cargoIntake.testLeft(.5);
-    else if(motor.equals("right"))
-      Robot.cargoIntake.testRight(.5);
-    else
-      Robot.cargoIntake.testBack(.5);
+    
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    if(Robot.oi.driver.getDriverButton2()) { //left intake
+      Robot.cargoIntake.testMotor(1, Robot.oi.driver.getDriverVertical());
+    } 
+    else if(Robot.oi.driver.getDriverButton3()) { //right intake
+      Robot.cargoIntake.testMotor(2, Robot.oi.driver.getDriverVertical());
+    } 
+    else if(Robot.oi.driver.getDriverButton4()) { //back intake
+      Robot.cargoIntake.testMotor(3, Robot.oi.driver.getDriverVertical());
+    } 
+    else if(Robot.oi.driver.getDriverButton5()) { //pistons in/out
+      Robot.cargoIntake.switchSol();
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return Robot.oi.driver.getDriverButton1();
   }
 
   // Called once after isFinished returns true
