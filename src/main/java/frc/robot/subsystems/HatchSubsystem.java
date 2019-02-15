@@ -32,9 +32,9 @@ public class HatchSubsystem extends Subsystem {
   public HatchPositions currentPosition;
 
   public HatchSubsystem() {
-    hatchSol = new DoubleSolenoid(RobotMap.Hatch.HATCH_PISTON[0], RobotMap.Hatch.HATCH_PISTON[1], RobotMap.Hatch.HATCH_PISTON[2]);
-    hatchDeploySol1 = new DoubleSolenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[1], RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[3]);
-    hatchDeploySol2 = new DoubleSolenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON_2[1], RobotMap.Hatch.HATCH_DEPLOY_PISTON_2[2]);
+    hatchSol = new DoubleSolenoid(RobotMap.Hatch.HATCH_PISTON[0], RobotMap.Hatch.HATCH_PISTON[1]);
+    hatchDeploySol1 = new DoubleSolenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[1]);
+    hatchDeploySol2 = new DoubleSolenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON_2[1]);
     hatchAcquired = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
     currentPosition = HatchPositions.hatchIn;
   }

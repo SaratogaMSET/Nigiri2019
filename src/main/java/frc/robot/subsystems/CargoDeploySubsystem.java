@@ -33,8 +33,8 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
   private boolean acquired = false;
   
   public CargoDeploySubsystem() {
-    intakeWheel = new TalonSRX(RobotMap.CargoDeploy.bagIntake);
-    cargoIR = new DigitalInput(RobotMap.CargoDeploy.cargoIRSensor);
+    intakeWheel = new TalonSRX(RobotMap.CargoDeploy.DEPLOY_INTAKE_MOTOR);
+    cargoIR = new DigitalInput(RobotMap.CargoDeploy.IR_SENSOR);
     leftPiston = new DoubleSolenoid(RobotMap.CargoDeploy.INTAKE_SOL_LEFT[0], RobotMap.CargoDeploy.INTAKE_SOL_LEFT[1]);
     rightPiston = new DoubleSolenoid(RobotMap.CargoDeploy.INTAKE_SOL_RIGHT[0], RobotMap.CargoDeploy.INTAKE_SOL_RIGHT[1]);
   }

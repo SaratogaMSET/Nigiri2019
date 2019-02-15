@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.robot.*;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
+import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.subsystems.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -56,10 +57,13 @@ public class Robot extends TimedRobot {
 
   public static Preferences prefs;
 
+  public static Compressor compressor;
+
   public static int timeoutMs = 20;
 
   public static TalonSRX motor1;
   public static TalonSRX motor2;
+  Timer time;
   Timer accelTime;
   Joystick joy1 = new Joystick(0);
   Joystick joy2 = new Joystick(1);
@@ -96,13 +100,13 @@ public class Robot extends TimedRobot {
     oi = new OI();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
-    // cargoIntake = new CargoIntakeSubsystem();
+    cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
     //camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
-    hatch = new HatchSubsystem();
+    // hatch = new HatchSubsystem();
     try {
       vision = new VisionSubsystem();
     }
@@ -114,6 +118,8 @@ public class Robot extends TimedRobot {
     initAccel = 0;
     drive.changeBrakeCoast(false);
     accelTime = new Timer();
+    compressor = new Compressor(4);
+    time = new Timer();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -135,7 +141,7 @@ public class Robot extends TimedRobot {
     prev_vel = Math.abs(drive.leftEncoder.getRate());
     SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
     SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
-    vision.readData();
+    // vision.readData();
   }
 
   /**
@@ -181,8 +187,10 @@ public class Robot extends TimedRobot {
     drive.stopMP();
     // jack.resetJackEncoder();
     gyro.resetGyro();
-    visionFixCommand = new VisionFixCommand();
+    // visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
+
+    // new IntakeMotorsTest().start();
     // lift.resetEncoder();
     // gyroStraightTestInit();
     // drive.stopMP();
@@ -191,6 +199,11 @@ public class Robot extends TimedRobot {
     // visionFixCommand = new VisionFixCommand();
     // drive.changeBrakeCoast(false);
     // new LiftTest().start();
+    compressor.setClosedLoopControl(true);
+    compressor.start();
+    time.reset();
+    time.start();
+
   }
 
   /**
@@ -200,19 +213,25 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     // gyroStraightTest();
-
+    SmartDashboard.putBoolean("LeftSol", cargoIntake.intakeSolLeft.get());
+    SmartDashboard.putBoolean("RightSol", cargoIntake.intakeSolRight.get());
+    SmartDashboard.putBoolean("IsOut", cargoIntake.isOut);
     // testJacks();
-
+    if(oi.driver.getDriverButton1() && time.get() > 0.5) {
+      cargoIntake.switchSol();
+      time.reset();
+    }
+    lift.setManualLift(oi.driver.getDriverVertical());
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    if(oi.visionFixButton.get()){
-      visionFixCommand.start();
-      return;
+    // if(oi.visionFixButton.get()){
+    //   visionFixCommand.start();
+    //   return;
 
-    }
-    else {
-      visionFixCommand.cancel();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    }
+    // }
+    // else {
+    //   visionFixCommand.cancel();
+    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    // }
     // lift.setManualLift(oi.driver.getDriverVertical());
     // SmartDashboard.putNumber("Lift Encoder", lift.getRawEncoder());
 

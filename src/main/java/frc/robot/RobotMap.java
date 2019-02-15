@@ -31,15 +31,15 @@ public class RobotMap {
     public static final int LIFT_MOTOR_1_PORT = 23;
     public static final int LIFT_MOTOR_2_PORT = 18;
     public static final int LIFT_MOTOR_3_PORT = 19;
-    public static final int BOTTOM_HAL_EFFECT = 9;
-    public static final int TOP_HAL_EFFECT = 8;
+    public static final int BOTTOM_HAL_EFFECT = 7;
+    public static final int TOP_HAL_EFFECT = 6;
   }
 
   public static class CargoDeploy {
-    public static final int bagIntake = 0;
-    public static final int cargoIRSensor = 0;
-    public static final int[] INTAKE_SOL_RIGHT = {0, 0};
-    public static final int[] INTAKE_SOL_LEFT = { 0, 0 };
+    public static final int DEPLOY_INTAKE_MOTOR = 23;
+    public static final int IR_SENSOR = 9;
+    public static final int[] INTAKE_SOL_RIGHT = { 4, 5 };
+    public static final int[] INTAKE_SOL_LEFT = { 2, 3 };
   }
   public static class Jacks {
     public static final int JACK_MOTOR = 13;
@@ -48,17 +48,17 @@ public class RobotMap {
   }
 
   public static class CargoIntake {
-    public static final int RIGHT_INTAKE = 0;
-    public static final int LEFT_INTAKE = 0;
-    public static final int BACK_INTAKE = 0;
-    public static final int[] INTAKE_SOL = {0,0,0};
+    public static final int RIGHT_INTAKE = 9;
+    public static final int LEFT_INTAKE = 8;
+    public static final int BACK_INTAKE = 22;
+    public static final int[] INTAKE_SOL = { 0, 1 };
   }
 
   public static class Hatch {
-    public static final int[] HATCH_PISTON = {0, 0, 0};
-    public static final int[] HATCH_DEPLOY_PISTON_1 = {0, 0, 0};
-    public static final int[] HATCH_DEPLOY_PISTON_2 = {0, 0, 0};
-    public static final int HATCH_SWITCH = 0;
+    public static final int[] HATCH_PISTON = { 4, 5 };
+    public static final int[] HATCH_DEPLOY_PISTON_1 = { 2, 3 };
+    public static final int[] HATCH_DEPLOY_PISTON_2 = { 6, 7 };
+    public static final int HATCH_SWITCH = 8;
   }
 
   public static class Ultrasonic {

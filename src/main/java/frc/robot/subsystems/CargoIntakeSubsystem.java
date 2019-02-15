@@ -8,12 +8,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.Robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 /**
  * Add your docs here.
@@ -22,8 +25,9 @@ public class CargoIntakeSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   public TalonSRX leftIntake, rightIntake, backIntake;
-  public DoubleSolenoid intakeSol;
-  boolean isOut;
+  public Solenoid intakeSolRight;
+  public Solenoid intakeSolLeft;
+  public boolean isOut;
 
   public CargoIntakeSubsystem(){
 
@@ -31,7 +35,11 @@ public class CargoIntakeSubsystem extends Subsystem {
     rightIntake = new TalonSRX(RobotMap.CargoIntake.RIGHT_INTAKE);
     backIntake = new TalonSRX(RobotMap.CargoIntake.BACK_INTAKE);
 
-    intakeSol = new DoubleSolenoid(RobotMap.CargoIntake.INTAKE_SOL[0],RobotMap.CargoIntake.INTAKE_SOL[1],RobotMap.CargoIntake.INTAKE_SOL[2]);
+    intakeSolRight = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[0]);
+    intakeSolLeft = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[1]);
+    
+    intakeSolRight.set(false);
+    intakeSolLeft.set(false);
 
     leftIntake.configNominalOutputForward(0, Robot.timeoutMs);
     leftIntake.configNominalOutputReverse(0, Robot.timeoutMs);
@@ -62,19 +70,20 @@ public class CargoIntakeSubsystem extends Subsystem {
       case 3:
         backIntake.set(ControlMode.PercentOutput, power);
         break;
-      
     }
   }
 
   public void switchSol(){
     if(isOut){
-      intakeSol.set(DoubleSolenoid.Value.kReverse);
+      intakeSolRight.set(false);
+      intakeSolLeft.set(false);
     }
     else{
-      intakeSol.set(DoubleSolenoid.Value.kForward);
+      intakeSolRight.set(true);
+      intakeSolLeft.set(true);
     }
     isOut = !isOut;
-
+    SmartDashboard.putBoolean("is Out", isOut);
   }
 
   @Override
