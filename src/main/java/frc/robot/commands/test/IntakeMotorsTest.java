@@ -7,6 +7,8 @@
 
 package frc.robot.commands.test;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,15 +36,15 @@ public class IntakeMotorsTest extends Command {
   @Override
   protected void execute() {
     if(Robot.oi.driver.getDriverButton2()) { //left intake
-      Robot.cargoIntake.testMotor(1, Robot.oi.driver.getDriverVertical());
+      Robot.cargoIntake.runMotor(1, Robot.oi.driver.getDriverVertical());
       SmartDashboard.putString("Currently Running Motor", "Motor 8 Left");
     } 
     else if(Robot.oi.driver.getDriverButton3()) { //right intake
-      Robot.cargoIntake.testMotor(2, Robot.oi.driver.getDriverVertical());
+      Robot.cargoIntake.runMotor(2, Robot.oi.driver.getDriverVertical());
       SmartDashboard.putString("Currently Running Motor", "Motor 9 Right");
     } 
     else if(Robot.oi.driver.getDriverButton4()) { //back intake
-      Robot.cargoIntake.testMotor(3, Robot.oi.driver.getDriverVertical());
+      Robot.cargoIntake.runMotor(3, Robot.oi.driver.getDriverVertical());
       SmartDashboard.putString("Currently Running Motor", "Motor 22 Back");
     } 
     else if(Robot.oi.driver.getDriverButton5() && time.get() > 0.5) { //pistons in/out
@@ -50,6 +52,16 @@ public class IntakeMotorsTest extends Command {
 
       time.reset();
       
+    }
+    else if(Robot.oi.driver.getDriverButton6()) { //pistons in/out
+      Robot.cargoIntake.testAll(Robot.oi.driver.getDriverVertical());
+      SmartDashboard.putString("Currently Running Motor", "All Intake Motors");
+      
+    }
+    else{
+      Robot.cargoIntake.runMotor(1, 0);
+      Robot.cargoIntake.runMotor(2, 0);
+      Robot.cargoIntake.runMotor(3, 0);
     }
   }
 

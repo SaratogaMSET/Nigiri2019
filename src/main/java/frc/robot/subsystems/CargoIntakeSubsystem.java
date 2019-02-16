@@ -24,10 +24,10 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 public class CargoIntakeSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
-  public TalonSRX leftIntake, rightIntake, backIntake;
-  public Solenoid intakeSolRight;
-  public Solenoid intakeSolLeft;
-  public boolean isOut;
+  private TalonSRX leftIntake, rightIntake, backIntake;
+  private Solenoid intakeSolRight;
+  private Solenoid intakeSolLeft;
+  private boolean isOut;
 
   public CargoIntakeSubsystem(){
 
@@ -59,19 +59,32 @@ public class CargoIntakeSubsystem extends Subsystem {
     isOut = false;
   }
 
-  public void testMotor(int motor, double power){
+  public void runMotor(int motor, double power){
     switch(motor){
       case 1:
         leftIntake.set(ControlMode.PercentOutput, power);
         break;
       case 2:
-        rightIntake.set(ControlMode.PercentOutput, power);
+        rightIntake.set(ControlMode.PercentOutput, -power);
         break;
       case 3:
         backIntake.set(ControlMode.PercentOutput, power);
         break;
     }
   }
+
+  public void testAll (double power){
+    leftIntake.set(ControlMode.PercentOutput, power);
+    rightIntake.set(ControlMode.PercentOutput, -power);
+    backIntake.set(ControlMode.PercentOutput, power);
+  }
+
+  public boolean getLeftSol(){
+    return intakeSolLeft.get();
+  }
+  public boolean getRightSol(){
+    return intakeSolRight.get();
+   }
 
   public void switchSol(){
     if(isOut){
@@ -85,6 +98,12 @@ public class CargoIntakeSubsystem extends Subsystem {
     isOut = !isOut;
     SmartDashboard.putBoolean("is Out", isOut);
   }
+
+  public boolean solOut(){
+    return isOut;
+  }
+
+ 
 
   @Override
   public void initDefaultCommand() {

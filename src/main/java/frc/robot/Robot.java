@@ -223,6 +223,8 @@ public class Robot extends TimedRobot {
     time.reset();
     time.start();
 
+    new IntakeMotorsTest().start();
+
   }
 
   /**
@@ -232,15 +234,16 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     // gyroStraightTest();
-    SmartDashboard.putBoolean("LeftSol", cargoIntake.intakeSolLeft.get());
-    SmartDashboard.putBoolean("RightSol", cargoIntake.intakeSolRight.get());
-    SmartDashboard.putBoolean("IsOut", cargoIntake.isOut);
+    SmartDashboard.putBoolean("LeftSol", cargoIntake.getLeftSol());
+    SmartDashboard.putBoolean("RightSol", cargoIntake.getRightSol());
+    SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
     // testJacks();
-    if(oi.driver.getDriverButton1() && time.get() > 0.5) {
-      cargoIntake.switchSol();
-      time.reset();
-    }
-    lift.setManualLift(oi.driver.getDriverVertical());
+    // if(oi.driver.getDriverButton1() && time.get() > 0.5) {
+    //   cargoIntake.switchSol();
+    //   time.reset();
+    // }
+    
+    //lift.setManualLift(oi.driver.getDriverVertical());
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
     // if(oi.visionFixButton.get()){
     //   visionFixCommand.start();
