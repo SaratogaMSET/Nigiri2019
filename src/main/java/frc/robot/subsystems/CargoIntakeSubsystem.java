@@ -86,6 +86,18 @@ public class CargoIntakeSubsystem extends Subsystem {
     return intakeSolRight.get();
    }
 
+  public void runIntake(boolean in, double power) {
+    if(in) {
+      leftIntake.set(ControlMode.PercentOutput, -power);
+      rightIntake.set(ControlMode.PercentOutput, power);
+      backIntake.set(ControlMode.PercentOutput, -power);
+    } else {
+      leftIntake.set(ControlMode.PercentOutput, power);
+      rightIntake.set(ControlMode.PercentOutput, -power);
+      backIntake.set(ControlMode.PercentOutput, power);
+    }
+  }
+
   public void switchSol(){
     if(isOut){
       intakeSolRight.set(false);

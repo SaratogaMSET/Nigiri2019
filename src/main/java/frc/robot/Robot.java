@@ -19,6 +19,8 @@ import frc.robot.auto.*;
 import frc.robot.commands.*;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.LiftSubsystem.LiftPositions;
+import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -66,6 +68,7 @@ public class Robot extends TimedRobot {
   public static TalonSRX motor1;
   public static TalonSRX motor2;
   Timer time;
+  Timer intakeTime;
   Timer accelTime;
   Joystick joy1 = new Joystick(0);
   Joystick joy2 = new Joystick(1);
@@ -89,6 +92,10 @@ public class Robot extends TimedRobot {
   public boolean onFirstLeg;
   public double initAccel = 0.0;
 
+  
+  public int maxLiftAccel;
+  public int maxLiftVel;
+  public int lastLiftVel;
  
   public static JackMotionProfileCommand jackMpCommand;
 
@@ -121,13 +128,14 @@ public class Robot extends TimedRobot {
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);
     accelTime = new Timer();
-    compressor = new Compressor(4);
+    // compressor = new Compressor(4);
     time = new Timer();
     accelTime.start();
     prev_time = accelTime.get();
   }
    /**
-   * This function is called every robot packet, no matter the mode. Use
+   * This function is ca
+   * lled every robot packet, no matter the mode. Use
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
@@ -209,6 +217,7 @@ public class Robot extends TimedRobot {
     // visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
 
+    // getInitLiftValues();
     // new IntakeMotorsTest().start();
     // lift.resetEncoder();
     // gyroStraightTestInit();
@@ -218,13 +227,15 @@ public class Robot extends TimedRobot {
     // visionFixCommand = new VisionFixCommand();
     // drive.changeBrakeCoast(false);
     // new LiftTest().start();
-    compressor.setClosedLoopControl(true);
-    compressor.start();
-    time.reset();
-    time.start();
 
-    new IntakeMotorsTest().start();
-
+    // compressor.setClosedLoopControl(true);
+    // compressor.start();
+    intakeTime = new Timer();
+    intakeTime.reset();
+    intakeTime.start();
+    // cargoIntake.isOut = false;
+    lift.resetEncoder();
+    initLiftTune();
   }
 
   /**
@@ -238,12 +249,26 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("RightSol", cargoIntake.getRightSol());
     SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
     // testJacks();
-    // if(oi.driver.getDriverButton1() && time.get() > 0.5) {
+    // if(oi.gamePad.getButtonA() && intakeTime.get() > 0.5) {
     //   cargoIntake.switchSol();
-    //   time.reset();
+    //   intakeTime.reset();
     // }
-    
-    //lift.setManualLift(oi.driver.getDriverVertical());
+    // if(oi.gamePad.getRightButton()) { //extake
+    //   cargoIntake.runIntake(true, 1);
+    //   cargoDeploy.runIntake(1);
+    // } else if(oi.gamePad.getLeftButton()) { //intake
+    //   cargoIntake.runIntake(false, 1);
+    //   cargoDeploy.runIntake(-1);
+    // } else {
+    //   cargoIntake.runIntake(true, 0);
+    //   cargoDeploy.runIntake(0);
+    // }
+
+
+    liftTune();
+    // drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    // getLiftValues();
+    // lift.setManualLift(oi.driver.getDriverVertical());
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
     // if(oi.visionFixButton.get()){
     //   visionFixCommand.start();
@@ -425,4 +450,65 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Delta Y", deltaY);
     SmartDashboard.putBoolean("On First Leg", onFirstLeg);
   }
+
+  public void getInitLiftValues() {
+    maxLiftAccel = 0;
+    maxLiftVel = 0;
+    time = new Timer();
+    time.reset();
+    time.start();
+  }
+
+  public void getLiftValues() {
+    // int currentAccel = ;
+    int currentVel = lift.getVel();
+    if (Math.abs(currentVel) > maxLiftVel) {
+      maxLiftVel = Math.abs(currentVel);
+    }
+    double sec = time.get();
+    int accel = (int)(((double)(currentVel - lastLiftVel))/sec);
+    if(Math.abs(accel) > maxLiftAccel) {
+      maxLiftAccel = Math.abs(accel);
+    }
+    lastLiftVel = currentVel;
+    time.reset();
+    SmartDashboard.putNumber("MaxAccel", maxLiftAccel);
+    SmartDashboard.putNumber("MaxVel", maxLiftVel);
+    SmartDashboard.putNumber("Curr Vel", currentVel);
+    SmartDashboard.putNumber("Curr Accel", accel);
+    SmartDashboard.putNumber("Position", lift.getRawEncoder());
+    }
+
+    public void initLiftTune() {
+      LiftSubsystem.PIDConstants.k_p = prefs.getDouble("k-p", 0.0);
+      LiftSubsystem.PIDConstants.k_i = prefs.getDouble("k-i", 0.0);
+      LiftSubsystem.PIDConstants.k_d = prefs.getDouble("k-d", 0.0);
+
+      SmartDashboard.putNumber("k-p", PIDConstants.k_p);
+      SmartDashboard.putNumber("k-i", PIDConstants.k_i);
+      SmartDashboard.putNumber("k-d", PIDConstants.k_d);
+
+      lift.setLiftPID();
+    }
+
+    public void liftTune() {
+      if(oi.driver.getDriverButton1()) {
+        lift.motionMagicLift(4466);
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(oi.driver.getDriverButton3()) {
+        lift.motionMagicLift(8000);
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(oi.driver.getDriverButton4()) {
+        new MoveLiftCommand(LiftPositions.HATCH_MID).start();
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(!lift.getIsMoving()) {
+        lift.setManualLift(oi.driver.getDriverVertical());
+        SmartDashboard.putBoolean("Is Motion Magic", false);
+      }
+      if(oi.driver.getDriverButton2()) {
+        lift.resetEncoder();
+        lift.setPosition(LiftPositions.LOW);
+      }
+      SmartDashboard.putNumber("Lift Pos", lift.getRawEncoder());
+    }
 }

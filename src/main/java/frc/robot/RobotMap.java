@@ -36,7 +36,7 @@ public class RobotMap {
   }
 
   public static class CargoDeploy {
-    public static final int DEPLOY_INTAKE_MOTOR = 23;
+    public static final int DEPLOY_INTAKE_MOTOR = 12;
     public static final int IR_SENSOR = 9;
     public static final int[] INTAKE_SOL_RIGHT = { 4, 5 };
     public static final int[] INTAKE_SOL_LEFT = { 2, 3 };
