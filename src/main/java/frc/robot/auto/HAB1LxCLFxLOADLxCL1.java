@@ -16,10 +16,10 @@ public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
    * Add your docs here.
    */
   public HAB1LxCLFxLOADLxCL1() {//215
-    addSequential(new MotionProfileCommand("HAB1L-CLF", 0.6, 0.0, 0.0, 16.0, 0.035, false));
-    addSequential(new MotionProfileCommand("3-point2", 0.05, 0.0, 0.0, 16.0, 0.002, true)); //.002
+    addSequential(new MotionProfileCommand("HAB1L-CLF", false));
+    addSequential(new MotionProfileCommand("3-point2", true)); //.002
 
-    addSequential(new MotionProfileCommand("TurnToLoadingStation", 0.05, 0.0, 0.0, 16.0, 0.015, false));
+    addSequential(new MotionProfileCommand("TurnToLoadingStation", false));
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());

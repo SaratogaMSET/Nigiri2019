@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
@@ -111,7 +112,7 @@ public class Robot extends TimedRobot {
     lift = new LiftSubsystem();
     // hatch = new HatchSubsystem();
     try {
-      vision = new VisionSubsystem();
+      //vision = new VisionSubsystem();
     }
     catch(Exception e){
       SmartDashboard.putString("VISION INIT FAILED", "1");
@@ -154,6 +155,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
     SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
     SmartDashboard.putNumber("TIME", accelTime.get());
+
+    SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
+    SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
+
 
     // vision.readData();
   }
@@ -263,9 +268,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    this.gyro.resetGyro();
-    this.drive.resetEncoders();
-    drive.runPath("TestPath", 0.015, 0.01, 0.0, DrivetrainSubsystem.ROBOT_TRUE_MAX_VELOCITY, 0.018, 0.01, false);
+    gyro.resetGyro();
+    drive.resetEncoders();
+    Command c = (new MotionProfileCommand("TestPath", false));
+    c.start();
   }
 
   /**
@@ -341,7 +347,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     // Remove all commands from queue
-    Scheduler.getInstance().removeAll();
+    // Scheduler.getInstance().removeAll();
 
     // Stop drivetrain motion
     drive.stopMP();

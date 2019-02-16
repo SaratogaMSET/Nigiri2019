@@ -13,6 +13,9 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.cscore.VideoCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 
 /**
  * Add your docs here.
@@ -21,13 +24,14 @@ public class CameraSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public static UsbCamera microsoft;
+  //public static UsbCamera microsoft;
 
-  public static UsbCamera jevois;
+  //public static UsbCamera jevois;
 
   public static AxisCamera axis;
 
   public static double max=0;
+  
 
   public CameraSubsystem(){
 
@@ -37,7 +41,14 @@ public class CameraSubsystem extends Subsystem implements ILogger {
     //jevois = CameraServer.getInstance().startAutomaticCapture();
     //jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
 
-    axis = CameraServer.getInstance().addAxisCamera("10.6.49.17");
+  
+    axis = new AxisCamera("driverCam", "10.6.49.17");
+    
+    
+    //axis = CameraServer.getInstance().addAxisCamera("driverCam", "10.6.49.17");
+    
+
+    
     // microsoft = CameraServer.getInstance().startAutomaticCapture();
     // microsoft.setResolution(320, 240);
 

@@ -27,6 +27,7 @@ import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.PathfinderJNI;
@@ -60,15 +61,32 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     public static double lastError = 0;
   }
 
+  public static class PathFollowingConstants {
+    public static class Left {
+      public static final double kp = 0.025;
+      public static final double kd = 0.0;
+      public static final double kv = 0.083333333;
+      public static final double ka = 0.02;
+    }
+    public static class Right {
+      public static final double kp = 0.025;
+      public static final double kd = 0.0;
+      public static final double kv = 0.083333333;
+      public static final double ka = 0.02;
+    }
+
+    public static final double kp_gyro = 0.01;
+  }
+
+
   // NEED TO RETUNE EVERY TIME ROBOT CHANGES
   // These are the values that go into path code PIDVA
   public static final double ROBOT_TRUE_MAX_VELOCITY = 12.0; // ft/s
-  public static final double ROBOT_TRUE_MAX_ACCELERATION = 22.0; // ft/s^2
 
   // wouldn't want to tip, now would we?
   // these are the values that go into pathfinder
-  public static final double ROBOT_TARGET_MAX_VELOCITY = 12.0; // ft/s
-  public static final double ROBOT_TARGET_MAX_ACCELERATION = 15.0; // ft/s^2
+  public static final double ROBOT_TARGET_MAX_VELOCITY = 9.0; // ft/s
+  public static final double ROBOT_TARGET_MAX_ACCELERATION = 16.0; // ft/s^2
 
   public TalonSRX[] motors;
   public Encoder rightEncoder;
@@ -77,7 +95,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public int motor;
 
 
-  private static final double wheelDiameter = (4.1/12.0); // feet
+  private static final double wheelDiameter = (4.06/12.0); // feet
   private static final int tickPerRev = 1024;
 
   public double kP, kI, kD, kF;
@@ -93,19 +111,24 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   private boolean isReversePath = false;
 
   // Path logging
-  private double[] targetVel = new double[10000];
-  private double[] actualVel = new double[10000];
+  private double[] ltargetVel = new double[10000];
+  private double[] lactualVel = new double[10000];
+  private double[] rtargetVel = new double[10000];
+  private double[] ractualVel = new double[10000];
 
   public DrivetrainSubsystem() {
     motors = new TalonSRX[6];
     for (int i = 0; i < motors.length; i++) {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
     }
-    rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1]);
-    leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0]);
+    rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
+    leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], true, EncodingType.k1X);
     
     rightEncoder.setDistancePerPulse(wheelDiameter * Math.PI / (double) tickPerRev);
     leftEncoder.setDistancePerPulse(wheelDiameter * Math.PI /  (double) tickPerRev);
+
+    leftEncoder.setSamplesToAverage(127);
+    rightEncoder.setSamplesToAverage(127);
     
     kP = 0.0;
     kI = 0.0;
@@ -182,7 +205,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder.reset();
   }
 
-  public void runPath(String pathName, double p, double i, double d, double v, double a, double turnVal, boolean revPath) {
+  public void runPath(String pathName, boolean reversePath) {
     changeBrakeCoast(false);
     //TODO: When WPI changes it, change the left and right trajectories. the current version of Wpilib-Pathfinder has a bug
     rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
@@ -191,7 +214,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     leftFollower = new EncoderFollower(leftTraj);
     rightFollower = new EncoderFollower(rightTraj);
 
-    if(isReversePath) {
+    if(reversePath) {
       leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
       rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
     }
@@ -200,19 +223,27 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
     }
 
+    leftFollower.configurePIDVA(PathFollowingConstants.Left.kp, 
+                                0.0, 
+                                PathFollowingConstants.Left.kd,
+                                PathFollowingConstants.Left.kv,
+                                PathFollowingConstants.Left.ka);
 
-    double kv = (v == 0.0) ? 0.0 : 1/v;
-    double ka = (a == 0.0) ? 0.0 : a;
-    leftFollower.configurePIDVA(p, i, d, kv, ka);
-    rightFollower.configurePIDVA(p, i, d, kv, ka);
+    rightFollower.configurePIDVA(PathFollowingConstants.Right.kp, 
+                                0.0, 
+                                PathFollowingConstants.Right.kd,
+                                PathFollowingConstants.Right.kv,
+                                PathFollowingConstants.Right.ka);
 
-    turnMult = turnVal;
-    isReversePath = revPath;
+    this.isReversePath = reversePath;
 
     followerNotifier = new Notifier(this::followPath);
     followerNotifier.startPeriodic(leftTraj.get(0).dt);
+    
     segmentCount = 0;
-    velCount = 0;
+    lvelCount = 0;
+    rvelCount = 0;
+
   }
 
   private int segmentCount = 0;
@@ -248,9 +279,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       SmartDashboard.putNumber("REG", leftSpeed); // TODO remove - debug
       SmartDashboard.putNumber("TURN", turn); // TODO remove - debug
 
-      NetworkTableInstance.getDefault().getTable("Paths").getEntry("TargetVelocity").setNumber(leftTraj.segments[segmentCount].velocity);
-      NetworkTableInstance.getDefault().getTable("Paths").getEntry("ActualVelocity").setNumber(leftEncoder.getRate());
-      trackVelocity(rightEncoder.getRate(), rightTraj.segments[segmentCount].velocity);
+      trackVelocity(false, rightEncoder.getRate(), rightTraj.segments[segmentCount].velocity);
+      trackVelocity(true, leftEncoder.getRate(), leftTraj.segments[segmentCount].velocity);
 
       segmentCount++;
 
@@ -258,24 +288,36 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     }
   }
 
-  private int velCount = 0;
-  public void trackVelocity(double actual, double target) {
-    targetVel[velCount] = target;
-    actualVel[velCount] = actual;
-    velCount++;
+  private int lvelCount = 0;
+  private int rvelCount = 0;
+  public void trackVelocity(boolean isLeft, double actual, double target) {
+    if(isLeft) {
+      ltargetVel[lvelCount] = target;
+      lactualVel[lvelCount] = actual;
+      lvelCount++;
+      return;
+    }
+    rtargetVel[rvelCount] = target;
+    ractualVel[rvelCount] = actual;
+    rvelCount++;
+    
   }
 
   public void logPathVel() {
     try {
       BufferedWriter br = new BufferedWriter(new FileWriter("/home/lvuser/path_velocity.csv"));
       StringBuilder sb = new StringBuilder();
-      sb.append("Target Velolcity");
-      sb.append(", Actual Velocity");
+      sb.append("Left Target, Left Actual, Right Target, Right Actual");
+      sb.append("");
       sb.append("\n");
-      for(int i = 0; i < targetVel.length; i++) {
-        sb.append(targetVel[i]);
+      for(int i = 0; i < ltargetVel.length; i++) {
+        sb.append(ltargetVel[i]);
         sb.append(",");
-        sb.append(actualVel[i]);
+        sb.append(lactualVel[i]);
+        sb.append(",");
+        sb.append(rtargetVel[i]);
+        sb.append(",");
+        sb.append(ractualVel[i]);
         sb.append("\n");
       }
       br.write(sb.toString());
