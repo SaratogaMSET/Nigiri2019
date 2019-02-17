@@ -43,7 +43,7 @@ public class MoveLiftCommand extends Command {
       isFinished = true;
       // stall lift command
     }
-    if(!Robot.cargoIntake.isOut) {
+    if(!Robot.cargoIntake.solOut()) {
       end();
     }
 
