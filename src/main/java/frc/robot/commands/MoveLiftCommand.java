@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
@@ -20,10 +21,15 @@ public class MoveLiftCommand extends Command {
   boolean isFinished;
   boolean onTarget;
 
-  public MoveLiftCommand(LiftPositions target) {
+  Timer time;
+
+  double timeout;
+
+  public MoveLiftCommand(LiftPositions target, double timeout) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.target = target;
+    this.timeout = timeout;
   }
 
   // Called just before this Command runs the first time
@@ -37,9 +43,15 @@ public class MoveLiftCommand extends Command {
       isFinished = true;
       // stall lift command
     }
+    if(!Robot.cargoIntake.isOut) {
+      end();
+    }
 
+    time = new Timer();
     Robot.lift.setIsMoving(true);
     Robot.lift.moveLiftToPos(target);
+    time.reset();
+    time.start();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -47,10 +59,7 @@ public class MoveLiftCommand extends Command {
   protected void execute() {
     Robot.lift.moveLiftToPos(target);
 
-    if(Robot.lift.withinTolerance(target)) {
-      onTarget = true;
-      isFinished = true;
-    }
+    
 
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", isFinished);
@@ -59,7 +68,13 @@ public class MoveLiftCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return isFinished;
+    if(Robot.lift.withinTolerance(target)) {
+      onTarget = true;
+      return true;
+    } else if (time.get() > timeout) {
+      return true;
+    }
+    return false;
   }
 
   // Called once after isFinished returns true
@@ -69,6 +84,9 @@ public class MoveLiftCommand extends Command {
     if(onTarget) {
       Robot.lift.setPosition(target);
     }
+    SmartDashboard.putBoolean("onTarget", onTarget);
+    SmartDashboard.putBoolean("isFinished", true);
+
     // start stall lift
   }
 

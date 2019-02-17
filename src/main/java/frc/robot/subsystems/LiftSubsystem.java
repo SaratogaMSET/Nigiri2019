@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 
@@ -23,6 +24,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   // here. Call these from Commands.
   public static enum LiftPositions {
     LOW,
+    CARGO_SHIP,
     CARGO_ROCKET_LEVEL_ONE,
     CARGO_ROCKET_LEVEL_TWO,
     CARGO_ROCKET_LEVEL_THREE,
@@ -44,7 +46,21 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final int CLIMB_HAB_TWO = 2728 + 440;
     public static final int CLIMB_HAB_THREE = 12500 + 440;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
+    public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
     public static final int TOLERANCE = 100;
+  }
+
+  public static class LiftDistanceConstants {
+    public static final double INTAKE = 0;
+    public static final double CARGO_SHIP = 30;
+    public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
+    public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
+    public static final double CARGO_ROCKET_LEVEL_THREE = 83.04;
+    public static final double CARGO_LOADING_STATION = 0;
+    public static final double HATCH_MID = 46.6;
+    public static final double HATCH_HIGH = 74.6;
+    public static final double CLIMB_HAB_TWO = 0;
+    public static final double CLIMB_HAB_THREE = 0;
   }
 
   public static class LiftPidConstants {
@@ -148,6 +164,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public void motionMagicLift(int pos) {
     motor1.set(ControlMode.MotionMagic, pos);
+    SmartDashboard.putNumber("Encoder Target", pos);
   }
   public void pidLift(int pos){
     motor1.set(ControlMode.Position, pos);
@@ -164,31 +181,34 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public void moveLiftToPos(LiftPositions pos) {
     switch(pos) {
       case LOW:
-        motionMagicLift(LiftEncoderConstants.INTAKE);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
+        break;
+      case CARGO_SHIP:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP));
         break;
       case CARGO_ROCKET_LEVEL_ONE:
-        motionMagicLift(LiftEncoderConstants.CARGO_ROCKET_LEVEL_ONE);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE));
         break;
       case CARGO_ROCKET_LEVEL_TWO:
-        motionMagicLift(LiftEncoderConstants.CARGO_ROCKET_LEVEL_TWO);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_TWO));
         break;
       case CARGO_ROCKET_LEVEL_THREE:
-        motionMagicLift(LiftEncoderConstants.CARGO_ROCKET_LEVEL_THREE);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_THREE));
         break;
       case CARGO_LOADING_STATION:
-        motionMagicLift(LiftEncoderConstants.CARGO_LOADING_STATION);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_LOADING_STATION));
         break;
       case HATCH_MID:
-        motionMagicLift(LiftEncoderConstants.HATCH_MID);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.HATCH_MID));
         break;
       case HATCH_HIGH:
-        motionMagicLift(LiftEncoderConstants.HATCH_HIGH);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.HATCH_HIGH));
         break;
       case CLIMB_HAB_TWO:
-        motionMagicLift(LiftEncoderConstants.CLIMB_HAB_TWO);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_TWO));
         break;
       case CLIMB_HAB_THREE:
-        motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE);
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_THREE));
         break;    
     }
   }
@@ -230,23 +250,25 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public int getLiftPositionEncoders(LiftPositions pos) {
     switch(pos) {
       case LOW:
-        return LiftEncoderConstants.INTAKE;
+        return getTicksFromDistance(LiftDistanceConstants.INTAKE);
+      case CARGO_SHIP:
+        return getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP);
       case CARGO_ROCKET_LEVEL_ONE:
-        return LiftEncoderConstants.CARGO_ROCKET_LEVEL_ONE;
+        return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE);
       case CARGO_ROCKET_LEVEL_TWO:
-        return LiftEncoderConstants.CARGO_ROCKET_LEVEL_TWO;
+        return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_TWO);
       case CARGO_ROCKET_LEVEL_THREE:
-        return LiftEncoderConstants.CARGO_ROCKET_LEVEL_THREE;
+        return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_THREE);
       case CARGO_LOADING_STATION:
-        return LiftEncoderConstants.CARGO_LOADING_STATION;
+        return getTicksFromDistance(LiftDistanceConstants.CARGO_LOADING_STATION);
       case HATCH_MID:
-        return LiftEncoderConstants.HATCH_MID;
+        return getTicksFromDistance(LiftDistanceConstants.HATCH_MID);
       case HATCH_HIGH:
-        return LiftEncoderConstants.HATCH_HIGH;
+        return getTicksFromDistance(LiftDistanceConstants.HATCH_HIGH);
       case CLIMB_HAB_TWO:
-        return LiftEncoderConstants.CLIMB_HAB_TWO;
+        return getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_TWO);
       case CLIMB_HAB_THREE:
-        return LiftEncoderConstants.CLIMB_HAB_THREE;    
+        return getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_THREE);    
     }
     return 0;
   }
@@ -267,6 +289,15 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public int getVel() {
     return motor1.getSelectedSensorVelocity(0);
   }
+
+  public int getTicksFromDistance(double distance) {
+    return (int) (distance / LiftEncoderConstants.DISTANCE_PER_PULSE);
+  }
+
+  public double getDistanceFromTicks() {
+    return LiftEncoderConstants.DISTANCE_PER_PULSE * getRawEncoder();
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

@@ -249,24 +249,26 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("RightSol", cargoIntake.getRightSol());
     SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
     // testJacks();
-    // if(oi.gamePad.getButtonA() && intakeTime.get() > 0.5) {
-    //   cargoIntake.switchSol();
-    //   intakeTime.reset();
-    // }
-    // if(oi.gamePad.getRightButton()) { //extake
-    //   cargoIntake.runIntake(true, 1);
-    //   cargoDeploy.runIntake(1);
-    // } else if(oi.gamePad.getLeftButton()) { //intake
-    //   cargoIntake.runIntake(false, 1);
-    //   cargoDeploy.runIntake(-1);
-    // } else {
-    //   cargoIntake.runIntake(true, 0);
-    //   cargoDeploy.runIntake(0);
-    // }
+    if(oi.gamePad.getButtonA() && intakeTime.get() > 0.5 && oi.gamePad.getRightTrigger() < 0.5) {
+      cargoIntake.switchSol();
+      intakeTime.reset();
+    }
+    if(oi.gamePad.getRightButton()) { //extake
+      cargoIntake.runIntake(true, 1);
+      cargoDeploy.runIntake(1);
+    } else if(oi.gamePad.getLeftButton()) { //intake
+      cargoIntake.runIntake(false, 1);
+      cargoDeploy.runIntake(-1);
+    } else if(oi.gamePad.getButtonX() && oi.gamePad.getRightTrigger() < 0.5) {
+      cargoDeploy.runIntake(1);
+    } else {
+      cargoIntake.runIntake(true, 0);
+      cargoDeploy.runIntake(0);
+    }
 
 
     liftTune();
-    // drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
     // getLiftValues();
     // lift.setManualLift(oi.driver.getDriverVertical());
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
@@ -492,23 +494,31 @@ public class Robot extends TimedRobot {
     }
 
     public void liftTune() {
-      if(oi.driver.getDriverButton1()) {
-        lift.motionMagicLift(4466);
+      if(oi.gamePad.getButtonB() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
         SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.driver.getDriverButton3()) {
-        lift.motionMagicLift(8000);
+      } else if(oi.gamePad.getButtonY() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
         SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.driver.getDriverButton4()) {
-        new MoveLiftCommand(LiftPositions.HATCH_MID).start();
+      } else if(oi.gamePad.getButtonX() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
+        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(oi.gamePad.getButtonA() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
+        new MoveLiftCommand(LiftPositions.LOW, 2).start();
         SmartDashboard.putBoolean("Is Motion Magic", true);
       } else if(!lift.getIsMoving()) {
-        lift.setManualLift(oi.driver.getDriverVertical());
+        lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);
         SmartDashboard.putBoolean("Is Motion Magic", false);
       }
+
+
+
       if(oi.driver.getDriverButton2()) {
         lift.resetEncoder();
         lift.setPosition(LiftPositions.LOW);
       }
       SmartDashboard.putNumber("Lift Pos", lift.getRawEncoder());
+      SmartDashboard.putString("LiftPosition", lift.getLiftPosition().toString());
+      SmartDashboard.putNumber("Lift Distance", lift.getDistanceFromTicks());
     }
 }
