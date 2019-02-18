@@ -35,14 +35,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     CLIMB_HAB_THREE
   }
 
-  public static class LiftEncoderConstants {
-    public static final int INTAKE = 0;
-    public static final int CARGO_ROCKET_LEVEL_ONE = 0;
-    public static final int CARGO_ROCKET_LEVEL_TWO = 10000;
-    public static final int CARGO_ROCKET_LEVEL_THREE = 0;
-    public static final int CARGO_LOADING_STATION = 0;
-    public static final int HATCH_MID = 5000;
-    public static final int HATCH_HIGH = 0;
+  public static class LiftTargetEncoderTicks {
     public static final int CLIMB_HAB_TWO = 2728 + 440;
     public static final int CLIMB_HAB_THREE = 12500 + 440;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
@@ -50,7 +43,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final int TOLERANCE = 100;
   }
 
-  public static class LiftDistanceConstants {
+  public static class LiftTargetInches {
+    // in. from 0-state
     public static final double INTAKE = 0;
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
@@ -59,16 +53,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_LOADING_STATION = 0;
     public static final double HATCH_MID = 46.6;
     public static final double HATCH_HIGH = 74.6;
-    public static final double CLIMB_HAB_TWO = 0;
-    public static final double CLIMB_HAB_THREE = 0;
-  }
-
-  public static class LiftPidConstants {
-    // Use feedBACK only for the downwards lift pushing for the climb.
-    public static final double CLIMB_kF = 0.0;
-    public static final double CLIMB_kP = 0.06;
-    public static final double CLIMB_kI = 0.0;
-    public static final double CLIMB_kD = 0.0;
   }
 
   public static class PIDConstants {
@@ -78,28 +62,34 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static double k_d = 0.0;
     public static final int MAX_ACCELERATION = 10000; //measured 40000-70000
     public static final int MAX_VELOCITY = 3500; // measured 4500
+
+    public static final double CLIMB_kF = 0.0;
+    public static final double CLIMB_kP = 0.06;
+    public static final double CLIMB_kI = 0.0;
+    public static final double CLIMB_kD = 0.0;
   }
 
-  private TalonSRX motor1;
+  public TalonSRX master;
   private TalonSRX motor2;
   private TalonSRX motor3;
-  private DigitalInput bottomHal;
-  private DigitalInput topHal;
-  private LiftPositions currentPosition;
+
+  public DigitalInput bottomHal;
+  public DigitalInput topHal;
+  public LiftPositions currentPosition;
   private boolean isMoving;
 
   public LiftSubsystem() {
-    motor1 = new TalonSRX(RobotMap.Lift.LIFT_MOTOR_1_PORT);
+    master = new TalonSRX(RobotMap.Lift.LIFT_MOTOR_1_PORT);
     motor2 = new TalonSRX(RobotMap.Lift.LIFT_MOTOR_2_PORT);
     motor3 = new TalonSRX(RobotMap.Lift.LIFT_MOTOR_3_PORT);
 
     // bottomHal = new DigitalInput(RobotMap.Lift.BOTTOM_HAL_EFFECT);
     // topHal = new DigitalInput(RobotMap.Lift.TOP_HAL_EFFECT);
 
-    motor1.configNominalOutputForward(0, Robot.timeoutMs);
-    motor1.configNominalOutputReverse(0, Robot.timeoutMs);
-    motor1.configPeakOutputForward(1, Robot.timeoutMs);
-    motor1.configPeakOutputReverse(-1, Robot.timeoutMs);
+    master.configNominalOutputForward(0, Robot.timeoutMs);
+    master.configNominalOutputReverse(0, Robot.timeoutMs);
+    master.configPeakOutputForward(1, Robot.timeoutMs);
+    master.configPeakOutputReverse(-1, Robot.timeoutMs);
 
     motor2.configNominalOutputForward(0, Robot.timeoutMs);
     motor2.configNominalOutputReverse(0, Robot.timeoutMs);
@@ -111,29 +101,29 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor3.configPeakOutputForward(1, Robot.timeoutMs);
     motor3.configPeakOutputReverse(-1, Robot.timeoutMs);
 
-    motor2.set(ControlMode.Follower, motor1.getDeviceID());
-    motor3.set(ControlMode.Follower, motor1.getDeviceID());
+    motor2.set(ControlMode.Follower, master.getDeviceID());
+    motor3.set(ControlMode.Follower, master.getDeviceID());
 
-    motor1.configMotionAcceleration(PIDConstants.MAX_ACCELERATION, Robot.timeoutMs);
-    motor1.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
-    motor1.config_kP(0, PIDConstants.k_p);
-    motor1.config_kI(0, PIDConstants.k_i);
-    motor1.config_kD(0, PIDConstants.k_d);
-    motor1.config_kF(0, PIDConstants.k_f);
+    master.configMotionAcceleration(PIDConstants.MAX_ACCELERATION, Robot.timeoutMs);
+    master.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
+    master.config_kP(0, PIDConstants.k_p);
+    master.config_kI(0, PIDConstants.k_i);
+    master.config_kD(0, PIDConstants.k_d);
+    master.config_kF(0, PIDConstants.k_f);
 
-    motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    master.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     currentPosition = LiftPositions.LOW;
     
     isMoving = false;
   }
 
   public void setManualLift(double power) {
-    motor1.set(ControlMode.PercentOutput, power);
+    master.set(ControlMode.PercentOutput, power);
   }
 
   public void setLiftMotor(int id, double power) {
     if(id == 1) {
-      motor1.set(ControlMode.PercentOutput, power);
+      master.set(ControlMode.PercentOutput, power);
     } else if(id == 2) {
       motor2.set(ControlMode.PercentOutput, power);
     } else if(id == 3) {
@@ -143,7 +133,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public int getLiftMotorID(int id) {
     if(id == 1) {
-      return motor1.getDeviceID();
+      return master.getDeviceID();
     } else if(id == 2) {
       return motor2.getDeviceID();
     } else if(id == 3) {
@@ -152,65 +142,34 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     return 0;
   }
 
-  public void setLiftMPHang(){
-    motor1.config_kF(0, LiftPidConstants.CLIMB_kF, Robot.timeoutMs);
-    motor1.config_kP(0, LiftPidConstants.CLIMB_kP, Robot.timeoutMs);
-    motor1.config_kI(0, LiftPidConstants.CLIMB_kI, Robot.timeoutMs);
-    motor1.config_kD(0, LiftPidConstants.CLIMB_kD, Robot.timeoutMs);
-    // motor1.configMotionCruiseVelocity(LiftPidConstants.HANG_VEL, Robot.timeoutMs);
-    // motor1.configMotionAcceleration(LiftPidConstants.HANG_ACCEL, Robot.timeoutMs);
+  public void configLiftClimb(){
+    master.config_kF(0, PIDConstants.CLIMB_kF, Robot.timeoutMs);
+    master.config_kP(0, PIDConstants.CLIMB_kP, Robot.timeoutMs);
+    master.config_kI(0, PIDConstants.CLIMB_kI, Robot.timeoutMs);
+    master.config_kD(0, PIDConstants.CLIMB_kD, Robot.timeoutMs);
+    // master.configMotionCruiseVelocity(LiftPidConstants.HANG_VEL, Robot.timeoutMs);
+    // master.configMotionAcceleration(LiftPidConstants.HANG_ACCEL, Robot.timeoutMs);
 
   }
 
   public void motionMagicLift(int pos) {
-    motor1.set(ControlMode.MotionMagic, pos);
+    master.set(ControlMode.MotionMagic, pos);
     SmartDashboard.putNumber("Encoder Target", pos);
   }
   public void pidLift(int pos){
-    motor1.set(ControlMode.Position, pos);
+    master.set(ControlMode.Position, pos);
   }
 
   public void resetEncoder() {
-    motor1.setSelectedSensorPosition(0);
+    master.setSelectedSensorPosition(0);
   }
 
   public int getRawEncoder() {
-    return motor1.getSelectedSensorPosition();
+    return master.getSelectedSensorPosition();
   }
 
   public void moveLiftToPos(LiftPositions pos) {
-    switch(pos) {
-      case LOW:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
-        break;
-      case CARGO_SHIP:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP));
-        break;
-      case CARGO_ROCKET_LEVEL_ONE:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE));
-        break;
-      case CARGO_ROCKET_LEVEL_TWO:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_TWO));
-        break;
-      case CARGO_ROCKET_LEVEL_THREE:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_THREE));
-        break;
-      case CARGO_LOADING_STATION:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_LOADING_STATION));
-        break;
-      case HATCH_MID:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.HATCH_MID));
-        break;
-      case HATCH_HIGH:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.HATCH_HIGH));
-        break;
-      case CLIMB_HAB_TWO:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_TWO));
-        break;
-      case CLIMB_HAB_THREE:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_THREE));
-        break;    
-    }
+    motionMagicLift(getLiftPositionEncoders(pos));
   }
 
   public void setPosition(LiftPositions pos) {
@@ -230,8 +189,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   // }
 
   public void setFollowers() {
-    motor2.set(ControlMode.Follower, motor1.getDeviceID());
-    motor3.set(ControlMode.Follower, motor1.getDeviceID());
+    motor2.set(ControlMode.Follower, master.getDeviceID());
+    motor3.set(ControlMode.Follower, master.getDeviceID());
   }
 
   public void setPercentOutput() {
@@ -250,52 +209,52 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public int getLiftPositionEncoders(LiftPositions pos) {
     switch(pos) {
       case LOW:
-        return getTicksFromDistance(LiftDistanceConstants.INTAKE);
+        return getTicksFromDistance(LiftTargetInches.INTAKE);
       case CARGO_SHIP:
-        return getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP);
+        return getTicksFromDistance(LiftTargetInches.CARGO_SHIP);
       case CARGO_ROCKET_LEVEL_ONE:
-        return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE);
+        return getTicksFromDistance(LiftTargetInches.CARGO_ROCKET_LEVEL_ONE);
       case CARGO_ROCKET_LEVEL_TWO:
-        return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_TWO);
+        return getTicksFromDistance(LiftTargetInches.CARGO_ROCKET_LEVEL_TWO);
       case CARGO_ROCKET_LEVEL_THREE:
-        return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_THREE);
+        return getTicksFromDistance(LiftTargetInches.CARGO_ROCKET_LEVEL_THREE);
       case CARGO_LOADING_STATION:
-        return getTicksFromDistance(LiftDistanceConstants.CARGO_LOADING_STATION);
+        return getTicksFromDistance(LiftTargetInches.CARGO_LOADING_STATION);
       case HATCH_MID:
-        return getTicksFromDistance(LiftDistanceConstants.HATCH_MID);
+        return getTicksFromDistance(LiftTargetInches.HATCH_MID);
       case HATCH_HIGH:
-        return getTicksFromDistance(LiftDistanceConstants.HATCH_HIGH);
+        return getTicksFromDistance(LiftTargetInches.HATCH_HIGH);
       case CLIMB_HAB_TWO:
-        return getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_TWO);
+        return LiftTargetEncoderTicks.CLIMB_HAB_TWO;
       case CLIMB_HAB_THREE:
-        return getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_THREE);    
+        return LiftTargetEncoderTicks.CLIMB_HAB_THREE;    
     }
     return 0;
   }
 
   public void setLiftPID() {
-    motor1.configMotionAcceleration(PIDConstants.MAX_ACCELERATION, Robot.timeoutMs);
-    motor1.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
-    motor1.config_kP(0, PIDConstants.k_p);
-    motor1.config_kI(0, PIDConstants.k_i);
-    motor1.config_kD(0, PIDConstants.k_d);
-    motor1.config_kF(0, PIDConstants.k_f);
+    master.configMotionAcceleration(PIDConstants.MAX_ACCELERATION, Robot.timeoutMs);
+    master.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
+    master.config_kP(0, PIDConstants.k_p);
+    master.config_kI(0, PIDConstants.k_i);
+    master.config_kD(0, PIDConstants.k_d);
+    master.config_kF(0, PIDConstants.k_f);
   }
 
   public boolean withinTolerance(LiftPositions target) {
-    return (Math.abs(getLiftPositionEncoders(target) - getRawEncoder()) < LiftEncoderConstants.TOLERANCE) ? true: false;
+    return (Math.abs(getLiftPositionEncoders(target) - getRawEncoder()) < LiftTargetEncoderTicks.TOLERANCE) ? true: false;
   }
 
   public int getVel() {
-    return motor1.getSelectedSensorVelocity(0);
+    return master.getSelectedSensorVelocity(0);
   }
 
   public int getTicksFromDistance(double distance) {
-    return (int) (distance / LiftEncoderConstants.DISTANCE_PER_PULSE);
+    return (int) (distance / LiftTargetEncoderTicks.DISTANCE_PER_PULSE);
   }
 
   public double getDistanceFromTicks() {
-    return LiftEncoderConstants.DISTANCE_PER_PULSE * getRawEncoder();
+    return LiftTargetEncoderTicks.DISTANCE_PER_PULSE * getRawEncoder();
   }
 
   @Override

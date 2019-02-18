@@ -95,26 +95,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public int motor;
 
 
-  private static final double wheelDiameter = (4.06/12.0); // feet
-  private static final int tickPerRev = 1024;
+  public static final double WHEEL_DIAMETER = (4.06/12.0); // feet
+  public static final int TICKS_PER_REV = 1024;
 
   public double kP, kI, kD, kF;
 
-  private EncoderFollower leftFollower;
-  private EncoderFollower rightFollower;
-  
-  private Notifier followerNotifier;
-  
-  private Trajectory leftTraj, rightTraj;
-  
-  private double turnMult;
-  private boolean isReversePath = false;
-
-  // Path logging
-  private double[] ltargetVel = new double[10000];
-  private double[] lactualVel = new double[10000];
-  private double[] rtargetVel = new double[10000];
-  private double[] ractualVel = new double[10000];
 
   public DrivetrainSubsystem() {
     motors = new TalonSRX[6];
@@ -124,8 +109,8 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
     leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], true, EncodingType.k1X);
     
-    rightEncoder.setDistancePerPulse(wheelDiameter * Math.PI / (double) tickPerRev);
-    leftEncoder.setDistancePerPulse(wheelDiameter * Math.PI /  (double) tickPerRev);
+    rightEncoder.setDistancePerPulse(WHEEL_DIAMETER * Math.PI / (double) TICKS_PER_REV);
+    leftEncoder.setDistancePerPulse(WHEEL_DIAMETER * Math.PI /  (double) TICKS_PER_REV);
 
     leftEncoder.setSamplesToAverage(127);
     rightEncoder.setSamplesToAverage(127);
@@ -203,143 +188,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public void resetEncoders() {
     leftEncoder.reset();
     rightEncoder.reset();
-  }
-
-  public void runPath(String pathName, boolean reversePath) {
-    changeBrakeCoast(false);
-    //TODO: When WPI changes it, change the left and right trajectories. the current version of Wpilib-Pathfinder has a bug
-    rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
-    leftTraj = PathfinderFRC.getTrajectory(pathName + ".right");
-
-    leftFollower = new EncoderFollower(leftTraj);
-    rightFollower = new EncoderFollower(rightTraj);
-
-    if(reversePath) {
-      leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
-      rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
-    }
-    else {
-      leftFollower.configureEncoder(getRawLeftEncoder(), tickPerRev, wheelDiameter);
-      rightFollower.configureEncoder(getRawRightEncoder(), tickPerRev, wheelDiameter);
-    }
-
-    leftFollower.configurePIDVA(PathFollowingConstants.Left.kp, 
-                                0.0, 
-                                PathFollowingConstants.Left.kd,
-                                PathFollowingConstants.Left.kv,
-                                PathFollowingConstants.Left.ka);
-
-    rightFollower.configurePIDVA(PathFollowingConstants.Right.kp, 
-                                0.0, 
-                                PathFollowingConstants.Right.kd,
-                                PathFollowingConstants.Right.kv,
-                                PathFollowingConstants.Right.ka);
-
-    this.isReversePath = reversePath;
-
-    followerNotifier = new Notifier(this::followPath);
-    followerNotifier.startPeriodic(leftTraj.get(0).dt);
-    
-    segmentCount = 0;
-    lvelCount = 0;
-    rvelCount = 0;
-
-  }
-
-  private int segmentCount = 0;
-
-  private void followPath(){
-    if(leftFollower.isFinished() && rightFollower.isFinished()){
-      SmartDashboard.putNumber("FINISHED", 1);
-      isPathRunning = false;
-      followerNotifier.stop();
-      rawDrive(0, 0);
-      followerNotifier = null;
-      logPathVel();
-    }else{
-      SmartDashboard.putNumber("FINISHED",0);
-      double leftSpeed, rightSpeed;
-      if(isReversePath) {
-        leftSpeed = -rightFollower.calculate(-rightEncoder.get());
-        rightSpeed = -leftFollower.calculate(-leftEncoder.get());
-      }
-      else {
-        leftSpeed = leftFollower.calculate(leftEncoder.get());
-        rightSpeed = rightFollower.calculate(rightEncoder.get());
-        
-      }
-      
-      double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle());
-      double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
-
-      double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
-      SmartDashboard.putNumber("HEADING DIFF", headingDiff); // TODO remove -  DEBUG
-      double turn = turnMult * headingDiff;
-  
-      SmartDashboard.putNumber("REG", leftSpeed); // TODO remove - debug
-      SmartDashboard.putNumber("TURN", turn); // TODO remove - debug
-
-      trackVelocity(false, rightEncoder.getRate(), rightTraj.segments[segmentCount].velocity);
-      trackVelocity(true, leftEncoder.getRate(), leftTraj.segments[segmentCount].velocity);
-
-      segmentCount++;
-
-      rawDrive(leftSpeed + turn, rightSpeed - turn);
-    }
-  }
-
-  private int lvelCount = 0;
-  private int rvelCount = 0;
-  public void trackVelocity(boolean isLeft, double actual, double target) {
-    if(isLeft) {
-      ltargetVel[lvelCount] = target;
-      lactualVel[lvelCount] = actual;
-      lvelCount++;
-      return;
-    }
-    rtargetVel[rvelCount] = target;
-    ractualVel[rvelCount] = actual;
-    rvelCount++;
-    
-  }
-
-  public void logPathVel() {
-    try {
-      BufferedWriter br = new BufferedWriter(new FileWriter("/home/lvuser/path_velocity.csv"));
-      StringBuilder sb = new StringBuilder();
-      sb.append("Left Target, Left Actual, Right Target, Right Actual");
-      sb.append("");
-      sb.append("\n");
-      for(int i = 0; i < ltargetVel.length; i++) {
-        sb.append(ltargetVel[i]);
-        sb.append(",");
-        sb.append(lactualVel[i]);
-        sb.append(",");
-        sb.append(rtargetVel[i]);
-        sb.append(",");
-        sb.append(ractualVel[i]);
-        sb.append("\n");
-      }
-      br.write(sb.toString());
-      br.flush();
-      br.close();
-      
-    }
-    catch(Exception e) {
-      SmartDashboard.putString("FAILED LOG", e.getLocalizedMessage());
-    }
-
-  }
-
-
-  public boolean isMPFinish(){
-    return leftFollower.isFinished() && rightFollower.isFinished();
-  }
-  public void stopMP(){
-    if(followerNotifier != null) {
-      followerNotifier.stop();
-    }
-    rawDrive(0,0);
   }
 
   public void testDrivetrain(double fwd, boolean changeMotor, boolean resetEncoders) {

@@ -5,11 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.CommandGroups;
+package frc.robot.semiauto.climb;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
-import frc.robot.commands.JackMotionProfileAndLiftCommand;
 import frc.robot.subsystems.JackSubsystem;
 
 

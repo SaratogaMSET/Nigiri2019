@@ -12,15 +12,19 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
-public class VisionFixCommand extends Command {
+public class VisionFixCommand extends FishyCommand {
   
   Timer time;
   int numUpdates = 0;
 
   public VisionFixCommand() {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+    super(Robot.drive, Robot.gyro);
     time = new Timer();
+  }
+
+  @Override
+  protected String[] getLogFields() {
+    return new String[] {"Angle"};
   }
 
   // Called just before this Command runs the first time
@@ -29,7 +33,7 @@ public class VisionFixCommand extends Command {
     time.start();
     Robot.drive.changeBrakeCoast(false);
     numUpdates = 0;
-    Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.gyro.getAngle());
+    Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.getGyroAngle());
     Robot.gyro.gyroPIDController.enable(); // doesn't actuate motors, only writes to gyroPIDOutput variables
   }
 
@@ -39,11 +43,11 @@ public class VisionFixCommand extends Command {
     // Activate vision target hold
     Robot.vision.readData();
     Double angle = Robot.vision.getAngleDisplacement();
-    
+    log("Angle", angle);
     if(numUpdates < 3) {
       if(angle != null) {
         SmartDashboard.putNumber("VISION CA", angle);
-        Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.gyro.getAngle() + angle);
+        Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.getGyroAngle() + angle);
         numUpdates += 1;
       }
       else {
@@ -52,6 +56,7 @@ public class VisionFixCommand extends Command {
         return;
       }
     }
+    logger.write();
     Robot.drive.driveFwdRotate(Robot.oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
     
   }

@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.semiauto.climb;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,12 +14,13 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.JackSubsystem;
 import frc.robot.subsystems.LiftSubsystem;
 
-public class JackMotionProfileCommand extends Command {
+public class JackMotionProfileAndLiftCommand extends Command {
   int jackHeight;
   boolean isDown;
   double timeout;
   Timer time;
-  public JackMotionProfileCommand(int jackHeight, boolean isDown, double timeout) {
+  int moveLiftVal;
+  public JackMotionProfileAndLiftCommand(int jackHeight, boolean isDown, double timeout) {
     // requires(Robot.jack);
     this.jackHeight = jackHeight;
     this.isDown = isDown;
@@ -38,7 +39,9 @@ public class JackMotionProfileCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.jack.setJackMotorMP(jackHeight);
+    moveLiftVal = (int)(LiftSubsystem.LiftTargetEncoderTicks.CLIMB_HAB_THREE - Robot.jack.getJackEncoder() * LiftSubsystem.LiftTargetEncoderTicks.LIFT_TICKS_PER_JACK_TICK);
+    SmartDashboard.putNumber("LIFT SETPOINT", moveLiftVal);
+    Robot.lift.pidLift(moveLiftVal);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -53,7 +56,7 @@ public class JackMotionProfileCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.jack.setJackMotor(0.0);
+    
   }
 
   // Called when another command which requires one or more of the same

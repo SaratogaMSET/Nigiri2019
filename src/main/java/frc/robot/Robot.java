@@ -17,7 +17,9 @@ import frc.robot.*;
 import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
+import frc.robot.semiauto.climb.*;
 import frc.robot.commands.test.IntakeMotorsTest;
+import frc.robot.safety.LiftSafetyCheck;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
@@ -50,34 +52,21 @@ public class Robot extends TimedRobot {
   public static VisionSubsystem vision;
   public static VisionFixCommand visionFixCommand;
 
-  // public final static Map<SubsystemEnum, Subsystem> loggingArr = new HashMap<>() {{
-  //     put(SubsystemEnum.Drive, drive);
-  //     put(SubsystemEnum.CargoDeploy, cargoDeploy);
-  //     put(SubsystemEnum.LED, led);
-  //     put(SubsystemEnum.Camera, camera);
-  //     put(SubsystemEnum.Gyro, gyro);
-  //     put(SubsystemEnum.Vision, vision);
-  // }};
-
   public static Preferences prefs;
 
   public static Compressor compressor;
 
   public static int timeoutMs = 20;
 
-  public static TalonSRX motor1;
-  public static TalonSRX motor2;
-  Timer time;
-  Timer intakeTime;
-  Timer accelTime;
-  Joystick joy1 = new Joystick(0);
-  Joystick joy2 = new Joystick(1);
 
   // DRIVE kinematics tracking
   public double prev_vel = 0.0; // TODO put in diagnostic
   public double prev_time = 0.0;
   public double max_vel = 0.0;
   public double max_accel = 0.0;
+  public Timer accelTime = new Timer();
+
+  public Timer intakeTime, time;
 
 
   public double lastLeftEncoder;
@@ -97,8 +86,6 @@ public class Robot extends TimedRobot {
   public int maxLiftVel;
   public int lastLiftVel;
  
-  public static JackMotionProfileCommand jackMpCommand;
-
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -118,39 +105,37 @@ public class Robot extends TimedRobot {
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
     // hatch = new HatchSubsystem();
+    compressor = new Compressor(4);
+    prefs = Preferences.getInstance();
+    drive.changeBrakeCoast(false);
+
     try {
-      //vision = new VisionSubsystem();
+      vision = new VisionSubsystem();
     }
     catch(Exception e){
       SmartDashboard.putString("VISION INIT FAILED", "1");
       e.printStackTrace();
     }
-    prefs = Preferences.getInstance();
-    drive.changeBrakeCoast(false);
-    accelTime = new Timer();
-    // compressor = new Compressor(4);
-    time = new Timer();
     accelTime.start();
-    prev_time = accelTime.get();
   }
    /**
-   * This function is ca
-   * lled every robot packet, no matter the mode. Use
+   * This function is called every robot packet, no matter the mode. Use
    * this for items like diagnostics that you want ran during disabled,
    * autonomous, teleoperated and test.
    *
    * <p>This runs after the mode specififc periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * LiveWindow and SmartDashboard integrated updating. </p>
+   * 
+   * 649: Because of ^ that fact, we can use this method to run our safety checks and override any dangerous behavior our mode-specific loops actuate.
    */
   @Override
   public void robotPeriodic() {
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
 
-    // kinematics negated b/c robot tips while driving fwd without most of robot weight.
     SmartDashboard.putNumber("GYRO HEADING", gyro.getGyroAngle());
-    SmartDashboard.putNumber("V", -drive.leftEncoder.getRate());    
-    SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, -(drive.leftEncoder.getRate())));  
+    SmartDashboard.putNumber("V", (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f);
+    SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f));  
     // only calculate avg A over 0.5 seconds because instantaneous stuff is way off (? why ?)
     if(prev_time + 0.5 <= accelTime.get()) {
       double curA = ((drive.leftEncoder.getRate()) - prev_vel)/(accelTime.get() - prev_time);
@@ -167,8 +152,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
 
-
-    // vision.readData();
+    // Safety Checks
+    LiftSafetyCheck.ensureSafety();
   }
 
   /**
@@ -184,17 +169,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    jack.resetJackEncoder();
-    // jackMpCommand = new JackMotionProfileCommand(6000,true,4.0);
-    // jackMpCommand.start();
-    // lift.setLiftMPHang(); 
-    // jack.setJackMPVals(true);  
-    // (new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0)).start();
     drive.resetEncoders();
     gyro.resetGyro();
-    // drive.runPath("HAB1L-ROCKLF-1", 0.18, 0.0, 0.02, 16.0, 0.008, true);
-    // drive.runPath("test-HABLI-CLF", 0.18, 0.0, 0.02, 16.0, 0.008, false);
-
     // new HAB1LxCLFxLOADLxCL1().start();
   }
   /**
@@ -211,7 +187,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    drive.stopMP();
+    Robot.drive.rawDrive(0.0, 0.0);
     // jack.resetJackEncoder();
     gyro.resetGyro();
     // visionFixCommand = new VisionFixCommand();
@@ -249,9 +225,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("RightSol", cargoIntake.getRightSol());
     SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
     // testJacks();
-    if(oi.gamePad.getButtonA() && intakeTime.get() > 0.5 && oi.gamePad.getRightTrigger() < 0.5) {
+    if(oi.gamePad.getButtonAPressed() && oi.gamePad.getRightTrigger() < 0.5) {
       cargoIntake.switchSol();
-      intakeTime.reset();
     }
     if(oi.gamePad.getRightButton()) { //extake
       cargoIntake.runIntake(true, 1);
@@ -268,32 +243,17 @@ public class Robot extends TimedRobot {
 
 
     liftTune();
-    drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    // getLiftValues();
-    // lift.setManualLift(oi.driver.getDriverVertical());
+
+    // DO NOT TOUCH OR COMMENT OUT
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    // if(oi.visionFixButton.get()){
-    //   visionFixCommand.start();
-    //   return;
-
-    // }
-    // else {
-    //   visionFixCommand.cancel();
-    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    // }
-    // lift.setManualLift(oi.driver.getDriverVertical());
-    // SmartDashboard.putNumber("Lift Encoder", lift.getRawEncoder());
-
-    // int motorNumber = prefs.getInt("MotorNumber", 0);
-    // sendShuffleboard(new SubsystemEnum[] {SubsystemEnum.AllEssentials});
-    // SmartDashboard.putNumber("left e", drive.getRawLeftEncoder());
-    // SmartDashboard.putNumber("right e", drive.getRawRightEncoder());
-
-
-    // if (oi.driver.getDriverButton1()) {
-    //   drive.resetEncoders();
-    // }
-   
+    if(oi.visionFixButton.get()){
+      visionFixCommand.start();
+      return;
+    }
+    else {
+      visionFixCommand.cancel();
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    }
   }
 
   @Override
@@ -377,10 +337,9 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     // Remove all commands from queue
-    // Scheduler.getInstance().removeAll();
+    Scheduler.getInstance().removeAll();
 
     // Stop drivetrain motion
-    drive.stopMP();
     drive.rawDrive(0, 0);
 
     // Stop lift motion

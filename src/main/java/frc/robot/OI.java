@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.util.filters.JoystickFilter;
+import frc.robot.util.filters.JoystickFilter.Mode;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -39,22 +41,22 @@ public class OI {
     gamePad = new Gamepad();
     operator = new Operator();
 
-    visionFixButton = new JoystickButton(driverHorizontal, 1);
+    visionFixButton = new JoystickButton(driverHorizontal, 1); // driver rot stick trigger
   }
 
   public class Driver {
+    private JoystickFilter verticalFilter = new JoystickFilter(0.1, 0.0, 1.0, Mode.LINEAR);
+    private JoystickFilter horizontalFilter = new JoystickFilter(0.1, 0.0, 1.0, Mode.LINEAR);
+
     public double getDriverVertical() {
-      if(Math.abs(driverVertical.getY()) > 0.1){
-        if(driverVertical.getY() > 0.0){
-          return (driverVertical.getY() - 0.1)/0.9;
-        }
-        return (driverVertical.getY() + 0.1)/0.9;
-      }
-      return 0.0;
-      
+      double y = -driverVertical.getY(); // Y is reversed
+      return verticalFilter.filter(y);
+    }
+
+    public double getDriverHorizontal() {
+      return horizontalFilter.filter(driverHorizontal.getX());
     }
     
-
     public boolean getDriverButton1() {
       return driverVertical.getRawButton(1) || driverHorizontal.getRawButton(1);
     }
@@ -90,19 +92,8 @@ public class OI {
     public boolean getDriverButton8() {
       return driverVertical.getRawButton(8) || driverHorizontal.getRawButton(8);
     }
-    
-    public double getDriverHorizontal() {
-      if(Math.abs(driverHorizontal.getX()) > 0.1){
-        if(driverHorizontal.getX() > 0.0){
-          double rotX = (driverHorizontal.getX()-0.1)/0.9;
-          return Math.abs(rotX) * rotX; 
-        }
-          double rotX = (driverHorizontal.getX()+0.1)/0.9;
-          return Math.abs(rotX) * rotX; 
-      }
-      return 0.0;
-    }
   }
+
   public class Operator{
     public double getY(){
       if(Math.abs(operatorJoystick.getY()) > 0.05){
@@ -121,6 +112,14 @@ public class OI {
   public class Gamepad {
     public boolean getButtonA() {
       return gamepad.getRawButton(1);
+    }
+
+    public boolean getButtonAPressed() {
+      return gamepad.getRawButtonPressed(1);
+    }
+
+    public boolean getButtonAReleased() {
+      return gamepad.getRawButtonReleased(1);
     }
 
     public boolean getButtonB() {
