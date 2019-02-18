@@ -44,8 +44,14 @@ public class OI {
 
   public class Driver {
     public double getDriverVertical() {
+      if(Math.abs(driverVertical.getY()) > 0.1){
+        if(driverVertical.getY() > 0.0){
+          return (driverVertical.getY() - 0.1)/0.9;
+        }
+        return (driverVertical.getY() + 0.1)/0.9;
+      }
+      return 0.0
       
-      return -driverVertical.getY();
     }
     
 
@@ -86,9 +92,15 @@ public class OI {
     }
     
     public double getDriverHorizontal() {
-      double rotX = driverHorizontal.getX();
-      double rot = Math.abs(rotX) * rotX; // square driver rotation input
-      return rot;
+      if(Math.abs(driverHorizontal.getX()) > 0.1){
+        if(driverHorizontal.getX() > 0.0){
+          double rotX = (driverHorizontal.getX()-0.1)/0.9;
+          return Math.abs(rotX) * rotX; 
+        }
+          double rotX = (driverHorizontal.getX()+0.1)/0.9;
+          return Math.abs(rotX) * rotX; 
+      }
+      return 0.0;
     }
   }
   public class Operator{
