@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.semiauto.climb;
+package frc.robot.commands.semiauto.climb;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,7 +39,7 @@ public class JackMotionProfileAndLiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    moveLiftVal = (int)(LiftSubsystem.LiftTargetEncoderTicks.CLIMB_HAB_THREE - Robot.jack.getJackEncoder() * LiftSubsystem.LiftTargetEncoderTicks.LIFT_TICKS_PER_JACK_TICK);
+    moveLiftVal = (int)(LiftSubsystem.LiftEncoderConstants.CLIMB_HAB_THREE - Robot.jack.getJackEncoder() * LiftSubsystem.LiftEncoderConstants.LIFT_TICKS_PER_JACK_TICK);
     SmartDashboard.putNumber("LIFT SETPOINT", moveLiftVal);
     Robot.lift.pidLift(moveLiftVal);
   }

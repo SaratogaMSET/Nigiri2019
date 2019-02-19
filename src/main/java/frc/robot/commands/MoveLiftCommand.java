@@ -57,7 +57,12 @@ public class MoveLiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.lift.moveLiftToPos(target);
+    if(!Robot.cargoIntake.solOut()) {
+      SmartDashboard.putBoolean("Here", true);
+      isFinished = true;
+    } else {
+      Robot.lift.moveLiftToPos(target);
+    }
 
     
 
@@ -74,7 +79,7 @@ public class MoveLiftCommand extends Command {
     } else if (time.get() > timeout) {
       return true;
     }
-    return false;
+    return isFinished;
   }
 
   // Called once after isFinished returns true

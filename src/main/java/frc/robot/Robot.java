@@ -17,9 +17,9 @@ import frc.robot.*;
 import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
-import frc.robot.semiauto.climb.*;
+import frc.robot.commands.GyroStraightDistancePID;
 import frc.robot.commands.test.IntakeMotorsTest;
-import frc.robot.safety.LiftSafetyCheck;
+import frc.robot.commands.test.LiftTest;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
@@ -116,7 +116,8 @@ public class Robot extends TimedRobot {
       SmartDashboard.putString("VISION INIT FAILED", "1");
       e.printStackTrace();
     }
-    accelTime.start();
+    prefs = Preferences.getInstance();
+    drive.changeBrakeCoast(false);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -151,9 +152,10 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
+    SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
+    SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
 
     // Safety Checks
-    LiftSafetyCheck.ensureSafety();
   }
 
   /**
@@ -204,14 +206,18 @@ public class Robot extends TimedRobot {
     // drive.changeBrakeCoast(false);
     // new LiftTest().start();
 
-    // compressor.setClosedLoopControl(true);
-    // compressor.start();
+    compressor.setClosedLoopControl(true);
+    compressor.start();
     intakeTime = new Timer();
-    intakeTime.reset();
-    intakeTime.start();
+    // intakeTime.reset();
+    // intakeTime.start();
     // cargoIntake.isOut = false;
+
     lift.resetEncoder();
-    initLiftTune();
+    // initLiftTune();
+
+    // new IntakeMotorsTest().start();
+    new LiftTest().start();
   }
 
   /**
@@ -221,8 +227,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     // gyroStraightTest();
-    SmartDashboard.putBoolean("LeftSol", cargoIntake.getLeftSol());
-    SmartDashboard.putBoolean("RightSol", cargoIntake.getRightSol());
     SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
     // testJacks();
     if(oi.gamePad.getButtonAPressed() && oi.gamePad.getRightTrigger() < 0.5) {

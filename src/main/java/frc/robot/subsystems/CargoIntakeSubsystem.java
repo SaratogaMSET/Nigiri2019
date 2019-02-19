@@ -14,6 +14,8 @@ import frc.robot.Robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -25,9 +27,10 @@ public class CargoIntakeSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   private TalonSRX leftIntake, rightIntake, backIntake;
-  private Solenoid intakeSolRight;
-  private Solenoid intakeSolLeft;
+  private Solenoid intakeSol;
+  public Solenoid intakeMidSol;
   private boolean isOut;
+  private DigitalInput outHal;
 
   public CargoIntakeSubsystem(){
 
@@ -35,11 +38,13 @@ public class CargoIntakeSubsystem extends Subsystem {
     rightIntake = new TalonSRX(RobotMap.CargoIntake.RIGHT_INTAKE);
     backIntake = new TalonSRX(RobotMap.CargoIntake.BACK_INTAKE);
 
-    intakeSolRight = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[0]);
-    intakeSolLeft = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[1]);
+    intakeSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[0]);
+    intakeMidSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[1]);
     
-    intakeSolRight.set(false);
-    intakeSolLeft.set(false);
+    outHal = new DigitalInput(RobotMap.CargoIntake.INTAKE_DOWN_HAL);
+
+    intakeSol.set(false);
+    intakeMidSol.set(false);
 
     leftIntake.configNominalOutputForward(0, Robot.timeoutMs);
     leftIntake.configNominalOutputReverse(0, Robot.timeoutMs);
@@ -79,13 +84,6 @@ public class CargoIntakeSubsystem extends Subsystem {
     backIntake.set(ControlMode.PercentOutput, power);
   }
 
-  public boolean getLeftSol(){
-    return intakeSolLeft.get();
-  }
-  public boolean getRightSol(){
-    return intakeSolRight.get();
-   }
-
   public void runIntake(boolean in, double power) {
     if(in) {
       leftIntake.set(ControlMode.PercentOutput, -power);
@@ -100,22 +98,26 @@ public class CargoIntakeSubsystem extends Subsystem {
 
   public void switchSol(){
     if(isOut){
-      intakeSolRight.set(false);
-      intakeSolLeft.set(false);
+      intakeSol.set(false);
     }
     else{
-      intakeSolRight.set(true);
-      intakeSolLeft.set(true);
+      intakeSol.set(true);
     }
     isOut = !isOut;
     SmartDashboard.putBoolean("is Out", isOut);
+  }
+
+  public void setMidStateSol(boolean state) {
+    intakeMidSol.set(state);
   }
 
   public boolean solOut(){
     return isOut;
   }
 
- 
+  public boolean getOutHal() {
+    return outHal.get();
+  }
 
   @Override
   public void initDefaultCommand() {
