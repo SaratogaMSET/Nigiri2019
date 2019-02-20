@@ -362,7 +362,7 @@ public class Robot extends TimedRobot {
         new MoveLiftCommand(LiftPositions.LOW, 2).start();
         SmartDashboard.putBoolean("Is Motion Magic", true);
       } else if(!lift.getIsMoving()) {
-        if(!lift.getBottomHal()) {
+        if(lift.getBottomHal()) {
           lift.setManualLift(0);
         } else {
           lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);

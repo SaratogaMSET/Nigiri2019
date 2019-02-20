@@ -223,11 +223,11 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   // public boolean getTopHal() {
-    // return topHal.get();
+    // return !topHal.get();
   // }
 
   public boolean getBottomHal() {
-    return bottomHal.get();
+    return !bottomHal.get();
   }
 
   public void setFollowers() {
