@@ -18,11 +18,17 @@ import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
 import frc.robot.commands.GyroStraightDistancePID;
+import frc.robot.commands.intake.SetCargoIntakes;
+import frc.robot.commands.intake.SetIntakePistons;
+import frc.robot.commands.intake.SetIntakeRollers;
+import frc.robot.commands.intake.SetMidStatePistons;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
+import frc.robot.util.RobotState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -36,6 +42,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  */
 public class Robot extends TimedRobot {
   public static OI oi;
+  public static RobotState robotState;
 
   // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
@@ -67,24 +74,6 @@ public class Robot extends TimedRobot {
   public Timer accelTime = new Timer();
 
   public Timer intakeTime, time;
-
-
-  public double lastLeftEncoder;
-  public double lastRightEncoder;
-  public double xLoc;
-  public double yLoc;
-  public double firstTargX;
-  public double firstTargY;
-  public double targX;
-  public double targY;
-  public double targH;
-  public boolean onFirstLeg;
-  public double initAccel = 0.0;
-
-  
-  public int maxLiftAccel;
-  public int maxLiftVel;
-  public int lastLiftVel;
  
   /**
    * This function is run when the robot is first started up and should be
@@ -96,6 +85,7 @@ public class Robot extends TimedRobot {
                         .withWidget(BuiltInWidgets.kNumberBar).getEntry();
     //******************************************** Subsystems */
     oi = new OI();
+    robotState = new RobotState();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     cargoIntake = new CargoIntakeSubsystem();
@@ -217,7 +207,7 @@ public class Robot extends TimedRobot {
     // initLiftTune();
 
     // new IntakeMotorsTest().start();
-    new LiftTest().start();
+    // new LiftTest().start();
   }
 
   /**
@@ -229,35 +219,32 @@ public class Robot extends TimedRobot {
     // gyroStraightTest();
     SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
     // testJacks();
-    if(oi.gamePad.getButtonAPressed() && oi.gamePad.getRightTrigger() < 0.5) {
-      cargoIntake.switchSol();
-    }
-    if(oi.gamePad.getRightButton()) { //extake
-      cargoIntake.runIntake(true, 1);
-      cargoDeploy.runIntake(1);
-    } else if(oi.gamePad.getLeftButton()) { //intake
-      cargoIntake.runIntake(false, 1);
-      cargoDeploy.runIntake(-1);
-    } else if(oi.gamePad.getButtonX() && oi.gamePad.getRightTrigger() < 0.5) {
-      cargoDeploy.runIntake(1);
-    } else {
-      cargoIntake.runIntake(true, 0);
-      cargoDeploy.runIntake(0);
-    }
 
+    // if(oi.gamePad.getButtonAPressed()) {
+    //   new SetIntakePistons(true, 2).start();
+    // } else if(oi.gamePad.getButtonYPressed()) {
+    //   new SetIntakePistons(false, 2).start();
+    // }
+
+    // if(oi.gamePad.getButtonBPressed()) {
+    //   new SetMidStatePistons(true, 2).start();
+    // } else if(oi.gamePad.getButtonXPressed()) {
+    //   new SetMidStatePistons(false, 2).start();
+    // }
 
     liftTune();
-
     // DO NOT TOUCH OR COMMENT OUT
     // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    if(oi.visionFixButton.get()){
-      visionFixCommand.start();
-      return;
-    }
-    else {
-      visionFixCommand.cancel();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    }
+    // if(oi.visionFixButton.get()){
+    //   visionFixCommand.start();
+    //   return;
+    // }
+    // else {
+    //   visionFixCommand.cancel();
+    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    // }
+    SmartDashboard.putBoolean("Intake UP Hal", cargoIntake.getInHal());
+    SmartDashboard.putBoolean("Intake OUT Hal", cargoIntake.getOutHal());
   }
 
   @Override
@@ -300,43 +287,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
   // }
 
-  public void gyroStraightTestInit() {
-    lastLeftEncoder = 0;
-    lastRightEncoder = 0;
-    xLoc = 0;
-    yLoc = 0;
-    onFirstLeg = true;
-    drive.resetEncoders();
-
-    targX = prefs.getDouble("target X", 0);
-    targY = prefs.getDouble("target Y", 0);
-    targH = prefs.getDouble("Angle", 0);
-    DrivetrainSubsystem.DriveStraightGyroConstants.kp = prefs.getDouble("Drive Gyro kp", 0);
-    DrivetrainSubsystem.DriveStraightGyroConstants.ki = prefs.getDouble("Drive Gyro ki", 0);
-    DrivetrainSubsystem.DriveStraightGyroConstants.kd = prefs.getDouble("Drive Gyro kd", 0);
-    GyroSubsystem.GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
-    GyroSubsystem.GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
-    GyroSubsystem.GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
-    DrivetrainSubsystem.DriveStraightConstants.kp = prefs.getDouble("Drive kp", 0);
-    DrivetrainSubsystem.DriveStraightConstants.ki = prefs.getDouble("Drive ki", 0);
-    DrivetrainSubsystem.DriveStraightConstants.kd = prefs.getDouble("Drive kd", 0);
-    GyroSubsystem.GyroStraightConstants.kp = prefs.getDouble("Gyro kp", 0);
-    GyroSubsystem.GyroStraightConstants.ki = prefs.getDouble("Gyro ki", 0);
-    GyroSubsystem.GyroStraightConstants.kd = prefs.getDouble("Gyro kd", 0);
-
-    SmartDashboard.putNumber("targX", targX);
-    SmartDashboard.putNumber("targY", targY);
-    SmartDashboard.putNumber("targH", targH);
-    SmartDashboard.putNumber("Drive kp", DrivetrainSubsystem.DriveStraightConstants.kp);
-    SmartDashboard.putNumber("Drive ki", DrivetrainSubsystem.DriveStraightConstants.ki);
-    SmartDashboard.putNumber("Drive kd", DrivetrainSubsystem.DriveStraightConstants.kd);
-    SmartDashboard.putNumber("Gyro kp", GyroSubsystem.GyroStraightConstants.kp);
-    SmartDashboard.putNumber("Gyro ki", GyroSubsystem.GyroStraightConstants.ki);
-    SmartDashboard.putNumber("Gyro kd", GyroSubsystem.GyroStraightConstants.kd);
-
-    firstTargX = targX/2.0;
-    firstTargY = targH/2.0;
-  }
+  
 
   @Override
   public void disabledInit() {
@@ -355,29 +306,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     
   }
-  public void testJacks(){
-    // SmartDashboard.putNumber("joy y", oi.operator.getY());
-    jack.setJackMotor(oi.operator.getY());
-    if(oi.operator.getButton7()){
-      jack.setJackDriveMotor(1.0);
-    }else if(oi.operator.getButton8()){
-      jack.setJackDriveMotor(-1.0);
-    }else{
-      jack.setJackDriveMotor(0.0);
-    }
-    SmartDashboard.putBoolean("Is Jack Down", jack.isJackAtBottom());
-    SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
-    SmartDashboard.putNumber("Jack Vel", jack.getJackVel());
-    if(accelTime.get() == 0.0){
-      initAccel = jack.getJackVel();
-      accelTime.start();
-    }else if(accelTime.get()>0.1){
-      accelTime.stop();
-      SmartDashboard.putNumber("Jack Accel", (jack.getJackVel() - initAccel) /(accelTime.get()/0.1));
-      accelTime.reset();
-    }
-
-  }
+  
   public void testMotors(){
     if(oi.driverVertical.getRawButton(7)){
       drive.motors[0].set(ControlMode.PercentOutput, 0.6);
@@ -413,48 +342,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
     // SmartDashboard.putNumber("Delta X", deltaX);
     // SmartDashboard.putNumber("Delta Y", deltaY);
-    SmartDashboard.putBoolean("On First Leg", onFirstLeg);
   }
 
-  public void getInitLiftValues() {
-    maxLiftAccel = 0;
-    maxLiftVel = 0;
-    time = new Timer();
-    time.reset();
-    time.start();
-  }
 
-  public void getLiftValues() {
-    // int currentAccel = ;
-    int currentVel = lift.getVel();
-    if (Math.abs(currentVel) > maxLiftVel) {
-      maxLiftVel = Math.abs(currentVel);
-    }
-    double sec = time.get();
-    int accel = (int)(((double)(currentVel - lastLiftVel))/sec);
-    if(Math.abs(accel) > maxLiftAccel) {
-      maxLiftAccel = Math.abs(accel);
-    }
-    lastLiftVel = currentVel;
-    time.reset();
-    SmartDashboard.putNumber("MaxAccel", maxLiftAccel);
-    SmartDashboard.putNumber("MaxVel", maxLiftVel);
-    SmartDashboard.putNumber("Curr Vel", currentVel);
-    SmartDashboard.putNumber("Curr Accel", accel);
-    SmartDashboard.putNumber("Position", lift.getRawEncoder());
-    }
 
-    public void initLiftTune() {
-      LiftSubsystem.PIDConstants.k_p = prefs.getDouble("k-p", 0.0);
-      LiftSubsystem.PIDConstants.k_i = prefs.getDouble("k-i", 0.0);
-      LiftSubsystem.PIDConstants.k_d = prefs.getDouble("k-d", 0.0);
-
-      SmartDashboard.putNumber("k-p", PIDConstants.k_p);
-      SmartDashboard.putNumber("k-i", PIDConstants.k_i);
-      SmartDashboard.putNumber("k-d", PIDConstants.k_d);
-
-      lift.setLiftPID();
-    }
+  
 
     public void liftTune() {
       if(oi.gamePad.getButtonB() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
@@ -470,18 +362,68 @@ public class Robot extends TimedRobot {
         new MoveLiftCommand(LiftPositions.LOW, 2).start();
         SmartDashboard.putBoolean("Is Motion Magic", true);
       } else if(!lift.getIsMoving()) {
-        lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);
+        if(!lift.getBottomHal()) {
+          lift.setManualLift(0);
+        } else {
+          lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);
+        }
         SmartDashboard.putBoolean("Is Motion Magic", false);
       }
 
-
+      if(oi.gamePad.getRightButton()) {
+        new SetIntakeRollers(1, true).start();
+      } else if(oi.gamePad.getLeftButton()) {
+        new SetIntakeRollers(1, false).start();
+      } else {
+        new SetIntakeRollers(0, false).start();
+      }
 
       if(oi.driver.getDriverButton2()) {
         lift.resetEncoder();
         lift.setPosition(LiftPositions.LOW);
       }
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+
       SmartDashboard.putNumber("Lift Pos", lift.getRawEncoder());
       SmartDashboard.putString("LiftPosition", lift.getLiftPosition().toString());
       SmartDashboard.putNumber("Lift Distance", lift.getDistanceFromTicks());
+    }
+
+    public void teleopLoop() {
+      //**************************************************INTAKE UP/DOWN */
+      if(oi.gamePad.getButtonAPressed()) {
+      new SetCargoIntakes(CargoIntakeState.OUT).start();
+      } else if(oi.gamePad.getButtonBPressed()) {
+      new SetCargoIntakes(CargoIntakeState.MID).start();
+      } else if(oi.gamePad.getButtonYPressed()) {
+      new SetCargoIntakes(CargoIntakeState.IN).start();
+      }
+      //*************************************************INTAKE WHEELS */
+      if(oi.gamePad.getRightButton()) {
+        new SetIntakeRollers(1, true).start();
+      } else if(oi.gamePad.getLeftButton()) {
+        new SetIntakeRollers(1, false).start();
+      }
+      //*************************************************CARGO LIFT STATES */
+      if(oi.gamePad.getButtonBPressed() && oi.gamePad.getRightTrigger() > 0.5) {
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(oi.gamePad.getButtonYPressed() && oi.gamePad.getRightTrigger() > 0.5) {
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(oi.gamePad.getButtonXPressed() && oi.gamePad.getRightTrigger() > 0.5) {
+        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(oi.gamePad.getButtonAPressed() && oi.gamePad.getRightTrigger() > 0.5) {
+        new MoveLiftCommand(LiftPositions.LOW, 2).start();
+        SmartDashboard.putBoolean("Is Motion Magic", true);
+      } else if(!lift.getIsMoving()) {
+        lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);
+        SmartDashboard.putBoolean("Is Motion Magic", false);
+      }
+
+
+      /*****************************************************DRIVE */
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
     }
 }

@@ -5,75 +5,70 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.util.RobotState;
 
-public class MoveLiftCommand extends Command {
+public class SetIntakePistons extends Command {
 
-  LiftPositions target;
-  LiftPositions current;
-
+  boolean out;
   boolean isFinished;
-  boolean onTarget;
-
   Timer time;
-
   double timeout;
-
-  public MoveLiftCommand(LiftPositions target, double timeout) {
+  public SetIntakePistons(boolean out, double timeout) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    this.target = target;
+    this.out = out;
     this.timeout = timeout;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    current = Robot.lift.getLiftPosition();
-    isFinished = false;
-    onTarget = false;
-
-    if(current == target || Robot.lift.getIsMoving()) {
-      isFinished = true;
-    }
     time = new Timer();
     time.reset();
     time.start();
+
+    isFinished = false;
+
+    if(RobotState.intakeState == CargoIntakeState.OUT) {
+      isFinished = true;
+    } else {
+      Robot.cargoIntake.switchSol(out);
+    }
+    SmartDashboard.putBoolean("SetIntakePistons Done?", false);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.robotState.canRunLift()) {
-      Robot.lift.moveLiftToPos(target);
-      Robot.lift.setIsMoving(true);
-      RobotState.liftPosition = LiftPositions.MOVING;
-    } else {
-      SmartDashboard.putBoolean("Here", true);
+    if(time.get() > timeout) {
       isFinished = true;
     }
-
     
-
-    SmartDashboard.putBoolean("onTarget", onTarget);
-    SmartDashboard.putBoolean("isFinished", isFinished);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if(Robot.lift.withinTolerance(target)) {
-      onTarget = true;
-      return true;
-    } else if (time.get() > timeout) {
-      return true;
+    CargoIntakeState currentState = Robot.cargoIntake.getIntakeState();
+    boolean midState = Robot.cargoIntake.getMidStateSolState();
+
+    if(out) {
+      if(currentState == CargoIntakeState.OUT) {
+        return true;
+      } 
+    } else {
+      if(currentState == CargoIntakeState.IN && midState == false) {
+        return true;
+      } else if(currentState == CargoIntakeState.MID && midState == true) {
+        return true;
+      }
     }
     return isFinished;
   }
@@ -81,19 +76,13 @@ public class MoveLiftCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.lift.setIsMoving(false);
-    if(onTarget) {
-      Robot.lift.setPosition(target);
-    }
-    SmartDashboard.putBoolean("onTarget", onTarget);
-    SmartDashboard.putBoolean("isFinished", true);
-
+    SmartDashboard.putBoolean("SetIntakePistons Done?", true);
+    SmartDashboard.putString("Current Intake", RobotState.intakeState.toString());
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    end();
   }
 }

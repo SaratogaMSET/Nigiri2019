@@ -28,7 +28,7 @@ public class RobotMap {
   }
 
   public static class Lift {
-    public static final int LIFT_MOTOR_1_PORT = 23;
+    public static final int LIFT_MOTOR_1_PORT = 21;
     public static final int LIFT_MOTOR_2_PORT = 18;
     public static final int LIFT_MOTOR_3_PORT = 19;
     public static final int BOTTOM_HAL_EFFECT = 8;
@@ -37,13 +37,14 @@ public class RobotMap {
 
   public static class CargoDeploy {
     public static final int DEPLOY_INTAKE_MOTOR = 12;
-    public static final int IR_SENSOR = 9;
+    public static final int IR_SENSOR = 10;
     public static final int INTAKE_SOL = 2;
   }
   public static class Jacks {
     public static final int JACK_MOTOR = 13;
     public static final int JACK_DRIVE_MOTOR = 14;
     public static final int DOWN_HAL = 4;
+    public static final int UP_HAL = 6;
   }
 
   public static class CargoIntake {
@@ -52,6 +53,7 @@ public class RobotMap {
     public static final int BACK_INTAKE = 22;
     public static final int[] INTAKE_SOL = { 0, 1 };
     public static final int INTAKE_DOWN_HAL = 5;
+    public static final int INTAKE_UP_HAL = 9;
   }
 
   public static class Hatch {

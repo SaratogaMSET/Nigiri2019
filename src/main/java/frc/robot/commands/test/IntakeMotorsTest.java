@@ -48,7 +48,7 @@ public class IntakeMotorsTest extends Command {
       SmartDashboard.putString("Currently Running Motor", "Motor 22 Back");
     } 
     else if(Robot.oi.driver.getDriverButton5() && time.get() > 0.5) { //pistons in/out
-      Robot.cargoIntake.switchSol();
+      // Robot.cargoIntake.switchSol();
 
       time.reset();
       

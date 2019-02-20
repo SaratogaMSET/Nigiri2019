@@ -14,6 +14,7 @@ import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.cscore.VideoCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 
@@ -34,28 +35,9 @@ public class CameraSubsystem extends Subsystem implements ILogger {
   
 
   public CameraSubsystem(){
-
-    // microsoft = CameraServer.getInstance().startAutomaticCapture();
-    // microsoft.setResolution(320, 240);
-
-    //jevois = CameraServer.getInstance().startAutomaticCapture();
-    //jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
-
-  
-    axis = new AxisCamera("driverCam", "10.6.49.17");
-    
-    
-    //axis = CameraServer.getInstance().addAxisCamera("driverCam", "10.6.49.17");
-    
-
-    
-    // microsoft = CameraServer.getInstance().startAutomaticCapture();
-    // microsoft.setResolution(320, 240);
-
-    // jevois = CameraServer.getInstance().startAutomaticCapture();
-    // jevois.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
-
-    // axis = CameraServer.getInstance().addAxisCamera("10.6.49.11");
+    axis = new AxisCamera("axis", "10.6.49.17");
+    CameraServer.getInstance().addAxisCamera("axis", "10.6.49.17");
+    SmartDashboard.putBoolean("In Camera Constructor", true);
   }
 
   @Override

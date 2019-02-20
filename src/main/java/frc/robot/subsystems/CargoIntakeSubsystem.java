@@ -26,11 +26,18 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 public class CargoIntakeSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
+  public static enum CargoIntakeState {
+    OUT,
+    MID,
+    IN
+  }
+  
   private TalonSRX leftIntake, rightIntake, backIntake;
   private Solenoid intakeSol;
   public Solenoid intakeMidSol;
   private boolean isOut;
   private DigitalInput outHal;
+  private DigitalInput inHal;
 
   public CargoIntakeSubsystem(){
 
@@ -42,6 +49,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     intakeMidSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[1]);
     
     outHal = new DigitalInput(RobotMap.CargoIntake.INTAKE_DOWN_HAL);
+    inHal = new DigitalInput(RobotMap.CargoIntake.INTAKE_UP_HAL);
 
     intakeSol.set(false);
     intakeMidSol.set(false);
@@ -96,15 +104,9 @@ public class CargoIntakeSubsystem extends Subsystem {
     }
   }
 
-  public void switchSol(){
-    if(isOut){
-      intakeSol.set(false);
-    }
-    else{
-      intakeSol.set(true);
-    }
-    isOut = !isOut;
-    SmartDashboard.putBoolean("is Out", isOut);
+  public void switchSol(boolean state){
+    intakeSol.set(state);
+    SmartDashboard.putBoolean("is Out", state);
   }
 
   public void setMidStateSol(boolean state) {
@@ -116,7 +118,25 @@ public class CargoIntakeSubsystem extends Subsystem {
   }
 
   public boolean getOutHal() {
-    return outHal.get();
+    return !outHal.get();
+  }
+
+  public boolean getInHal() {
+    return !inHal.get();
+  }
+
+  public CargoIntakeState getIntakeState() {
+    if(getOutHal()) {
+      return CargoIntakeState.OUT;
+    } else if(getInHal()) {
+      return CargoIntakeState.IN;
+    } else {
+      return CargoIntakeState.MID;
+    }
+  }
+
+  public boolean getMidStateSolState() {
+    return intakeMidSol.get();
   }
 
   @Override
