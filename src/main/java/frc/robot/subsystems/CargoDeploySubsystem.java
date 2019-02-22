@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,8 +25,7 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   private TalonSRX intakeWheel;
-  private DoubleSolenoid rightPiston;
-  private DoubleSolenoid leftPiston;
+  private Solenoid piston;
   private DigitalInput cargoIR;
 
   private boolean running = false;
@@ -35,8 +35,7 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
   public CargoDeploySubsystem() {
     intakeWheel = new TalonSRX(RobotMap.CargoDeploy.DEPLOY_INTAKE_MOTOR);
     cargoIR = new DigitalInput(RobotMap.CargoDeploy.IR_SENSOR);
-    leftPiston = new DoubleSolenoid(RobotMap.CargoDeploy.INTAKE_SOL_LEFT[0], RobotMap.CargoDeploy.INTAKE_SOL_LEFT[1]);
-    rightPiston = new DoubleSolenoid(RobotMap.CargoDeploy.INTAKE_SOL_RIGHT[0], RobotMap.CargoDeploy.INTAKE_SOL_RIGHT[1]);
+    piston = new Solenoid(4, RobotMap.CargoDeploy.INTAKE_SOL);
   }
 
   public void runIntake(double power) {
@@ -49,13 +48,11 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
 
   public void anglePistons() {
     if(angled) {
-      rightPiston.set(Value.kReverse);
-      leftPiston.set(Value.kReverse);
+      piston.set(false);
       angled = false;
     }
     else {
-      rightPiston.set(Value.kForward);
-      leftPiston.set(Value.kForward);
+      piston.set(true);
       angled = true;
     }
   }
@@ -80,10 +77,7 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
     cargoDeploy.add("Intake Running", running);
 
     cargoDeploy.add("Angled", angled);
-    cargoDeploy.add("Right Piston Shortage", rightPiston.getPCMSolenoidVoltageFault());
-    cargoDeploy.add("Left Piston Shortage", leftPiston.getPCMSolenoidVoltageFault());
-    cargoDeploy.add("Right Piston PCM Blacklist", rightPiston.getPCMSolenoidBlackList());
-    cargoDeploy.add("Left Piston PCM Blacklist", leftPiston.getPCMSolenoidBlackList());
+    
   }
 
   @Override

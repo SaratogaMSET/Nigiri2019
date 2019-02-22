@@ -48,12 +48,21 @@ public class IntakeMotorsTest extends Command {
       SmartDashboard.putString("Currently Running Motor", "Motor 22 Back");
     } 
     else if(Robot.oi.driver.getDriverButton5() && time.get() > 0.5) { //pistons in/out
-      Robot.cargoIntake.switchSol();
+      // Robot.cargoIntake.switchSol();
 
       time.reset();
       
-    }
-    else if(Robot.oi.driver.getDriverButton6()) { //pistons in/out
+    } else if(Robot.oi.driver.getDriverButton7() && time.get() > 0.5) { //pistons in/out
+      Robot.cargoIntake.setMidStateSol(true);
+      SmartDashboard.putBoolean("Mid State", true);
+      time.reset();
+      
+    } else if(Robot.oi.driver.getDriverButton8() && time.get() > 0.5) { //pistons in/out
+      Robot.cargoIntake.setMidStateSol(false);
+      SmartDashboard.putBoolean("Mid State", false);
+      time.reset();
+      
+    } else if(Robot.oi.driver.getDriverButton6()) { //pistons in/out
       Robot.cargoIntake.testAll(Robot.oi.driver.getDriverVertical());
       SmartDashboard.putString("Currently Running Motor", "All Intake Motors");
       
@@ -63,6 +72,8 @@ public class IntakeMotorsTest extends Command {
       Robot.cargoIntake.runMotor(2, 0);
       Robot.cargoIntake.runMotor(3, 0);
     }
+    SmartDashboard.putBoolean("out hal", Robot.cargoIntake.getOutHal());
+    SmartDashboard.putBoolean("Mid State Sol", Robot.cargoIntake.intakeMidSol.get());
   }
 
   // Make this return true when this Command no longer needs to run execute()

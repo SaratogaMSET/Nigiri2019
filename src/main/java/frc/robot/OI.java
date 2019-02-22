@@ -126,28 +126,84 @@ public class OI {
       return gamepad.getRawButton(2);
     }
 
+    public boolean getButtonBReleased() {
+      return gamepad.getRawButtonReleased(2);
+    }
+
+    public boolean getButtonBPressed() {
+      return gamepad.getRawButtonPressed(2);
+    }
+
     public boolean getButtonX() {
       return gamepad.getRawButton(3);
+    }
+
+    public boolean getButtonXPressed() {
+      return gamepad.getRawButtonPressed(3);
+    }
+
+    public boolean getButtonXReleased() {
+      return gamepad.getRawButtonReleased(3);
     }
 
     public boolean getButtonY() {
       return gamepad.getRawButton(4);
     }
 
+    public boolean getButtonYPressed() {
+      return gamepad.getRawButtonPressed(4);
+    }
+
+    public boolean getButtonYReleased() {
+      return gamepad.getRawButtonReleased(4);
+    }
+
     public boolean getLeftButton() {
       return gamepad.getRawButton(5);
+    }
+
+    public boolean getLeftButtonPressed() {
+      return gamepad.getRawButtonPressed(5);
+    }
+
+    public boolean getLeftButtonReleased() {
+      return gamepad.getRawButtonReleased(5);
     }
 
     public boolean getRightButton() {
       return gamepad.getRawButton(6);
     }
 
+    public boolean getRightButtonReleased() {
+      return gamepad.getRawButtonReleased(6);
+    }
+
+    public boolean getRightButtonPressed() {
+      return gamepad.getRawButtonPressed(6);
+    }
+
     public boolean getBackButton() {
       return gamepad.getRawButton(7);
     }
 
+    public boolean getBackButtonPressed() {
+      return gamepad.getRawButtonPressed(7);
+    }
+
+    public boolean getBackButtonReleased() {
+      return gamepad.getRawButtonReleased(7);
+    }
+
     public boolean getStartButton() {
       return gamepad.getRawButton(8);
+    }
+
+    public boolean getStartButtonPressed() {
+      return gamepad.getRawButtonPressed(8);
+    }
+
+    public boolean getStartButtonReleased() {
+      return gamepad.getRawButtonReleased(8);
     }
 
     public boolean getLeftJoystickButton() {

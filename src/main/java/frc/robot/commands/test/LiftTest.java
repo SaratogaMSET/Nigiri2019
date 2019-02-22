@@ -61,7 +61,7 @@ public class LiftTest extends Command {
     SmartDashboard.putNumber("Lift Encoder", Robot.lift.getRawEncoder());
     SmartDashboard.putBoolean("Slow", (slow == 1? false : true));
     // SmartDashboard.putBoolean("Top Hal", Robot.lift.getTopHal());
-    // SmartDashboard.putBoolean("Bottom Hal", Robot.lift.getBottomHal());
+    SmartDashboard.putBoolean("Bottom Hal", Robot.lift.getBottomHal());
 
   }
 
