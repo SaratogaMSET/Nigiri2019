@@ -132,16 +132,16 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
-
+    double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
     SmartDashboard.putNumber("GYRO HEADING", gyro.getGyroAngle());
-    SmartDashboard.putNumber("V", (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f);
-    SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f));  
+    SmartDashboard.putNumber("V", vel);
+    SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, vel));  
     // only calculate avg A over 0.5 seconds because instantaneous stuff is way off (? why ?)
     if(prev_time + 0.5 <= accelTime.get()) {
-      double curA = ((drive.leftEncoder.getRate()) - prev_vel)/(accelTime.get() - prev_time);
+      double curA = (vel - prev_vel)/(accelTime.get() - prev_time);
       SmartDashboard.putNumber("A", curA);
       SmartDashboard.putNumber("MAX A", max_accel = Math.max(max_accel, -curA));
-      prev_vel = -(drive.leftEncoder.getRate());
+      prev_vel = vel;
       prev_time = accelTime.get();
       SmartDashboard.putNumber("PREV TIME", prev_time);
     }  
