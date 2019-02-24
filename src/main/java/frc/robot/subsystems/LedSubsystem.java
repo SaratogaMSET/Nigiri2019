@@ -17,7 +17,11 @@ public class LedSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  private static Spark led = new Spark(0);
+  Spark led;
+
+  public LedSubsystem(){
+    led = new Spark(0);
+  }
 
   @Override
   public void initDefaultCommand() {
@@ -25,21 +29,19 @@ public class LedSubsystem extends Subsystem implements ILogger {
     // setDefaultCommand(new MySpecialCommand());
   }
 
-  public void blink(int seconds){
+  public void blink(){
     led.set(.11); //green
-    Timer.delay(seconds);
-    led.set(.99);
   }
 
-  public void solid(int seconds){
+  public void solid(){
     led.set(.59); //solid color lime
-    Timer.delay(seconds);
-    led.set(.99);
   }
 
-  public void chase(int seconds){
+  public void chase(){
     led.set(.31); //lightchase red
-    Timer.delay(seconds);
+  }
+
+  public void off(){
     led.set(.99);
   }
 
