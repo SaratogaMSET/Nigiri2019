@@ -18,7 +18,7 @@ import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
 import frc.robot.commands.GyroStraightDistancePID;
-import frc.robot.commands.intake.SetCargoIntakes;
+import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakePistons;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.SetMidStatePistons;
@@ -371,11 +371,11 @@ public class Robot extends TimedRobot {
       }
 
       if(oi.gamePad.getRightButton()) {
-        new SetIntakeRollers(1, true).start();
+        new SetIntakeRollers(true, 1).start();
       } else if(oi.gamePad.getLeftButton()) {
-        new SetIntakeRollers(1, false).start();
+        new SetIntakeRollers(false, 1).start();
       } else {
-        new SetIntakeRollers(0, false).start();
+        new SetIntakeRollers(false, 0).start();
       }
 
       if(oi.driver.getDriverButton2()) {
@@ -392,17 +392,17 @@ public class Robot extends TimedRobot {
     public void teleopLoop() {
       //**************************************************INTAKE UP/DOWN */
       if(oi.gamePad.getButtonAPressed()) {
-      new SetCargoIntakes(CargoIntakeState.OUT).start();
+      new ChangeIntakeState(CargoIntakeState.OUT).start();
       } else if(oi.gamePad.getButtonBPressed()) {
-      new SetCargoIntakes(CargoIntakeState.MID).start();
+      new ChangeIntakeState(CargoIntakeState.MID).start();
       } else if(oi.gamePad.getButtonYPressed()) {
-      new SetCargoIntakes(CargoIntakeState.IN).start();
+      new ChangeIntakeState(CargoIntakeState.IN).start();
       }
       //*************************************************INTAKE WHEELS */
       if(oi.gamePad.getRightButton()) {
-        new SetIntakeRollers(1, true).start();
+        new SetIntakeRollers(true, 1).start();
       } else if(oi.gamePad.getLeftButton()) {
-        new SetIntakeRollers(1, false).start();
+        new SetIntakeRollers(false, 1).start();
       }
       //*************************************************CARGO LIFT STATES */
       if(oi.gamePad.getButtonBPressed() && oi.gamePad.getRightTrigger() > 0.5) {
