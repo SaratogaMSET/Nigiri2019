@@ -58,7 +58,7 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
   }
 
   public boolean hasCargo() {
-    return acquired = cargoIR.get();
+    return acquired = !cargoIR.get();
   }
 
   @Override

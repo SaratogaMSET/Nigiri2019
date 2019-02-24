@@ -21,8 +21,7 @@ public class HatchSubsystem extends Subsystem {
 
   public static enum HatchPositions {
     hatchIn,
-    hatchOut,
-    hatchDeploy
+    hatchOut
   }
 
   public Solenoid hatchSol;
@@ -68,9 +67,6 @@ public class HatchSubsystem extends Subsystem {
         break;
       case hatchOut:
         hatchOut();
-        break;
-      case hatchDeploy:
-        hatchDeploy();
         break;
     }
   }
