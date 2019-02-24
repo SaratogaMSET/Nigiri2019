@@ -56,6 +56,7 @@ public class JackSubsystem extends Subsystem {
   private TalonSRX jackMotor;
   private TalonSRX jackDriveMotor;
   private DigitalInput botHal;
+  private DigitalInput topHal;
 
   public JackSubsystem(){
     jackMotor = new TalonSRX(RobotMap.Jacks.JACK_MOTOR);
@@ -67,6 +68,7 @@ public class JackSubsystem extends Subsystem {
     
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);
     botHal = new DigitalInput(RobotMap.Jacks.DOWN_HAL);
+    topHal = new DigitalInput(RobotMap.Jacks.UP_HAL);
   }
 
   public void setJackDriveMotor(double pow){
@@ -90,6 +92,9 @@ public class JackSubsystem extends Subsystem {
   }
   public boolean isJackAtBottom(){
     return !botHal.get();
+  }
+  public boolean isJackAtTop(){
+    return !topHal.get();
   }
   public void setJackMPVals(boolean isDown){
     if(isDown){

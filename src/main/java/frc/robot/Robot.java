@@ -145,6 +145,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
     SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
     SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
+    SmartDashboard.putBoolean("CARGO IR SENSOR", cargoDeploy.hasCargo());
+    SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
 
     // Safety Checks
   }
@@ -371,6 +373,11 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Is Motion Magic", false);
       }
 
+      if(oi.gamePad.getButtonYPressed()) {
+        cargoIntake.switchSol(false);
+      } else if(oi.gamePad.getButtonAPressed()) {
+        cargoIntake.switchSol(true);
+      }
       if(oi.gamePad.getRightButton()) {
         new SetIntakeRollers(true, 1).start();
       } else if(oi.gamePad.getLeftButton()) {
