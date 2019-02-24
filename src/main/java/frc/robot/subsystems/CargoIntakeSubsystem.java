@@ -32,7 +32,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     IN
   }
   
-  private TalonSRX leftIntake, rightIntake, backIntake;
+  private TalonSRX leftIntake, rightIntake, frontIntake;
   private Solenoid intakeSol;
   public Solenoid intakeMidSol;
   private boolean isOut;
@@ -43,7 +43,7 @@ public class CargoIntakeSubsystem extends Subsystem {
 
     leftIntake = new TalonSRX(RobotMap.CargoIntake.LEFT_INTAKE);
     rightIntake = new TalonSRX(RobotMap.CargoIntake.RIGHT_INTAKE);
-    backIntake = new TalonSRX(RobotMap.CargoIntake.BACK_INTAKE);
+    frontIntake = new TalonSRX(RobotMap.CargoIntake.BACK_INTAKE);
 
     intakeSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[0]);
     intakeMidSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[1]);
@@ -64,10 +64,10 @@ public class CargoIntakeSubsystem extends Subsystem {
     rightIntake.configPeakOutputForward(1, Robot.timeoutMs);
     rightIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
 
-    backIntake.configNominalOutputForward(0, Robot.timeoutMs);
-    backIntake.configNominalOutputReverse(0, Robot.timeoutMs);
-    backIntake.configPeakOutputForward(1, Robot.timeoutMs);
-    backIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
+    frontIntake.configNominalOutputForward(0, Robot.timeoutMs);
+    frontIntake.configNominalOutputReverse(0, Robot.timeoutMs);
+    frontIntake.configPeakOutputForward(1, Robot.timeoutMs);
+    frontIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
 
     isOut = false;
   }
@@ -81,7 +81,7 @@ public class CargoIntakeSubsystem extends Subsystem {
         rightIntake.set(ControlMode.PercentOutput, -power);
         break;
       case 3:
-        backIntake.set(ControlMode.PercentOutput, power);
+        frontIntake.set(ControlMode.PercentOutput, power);
         break;
     }
   }
@@ -89,18 +89,18 @@ public class CargoIntakeSubsystem extends Subsystem {
   public void testAll (double power){
     leftIntake.set(ControlMode.PercentOutput, power);
     rightIntake.set(ControlMode.PercentOutput, -power);
-    backIntake.set(ControlMode.PercentOutput, power);
+    frontIntake.set(ControlMode.PercentOutput, power);
   }
 
   public void runIntake(boolean in, double power) {
     if(in) {
       leftIntake.set(ControlMode.PercentOutput, -power);
       rightIntake.set(ControlMode.PercentOutput, power);
-      backIntake.set(ControlMode.PercentOutput, -power);
+      frontIntake.set(ControlMode.PercentOutput, -power);
     } else {
       leftIntake.set(ControlMode.PercentOutput, power);
       rightIntake.set(ControlMode.PercentOutput, -power);
-      backIntake.set(ControlMode.PercentOutput, power);
+      frontIntake.set(ControlMode.PercentOutput, power);
     }
   }
 

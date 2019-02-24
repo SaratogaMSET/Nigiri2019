@@ -36,7 +36,7 @@ public class SetIntakePistons extends Command {
 
     isFinished = false;
 
-    if(RobotState.intakeState == CargoIntakeState.OUT) {
+    if(Robot.cargoIntake.getIntakeState() == CargoIntakeState.OUT) {
       isFinished = true;
     } else {
       Robot.cargoIntake.switchSol(out);
@@ -56,17 +56,17 @@ public class SetIntakePistons extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    CargoIntakeState currentState = Robot.cargoIntake.getIntakeState();
+    CargoIntakeState intakeState = Robot.cargoIntake.getIntakeState();
     boolean midState = Robot.cargoIntake.getMidStateSolState();
 
     if(out) {
-      if(currentState == CargoIntakeState.OUT) {
+      if(intakeState == CargoIntakeState.OUT) {
         return true;
       } 
     } else {
-      if(currentState == CargoIntakeState.IN && midState == false) {
+      if(intakeState == CargoIntakeState.IN && midState == false) {
         return true;
-      } else if(currentState == CargoIntakeState.MID && midState == true) {
+      } else if(intakeState == CargoIntakeState.MID && midState == true) {
         return true;
       }
     }

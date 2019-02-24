@@ -14,7 +14,7 @@ public class SetIntakeRollers extends Command {
   
   double power;
   boolean intake;
-  public SetIntakeRollers(double power, boolean intake) {
+  public SetIntakeRollers(boolean intake, double power) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.power = power;
@@ -26,11 +26,10 @@ public class SetIntakeRollers extends Command {
   protected void initialize() {
     if(intake) {
       Robot.cargoDeploy.runIntake(-power);
-      Robot.cargoIntake.runIntake(!intake, power);
     } else {
       Robot.cargoDeploy.runIntake(power);
-      Robot.cargoIntake.runIntake(intake, power);
     }
+    Robot.cargoIntake.runIntake(intake, power);
 
   }
 

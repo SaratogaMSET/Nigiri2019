@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.util.RobotState;
 
-public class SetCargoIntakes extends Command {
+public class ChangeIntakeState extends Command {
 
   CargoIntakeState targetState;
-  public SetCargoIntakes(CargoIntakeState targetState) {
+  public ChangeIntakeState(CargoIntakeState targetState) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.targetState = targetState;
