@@ -19,6 +19,7 @@ import frc.robot.auto.*;
 import frc.robot.commands.*;
 import frc.robot.commands.GyroStraightDistancePID;
 import frc.robot.commands.intake.ChangeIntakeState;
+import frc.robot.commands.intake.RunCargoIntake;
 import frc.robot.commands.intake.SetIntakePistons;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.SetMidStatePistons;
@@ -403,6 +404,13 @@ public class Robot extends TimedRobot {
         new SetIntakeRollers(true, 1).start();
       } else if(oi.gamePad.getLeftButton()) {
         new SetIntakeRollers(false, 1).start();
+      }
+      //*************************************************RUN INTAKE*/
+      if(oi.gamePad.getLeftButton()){
+        new RunCargoIntake(1).start();
+      }
+      else{
+        new ChangeIntakeState(CargoIntakeState.MID);
       }
       //*************************************************CARGO LIFT STATES */
       if(oi.gamePad.getButtonBPressed() && oi.gamePad.getRightTrigger() > 0.5) {
