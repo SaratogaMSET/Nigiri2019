@@ -34,6 +34,7 @@ public class JackSubsystem extends Subsystem {
     public static int DOWN_STATE = 21792;
     public static int DOWN_STATE_2 =  (int)(6/(1.2*Math.PI/4096) + 605);
     public static int ABS_TOL = 50;
+    public static double DRIVETRAIN_RATIO = 0.4;
   }
 
   public static class LiftConstants{
