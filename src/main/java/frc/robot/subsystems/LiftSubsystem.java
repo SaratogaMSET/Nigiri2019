@@ -295,7 +295,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     return (int) (distance / LiftEncoderConstants.DISTANCE_PER_PULSE);
   }
 
-  public double getDistanceFromTicks() {
+  public double getDistance() {
     return LiftEncoderConstants.DISTANCE_PER_PULSE * getRawEncoder();
   }
 

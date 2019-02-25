@@ -8,6 +8,7 @@
 package frc.robot.util;
 
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
+import frc.robot.subsystems.HatchSubsystem.HatchPositions;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 
 /**
@@ -16,10 +17,12 @@ import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 public class RobotState {
     public static LiftPositions liftPosition;
     public static CargoIntakeState intakeState;
+    public static HatchPositions hatchState;
 
     public RobotState() {
         liftPosition = LiftPositions.LOW;
         intakeState = CargoIntakeState.MID;
+        hatchState = HatchPositions.hatchOut;
     }
     public boolean canRunLift() {
         if (intakeState == CargoIntakeState.MID || intakeState == CargoIntakeState.OUT) {

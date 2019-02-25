@@ -19,6 +19,8 @@ public class RobotMap {
   public static final int JOYSTICK_DRIVE_HORIZONTAL = 1;
   public static final int OPERATOR_JOYSTICK = 2; 
   public static final int JOYSTICK_GAMEPAD = 3;
+  public static final int BUTTON_BOARD_RIGHT = 3;
+  public static final int BUTTON_BOARD_LEFT = 4;
  
   public static class Drivetrain {
     // Right: 16, 17, 20 Left: 6, 7, 11
@@ -57,9 +59,8 @@ public class RobotMap {
   }
 
   public static class Hatch {
-    public static final int[] HATCH_PISTON = { 4, 5 };
-    public static final int[] HATCH_DEPLOY_PISTON_1 = { 2, 3 };
-    public static final int[] HATCH_DEPLOY_PISTON_2 = { 6, 7 };
+    public static final int[] HATCH_PISTON = { 4, 2 };
+    public static final int[] HATCH_DEPLOY_PISTON = { 4, 3 };
     public static final int HATCH_SWITCH = 1;
   }
 

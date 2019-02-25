@@ -32,8 +32,7 @@ public class HatchSubsystem extends Subsystem {
 
   public HatchSubsystem() {
     hatchSol = new Solenoid(RobotMap.Hatch.HATCH_PISTON[0], RobotMap.Hatch.HATCH_PISTON[1]);
-    hatchDeploySol1 = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[1]);
-    hatchDeploySol2 = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON_1[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON_2[1]);
+    hatchDeploySol1 = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON[1]);
     hatchAcquired = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
     currentPosition = HatchPositions.hatchIn;
   }
@@ -48,12 +47,10 @@ public class HatchSubsystem extends Subsystem {
 
   public void hatchDeploy() {
     hatchDeploySol1.set(true);
-    hatchDeploySol2.set(true);
   }
 
   public void hatchDeployIn() {
     hatchDeploySol1.set(false);
-    hatchDeploySol2.set(false);
   }
 
   public boolean getHatchAcquired() {

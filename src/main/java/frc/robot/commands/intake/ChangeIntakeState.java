@@ -42,7 +42,9 @@ public class ChangeIntakeState extends Command {
   protected void end() {
     CargoIntakeState currentState = RobotState.intakeState;
     
-    if(targetState == CargoIntakeState.IN) {
+    if(targetState == currentState) {
+      // it be done;
+    } else if(targetState == CargoIntakeState.IN) {
       if(currentState == CargoIntakeState.OUT) {
         new CargoIntakeOutToIn().start();
       } else if(currentState == CargoIntakeState.MID) {

@@ -117,6 +117,10 @@ public class CargoIntakeSubsystem extends Subsystem {
     return isOut;
   }
 
+  public boolean getIntakeSolState() {
+    return intakeSol.get();
+  }
+
   public boolean getOutHal() {
     return !outHal.get();
   }

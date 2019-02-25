@@ -5,25 +5,22 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.LiftSubsystem.LiftPositions;
+import frc.robot.util.RobotState;
 
-public class StallLiftCommand extends Command {
-
-  LiftPositions pos;
-  public StallLiftCommand(LiftPositions pos) {
+public class UpdateIntakeStateCommand extends Command {
+  public UpdateIntakeStateCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    this.pos = pos;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.lift.moveLiftToPos(pos);
+    RobotState.intakeState =  Robot.cargoIntake.getIntakeState();
   }
 
   // Called repeatedly when this Command is scheduled to run

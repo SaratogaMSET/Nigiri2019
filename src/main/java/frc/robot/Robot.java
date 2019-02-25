@@ -17,7 +17,6 @@ import frc.robot.*;
 import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
-import frc.robot.commands.GyroStraightDistancePID;
 import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.RunCargoIntake;
 import frc.robot.commands.intake.SetIntakePistons;
@@ -44,6 +43,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class Robot extends TimedRobot {
   public static OI oi;
   public static RobotState robotState;
+  public static boolean isGamepad = true;
 
   // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
@@ -139,7 +139,7 @@ public class Robot extends TimedRobot {
     }  
     SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
     SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
-    SmartDashboard.putNumber("TIME", accelTime.get());
+    // SmartDashboard.putNumber("TIME", accelTime.get());
 
     SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
@@ -183,34 +183,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     Robot.drive.rawDrive(0.0, 0.0);
-    // jack.resetJackEncoder();
     gyro.resetGyro();
-    // visionFixCommand = new VisionFixCommand();
     drive.changeBrakeCoast(false);
-
-    // getInitLiftValues();
-    // new IntakeMotorsTest().start();
-    // lift.resetEncoder();
-    // gyroStraightTestInit();
-    // drive.stopMP();
-    // drive.stopMP();
-    // gyro.resetGyro();
-    // visionFixCommand = new VisionFixCommand();
-    // drive.changeBrakeCoast(false);
-    // new LiftTest().start();
 
     compressor.setClosedLoopControl(true);
     compressor.start();
-    intakeTime = new Timer();
-    // intakeTime.reset();
-    // intakeTime.start();
-    // cargoIntake.isOut = false;
-
-    lift.resetEncoder();
-    // initLiftTune();
-
-    // new IntakeMotorsTest().start();
-    // new LiftTest().start();
+    
   }
 
   /**
@@ -219,35 +197,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    // gyroStraightTest();
-    SmartDashboard.putBoolean("IsOut", cargoIntake.solOut());
-    // testJacks();
-
-    // if(oi.gamePad.getButtonAPressed()) {
-    //   new SetIntakePistons(true, 2).start();
-    // } else if(oi.gamePad.getButtonYPressed()) {
-    //   new SetIntakePistons(false, 2).start();
-    // }
-
-    // if(oi.gamePad.getButtonBPressed()) {
-    //   new SetMidStatePistons(true, 2).start();
-    // } else if(oi.gamePad.getButtonXPressed()) {
-    //   new SetMidStatePistons(false, 2).start();
-    // }
-
-    liftTune();
-    // DO NOT TOUCH OR COMMENT OUT
-    // NOTE: THE VISION FIX COMMAND OVVERRIDES THE STANDARD TELEOP ARCADE DRIVING.
-    // if(oi.visionFixButton.get()){
-    //   visionFixCommand.start();
-    //   return;
-    // }
-    // else {
-    //   visionFixCommand.cancel();
-    //   drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-    // }
-    SmartDashboard.putBoolean("Intake UP Hal", cargoIntake.getInHal());
-    SmartDashboard.putBoolean("Intake OUT Hal", cargoIntake.getOutHal());
+    
   }
 
   @Override
@@ -343,102 +293,94 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
     SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
-    // SmartDashboard.putNumber("Delta X", deltaX);
-    // SmartDashboard.putNumber("Delta Y", deltaY);
   }
 
-
-
-  
-
-    public void liftTune() {
-      if(oi.gamePad.getButtonB() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
-        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.gamePad.getButtonY() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
-        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.gamePad.getButtonX() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
-        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.gamePad.getButtonA() && oi.gamePad.getRightTrigger() > 0.5 && !lift.getIsMoving()) {
-        new MoveLiftCommand(LiftPositions.LOW, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(!lift.getIsMoving()) {
-        if(lift.getBottomHal()) {
-          lift.setManualLift(0);
-        } else {
-          lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);
-        }
-        SmartDashboard.putBoolean("Is Motion Magic", false);
-      }
-
-      if(oi.gamePad.getButtonYPressed()) {
-        cargoIntake.switchSol(false);
-      } else if(oi.gamePad.getButtonAPressed()) {
-        cargoIntake.switchSol(true);
-      }
-      if(oi.gamePad.getRightButton()) {
-        new SetIntakeRollers(true, 1).start();
-      } else if(oi.gamePad.getLeftButton()) {
-        new SetIntakeRollers(false, 1).start();
-      } else {
-        new SetIntakeRollers(false, 0).start();
-      }
-
-      if(oi.driver.getDriverButton2()) {
-        lift.resetEncoder();
-        lift.setPosition(LiftPositions.LOW);
-      }
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
-
-      SmartDashboard.putNumber("Lift Pos", lift.getRawEncoder());
-      SmartDashboard.putString("LiftPosition", lift.getLiftPosition().toString());
-      SmartDashboard.putNumber("Lift Distance", lift.getDistanceFromTicks());
-    }
-
-    public void teleopLoop() {
-      //**************************************************INTAKE UP/DOWN */
-      if(oi.gamePad.getButtonAPressed()) {
+  public void teleopLoop() {
+    //******************************* INTAKE ***********************************************/
+    if(oi.gamePad.getLeftButton()) {
       new ChangeIntakeState(CargoIntakeState.OUT).start();
-      } else if(oi.gamePad.getButtonBPressed()) {
+      new RunCargoIntake(1).start();
+    } else {
       new ChangeIntakeState(CargoIntakeState.MID).start();
-      } else if(oi.gamePad.getButtonYPressed()) {
-      new ChangeIntakeState(CargoIntakeState.IN).start();
-      }
-      //*************************************************INTAKE WHEELS */
-      if(oi.gamePad.getRightButton()) {
-        new SetIntakeRollers(true, 1).start();
-      } else if(oi.gamePad.getLeftButton()) {
-        new SetIntakeRollers(false, 1).start();
-      }
-      //*************************************************RUN INTAKE*/
-      if(oi.gamePad.getLeftButton()){
-        new RunCargoIntake(1).start();
-      }
-      else{
-        new ChangeIntakeState(CargoIntakeState.MID);
-      }
-      //*************************************************CARGO LIFT STATES */
-      if(oi.gamePad.getButtonBPressed() && oi.gamePad.getRightTrigger() > 0.5) {
-        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.gamePad.getButtonYPressed() && oi.gamePad.getRightTrigger() > 0.5) {
-        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.gamePad.getButtonXPressed() && oi.gamePad.getRightTrigger() > 0.5) {
-        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(oi.gamePad.getButtonAPressed() && oi.gamePad.getRightTrigger() > 0.5) {
-        new MoveLiftCommand(LiftPositions.LOW, 2).start();
-        SmartDashboard.putBoolean("Is Motion Magic", true);
-      } else if(!lift.getIsMoving()) {
-        lift.setManualLift(oi.gamePad.getLeftJoystickY()/2.0);
-        SmartDashboard.putBoolean("Is Motion Magic", false);
-      }
-
-
-      /*****************************************************DRIVE */
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
     }
+
+    //****************************** LIFTING *************************************************/
+    if(oi.gamePad.getButtonAPressed()) { // ****************************** LIFT TO LOW
+      new MoveLiftCommand(LiftPositions.LOW, 2).start();
+    } else if(oi.gamePad.getButtonXPressed()) { // *********************** LIFT TO HATCH MID
+      new MoveLiftCommand(LiftPositions.HATCH_MID, 2).start();
+    } else if(oi.gamePad.getButtonYPressed()) { // *********************** LIFT TO HATCH HIGH
+      new MoveLiftCommand(LiftPositions.HATCH_HIGH, 2).start();
+    } else if(oi.gamePad.getButtonXPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO LOW ROCKET
+      new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
+    } else if(oi.gamePad.getButtonYPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO MID ROCKET
+      new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
+    } else if(oi.gamePad.getButtonBPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO HIGH ROCKET
+      new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 2).start();
+    } else if(oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
+      new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
+    } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
+      new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 2).start();
+    }
+
+    // *************************** DEPLOY **********************************************/
+    if(oi.gamePad.getBackButtonPressed()) { 
+      new SetIntakeRollers(false, 0.75).start();
+      hatch.hatchDeploy();
+    } else if(oi.gamePad.getBackButtonReleased()) {
+      new SetIntakeRollers(false, 0).start();
+      hatch.hatchDeployIn();
+    }
+
+    // ****************************** JACK ***********************************************/
+    if(oi.gamePad.getPOVLeft()) {
+      // start climb sequence level 2
+    } else if(oi.gamePad.getPOVRight()) {
+      // start climb sequence level 3
+    } else if(oi.gamePad.getPOVDown()) {
+      // push down jack
+    } else if(oi.gamePad.getPOVUp()) {
+      // push up jack
+    }
+
+    if(oi.gamePad.getStartButton()) { // ****************** MANUAL MODE
+      lift.setManualLift(oi.gamePad.getLeftJoystickY());
+    }
+
+    //******************************* DRIVE ****************************************/
+    drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+  }
+
+  public void smartdashboardTesting() {
+    //***************************************************** DRIVE */
+    SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
+    SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
+    SmartDashboard.putNumber("Right Encoder Raw", drive.getRightEncoderDistance());
+
+    //***************************************************** LIFT */
+    SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
+    SmartDashboard.putNumber("Lift Distance", lift.getDistance());
+    SmartDashboard.putBoolean("Bottom Hal", lift.getBottomHal());
+
+    //***************************************************** INTAKE */
+    SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());
+    SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
+    SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
+    SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
+
+    //***************************************************** JACK */
+    SmartDashboard.putBoolean("Deployed Hal", jack.isJackAtTop());
+
+    //***************************************************** HATCH */
+
+
+    //***************************************************** VISION */
+
+
+    //***************************************************** CURRENT ROBOT STATES */
+    SmartDashboard.putString("Lift State", RobotState.liftPosition.toString());
+    SmartDashboard.putString("Hatch State", RobotState.hatchState.toString());
+    SmartDashboard.putString("Intake State", RobotState.intakeState.toString());
+  }
 }
