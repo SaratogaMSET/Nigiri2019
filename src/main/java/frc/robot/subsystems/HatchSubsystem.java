@@ -38,11 +38,11 @@ public class HatchSubsystem extends Subsystem {
   }
 
   public void hatchOut() {
-    hatchSol.set(false);
+    hatchSol.set(true);
   }
 
   public void hatchIn() {
-    hatchSol.set(true);
+    hatchSol.set(false);
   }
 
   public void hatchDeploy() {
