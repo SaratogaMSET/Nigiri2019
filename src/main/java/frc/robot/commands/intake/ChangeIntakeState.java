@@ -8,6 +8,7 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.util.RobotState;
 
@@ -40,11 +41,11 @@ public class ChangeIntakeState extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    CargoIntakeState currentState = RobotState.intakeState;
+    CargoIntakeState currentState = RobotState.cargoIntakeState;
     
     if(targetState == currentState) {
       // it be done;
-    } else if(targetState == CargoIntakeState.IN) {
+    } else if(targetState == CargoIntakeState.IN && Robot.robotState.canBringIntakeIn()) {
       if(currentState == CargoIntakeState.OUT) {
         new CargoIntakeOutToIn().start();
       } else if(currentState == CargoIntakeState.MID) {

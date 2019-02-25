@@ -16,16 +16,25 @@ import frc.robot.subsystems.LiftSubsystem.LiftPositions;
  */
 public class RobotState {
     public static LiftPositions liftPosition;
-    public static CargoIntakeState intakeState;
+    public static CargoIntakeState cargoIntakeState;
     public static HatchPositions hatchState;
+    public static CargoIntakeState intakeState;
 
     public RobotState() {
         liftPosition = LiftPositions.LOW;
-        intakeState = CargoIntakeState.MID;
+        cargoIntakeState = CargoIntakeState.MID;
         hatchState = HatchPositions.hatchOut;
+        intakeState = CargoIntakeState.NONE;
     }
     public boolean canRunLift() {
-        if (intakeState == CargoIntakeState.MID || intakeState == CargoIntakeState.OUT) {
+        if (cargoIntakeState == CargoIntakeState.MID || cargoIntakeState == CargoIntakeState.OUT) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canBringIntakeIn() {
+        if(liftPosition == LiftPositions.LOW) {
             return true;
         }
         return false;

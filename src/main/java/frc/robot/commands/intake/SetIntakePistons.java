@@ -77,7 +77,7 @@ public class SetIntakePistons extends Command {
   @Override
   protected void end() {
     SmartDashboard.putBoolean("SetIntakePistons Done?", true);
-    SmartDashboard.putString("Current Intake", RobotState.intakeState.toString());
+    SmartDashboard.putString("Current Intake", RobotState.cargoIntakeState.toString());
   }
 
   // Called when another command which requires one or more of the same

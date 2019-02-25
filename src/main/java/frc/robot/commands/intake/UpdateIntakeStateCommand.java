@@ -20,7 +20,7 @@ public class UpdateIntakeStateCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    RobotState.intakeState =  Robot.cargoIntake.getIntakeState();
+    RobotState.cargoIntakeState =  Robot.cargoIntake.getIntakeState();
   }
 
   // Called repeatedly when this Command is scheduled to run

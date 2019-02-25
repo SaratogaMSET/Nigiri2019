@@ -29,7 +29,10 @@ public class CargoIntakeSubsystem extends Subsystem {
   public static enum CargoIntakeState {
     OUT,
     MID,
-    IN
+    IN,
+    INTAKE,
+    EXTAKE,
+    NONE
   }
   
   private TalonSRX leftIntake, rightIntake, frontIntake;

@@ -86,7 +86,6 @@ public class Robot extends TimedRobot {
                         .withWidget(BuiltInWidgets.kNumberBar).getEntry();
     //******************************************** Subsystems */
     oi = new OI();
-    robotState = new RobotState();
     drive = new DrivetrainSubsystem();
     cargoDeploy = new CargoDeploySubsystem();
     cargoIntake = new CargoIntakeSubsystem();
@@ -108,6 +107,8 @@ public class Robot extends TimedRobot {
       e.printStackTrace();
     }
     prefs = Preferences.getInstance();
+    robotState = new RobotState();
+
     drive.changeBrakeCoast(false);
   }
    /**
@@ -297,11 +298,12 @@ public class Robot extends TimedRobot {
 
   public void teleopLoop() {
     //******************************* INTAKE ***********************************************/
-    if(oi.gamePad.getLeftButton()) {
+    if(oi.gamePad.getLeftButtonPressed()) {
       new ChangeIntakeState(CargoIntakeState.OUT).start();
-      new RunCargoIntake(1).start();
-    } else {
+      new SetIntakeRollers(true, 0.75).start();
+    } else if(oi.gamePad.getLeftButtonReleased()) {
       new ChangeIntakeState(CargoIntakeState.MID).start();
+      new SetIntakePistons(false, 0).start();
     }
 
     //****************************** LIFTING *************************************************/
@@ -326,8 +328,17 @@ public class Robot extends TimedRobot {
     // *************************** DEPLOY **********************************************/
     if(oi.gamePad.getBackButtonPressed()) { 
       new SetIntakeRollers(false, 0.75).start();
+      cargoDeploy.runIntake(0.75);
       hatch.hatchDeploy();
     } else if(oi.gamePad.getBackButtonReleased()) {
+      new SetIntakeRollers(false, 0).start();
+      hatch.hatchDeployIn();
+    }
+
+    if(oi.driver.driverDeploy()) {
+      new SetIntakeRollers(false, 0.75).start();
+      hatch.hatchDeploy();
+    } else {
       new SetIntakeRollers(false, 0).start();
       hatch.hatchDeployIn();
     }
@@ -344,7 +355,7 @@ public class Robot extends TimedRobot {
     }
 
     if(oi.gamePad.getStartButton()) { // ****************** MANUAL MODE
-      lift.setManualLift(oi.gamePad.getLeftJoystickY());
+      lift.setManualLift(oi.gamePad.getLeftJoystickY()/2);
     }
 
     //******************************* DRIVE ****************************************/
@@ -370,7 +381,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
 
     //***************************************************** JACK */
-    SmartDashboard.putBoolean("Deployed Hal", jack.isJackAtTop());
+    SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());
+    SmartDashboard.putBoolean("Jack Stored Hal", jack.isJackAtBottom());
+    SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
 
     //***************************************************** HATCH */
 
@@ -381,6 +394,6 @@ public class Robot extends TimedRobot {
     //***************************************************** CURRENT ROBOT STATES */
     SmartDashboard.putString("Lift State", RobotState.liftPosition.toString());
     SmartDashboard.putString("Hatch State", RobotState.hatchState.toString());
-    SmartDashboard.putString("Intake State", RobotState.intakeState.toString());
+    SmartDashboard.putString("Intake State", RobotState.cargoIntakeState.toString());
   }
 }

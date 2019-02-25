@@ -108,6 +108,23 @@ public class OI {
     public boolean getDriverButton8() {
       return driverVertical.getRawButton(8) || driverHorizontal.getRawButton(8);
     }
+
+    public boolean getDriverButton9() {
+      return driverVertical.getRawButton(9) || driverHorizontal.getRawButton(9);
+    }
+
+    public boolean getDriverButton10() {
+      return driverVertical.getRawButton(10) || driverHorizontal.getRawButton(10);
+    }
+
+    public boolean getDriverButton11() {
+      return driverVertical.getRawButton(11) || driverHorizontal.getRawButton(11);
+    }
+
+    public boolean driverDeploy() {
+      return getDriverButton6() || getDriverButton7() || getDriverButton8() || getDriverButton9()
+            || getDriverButton10() || getDriverButton11();
+    }
   }
 
   public class Operator{
