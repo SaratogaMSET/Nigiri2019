@@ -35,7 +35,7 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
   public CargoDeploySubsystem() {
     intakeWheel = new TalonSRX(RobotMap.CargoDeploy.DEPLOY_INTAKE_MOTOR);
     cargoIR = new DigitalInput(RobotMap.CargoDeploy.IR_SENSOR);
-    piston = new Solenoid(4, RobotMap.CargoDeploy.INTAKE_SOL);
+    //piston = new Solenoid(4, RobotMap.CargoDeploy.INTAKE_SOL);
   }
 
   public void runIntake(double power) {

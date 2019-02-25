@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
     camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
-    // hatch = new HatchSubsystem();
+    hatch = new HatchSubsystem();
     compressor = new Compressor(4);
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);

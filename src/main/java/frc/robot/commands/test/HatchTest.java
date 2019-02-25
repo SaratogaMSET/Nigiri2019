@@ -20,6 +20,7 @@ public class HatchTest extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    //Robot.hatch.hatchDeployIn();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -34,10 +35,10 @@ public class HatchTest extends Command {
     if (Robot.oi.driver.getDriverButton4()) {
       Robot.hatch.hatchDeploy();
     }
-    if (Robot.oi.driver.getDriverButton4()) {
+    if (Robot.oi.driver.getDriverButton5()) {
       Robot.hatch.hatchDeployIn();
     }
-    SmartDashboard.putBoolean("Hatch", Robot.hatch.getHatchAcquired());
+    //SmartDashboard.putBoolean("Hatch", Robot.hatch.getHatchAcquired());
   }
 
   // Make this return true when this Command no longer needs to run execute()
