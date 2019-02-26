@@ -40,7 +40,7 @@ public class RobotMap {
   public static class CargoDeploy {
     public static final int DEPLOY_INTAKE_MOTOR = 12;
     public static final int IR_SENSOR = 10;
-    public static final int INTAKE_SOL = 2;
+    public static final int INTAKE_SOL = 5;
   }
   public static class Jacks {
     public static final int JACK_MOTOR = 13;
@@ -61,7 +61,7 @@ public class RobotMap {
   public static class Hatch {
     public static final int[] HATCH_PISTON = { 4, 2 };
     public static final int[] HATCH_DEPLOY_PISTON = { 4, 3 };
-    public static final int HATCH_SWITCH = 1;
+    public static final int HATCH_SWITCH = 11;
   }
 
   public static class Ultrasonic {

@@ -27,7 +27,14 @@ public class SetMidStatePistons extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    time = new Timer();
+    time.reset();
+    time.start();
+
     isFinished = false;
+
+    Robot.cargoIntake.setMidStateSol(out);
+
     if(Robot.cargoIntake.getMidStateSolState() == out) {
       isFinished = true;
     } else {
@@ -47,6 +54,9 @@ public class SetMidStatePistons extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
+    if(Robot.cargoIntake.getMidStateSolState() == out) {
+      return true;
+    }
     return isFinished;
   }
 

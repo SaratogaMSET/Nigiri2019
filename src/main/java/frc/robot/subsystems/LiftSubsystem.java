@@ -56,7 +56,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
     public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
-    public static final double CARGO_ROCKET_LEVEL_THREE = 83.04; // not sure yet
+    public static final double CARGO_ROCKET_LEVEL_THREE = 50; // not sure yet
     public static final double CARGO_LOADING_STATION = 0;
     public static final double HATCH_MID = 46.6;
     public static final double HATCH_HIGH = 74.6;
@@ -74,11 +74,11 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class PIDConstants {
     public static final double k_f = 0.2925714;
-    public static double k_p = 0.5;
+    public static double k_p = 0.25;
     public static double k_i = 0.0;
     public static double k_d = 0.0;
-    public static final int MAX_ACCELERATION = 10000; //measured 40000-70000
-    public static final int MAX_VELOCITY = 3500; // measured 4500
+    public static final int MAX_ACCELERATION = 5000; //measured 40000-70000
+    public static final int MAX_VELOCITY = 3000; // measured 4500
   }
 
   private TalonSRX motor1;

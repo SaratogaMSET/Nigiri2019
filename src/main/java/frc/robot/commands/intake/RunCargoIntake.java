@@ -16,7 +16,7 @@ public class RunCargoIntake extends CommandGroup {
    * Add your docs here.
    */
   public RunCargoIntake(double power) {
-    addSequential(new ChangeIntakeState(CargoIntakeState.OUT));
+    addParallel(new ChangeIntakeState(CargoIntakeState.OUT));
     addSequential(new SetIntakeRollers(true, power));
   }
 }

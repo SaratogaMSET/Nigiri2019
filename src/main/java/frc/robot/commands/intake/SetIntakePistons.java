@@ -36,12 +36,13 @@ public class SetIntakePistons extends Command {
 
     isFinished = false;
 
-    if(Robot.cargoIntake.getIntakeState() == CargoIntakeState.OUT) {
+    if(Robot.cargoIntake.getIntakeSolState() == out) {
       isFinished = true;
     } else {
       Robot.cargoIntake.switchSol(out);
     }
     SmartDashboard.putBoolean("SetIntakePistons Done?", false);
+    SmartDashboard.putBoolean("Intake Timeout?", false);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -49,6 +50,7 @@ public class SetIntakePistons extends Command {
   protected void execute() {
     if(time.get() > timeout) {
       isFinished = true;
+      SmartDashboard.putBoolean("Intake Timeout?", true);
     }
     
   }
@@ -56,19 +58,8 @@ public class SetIntakePistons extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    CargoIntakeState intakeState = Robot.cargoIntake.getIntakeState();
-    boolean midState = Robot.cargoIntake.getMidStateSolState();
-
-    if(out) {
-      if(intakeState == CargoIntakeState.OUT) {
-        return true;
-      } 
-    } else {
-      if(intakeState == CargoIntakeState.IN && midState == false) {
-        return true;
-      } else if(intakeState == CargoIntakeState.MID && midState == true) {
-        return true;
-      }
+    if(Robot.cargoIntake.getIntakeSolState() == out) {
+      return true;
     }
     return isFinished;
   }

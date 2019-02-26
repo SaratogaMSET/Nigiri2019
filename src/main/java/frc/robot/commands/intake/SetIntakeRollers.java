@@ -25,9 +25,9 @@ public class SetIntakeRollers extends Command {
   @Override
   protected void initialize() {
     if(intake) {
-      Robot.cargoDeploy.runIntake(-power);
-    } else {
       Robot.cargoDeploy.runIntake(power);
+    } else {
+      Robot.cargoDeploy.runIntake(-power);
     }
     Robot.cargoIntake.runIntake(intake, power);
 

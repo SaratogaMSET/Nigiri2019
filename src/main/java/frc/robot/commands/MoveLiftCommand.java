@@ -36,11 +36,13 @@ public class MoveLiftCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    current = Robot.lift.getLiftPosition();
+    current = RobotState.liftPosition;
     isFinished = false;
     onTarget = false;
 
-    if(current == target || Robot.lift.getIsMoving()) {
+    SmartDashboard.putBoolean("IN HERE", false);
+    if(current == target) {
+      SmartDashboard.putBoolean("IN HERE", true);
       isFinished = true;
     }
     time = new Timer();
@@ -54,14 +56,15 @@ public class MoveLiftCommand extends Command {
     if(Robot.robotState.canRunLift()) {
       Robot.lift.moveLiftToPos(target);
       Robot.lift.setIsMoving(true);
-      RobotState.liftPosition = LiftPositions.MOVING;
+      SmartDashboard.putString("Target Position", target.toString());
+      // RobotState.liftPosition = LiftPositions.MOVING;
     } else {
       SmartDashboard.putBoolean("Here", true);
       isFinished = true;
     }
 
-    
-
+    SmartDashboard.putNumber("Time", time.get());
+    SmartDashboard.putBoolean("is interrupted", false);
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", isFinished);
   }
@@ -70,9 +73,11 @@ public class MoveLiftCommand extends Command {
   @Override
   protected boolean isFinished() {
     if(Robot.lift.withinTolerance(target)) {
+      SmartDashboard.putString("Here", "Within Tol");
       onTarget = true;
       return true;
     } else if (time.get() > timeout) {
+      SmartDashboard.putString("Here", "timeout");
       return true;
     }
     return isFinished;
@@ -83,8 +88,9 @@ public class MoveLiftCommand extends Command {
   protected void end() {
     Robot.lift.setIsMoving(false);
     if(onTarget) {
-      Robot.lift.setPosition(target);
+      RobotState.liftPosition = target;
     }
+    Robot.lift.setManualLift(0);
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);
 
@@ -94,6 +100,7 @@ public class MoveLiftCommand extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    SmartDashboard.putBoolean("is interrupted", true);
     end();
   }
 }
