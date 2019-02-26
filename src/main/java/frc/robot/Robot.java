@@ -310,11 +310,7 @@ public class Robot extends TimedRobot {
     } else if(oi.gamePad.getLeftButtonReleased()) {
       SmartDashboard.putBoolean("Intake Pressed", false);
       new ChangeIntakeState(CargoIntakeState.MID).start();
-<<<<<<< HEAD
       new SetIntakeRollers(false, 0).start();
-=======
-      new SetIntakePistons(false).start();
->>>>>>> intake timeouts
     }
 
     //****************************** LIFTING *************************************************/
