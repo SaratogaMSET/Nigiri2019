@@ -314,9 +314,8 @@ public class Robot extends TimedRobot {
       //switch lift state to cargo
     } else if(oi.gamePad.getLeftButtonReleased()) {
       SmartDashboard.putBoolean("Intake Pressed", false);
-      if(RobotState.cargoIntakeState != CargoIntakeState.MID){
-        new ChangeIntakeState(CargoIntakeState.MID).start();
-      }
+      new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
+      new ChangeIntakeState(CargoIntakeState.MID).start();
       new SetIntakeRollers(false, 0).start();
     }
 
