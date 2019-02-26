@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -132,7 +131,15 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getBackButtonPressed();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(1);
+        return buttonBoardLeft.getRawButtonPressed(5);
+      }
+    }
+
+    public boolean deployCargo() {
+      if(Robot.isGamepad) {
+        return gamePad.getBackButtonPressed() && gamePad.getLeftTrigger();
+      } else {
+        return buttonBoardRight.getRawButtonPressed(5);
       }
     }
 
@@ -140,7 +147,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getButtonAPressed();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(2);
+        return buttonBoardLeft.getRawButtonPressed(6);
       }
     }
 
@@ -164,7 +171,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getButtonXPressed() && gamePad.getLeftTrigger();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(5);
+        return buttonBoardRight.getRawButtonPressed(3);
       }
     }
 
@@ -172,7 +179,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getButtonYPressed() && gamePad.getLeftTrigger();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(7);
+        return buttonBoardRight.getRawButtonPressed(2);
       }
     }
 
@@ -180,7 +187,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getButtonBPressed() && gamePad.getLeftTrigger();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(6);
+        return buttonBoardRight.getRawButtonPressed(1);
       }
     }
 
@@ -188,7 +195,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getRightButtonPressed();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(8);
+        return buttonBoardRight.getRawButtonPressed(6);
       }
     }
 
@@ -196,7 +203,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getLeftButton();
       } else {
-        return buttonBoardRight.getRawButtonPressed(1);
+        return buttonBoardRight.getRawButtonPressed(4);
       }
     }
 
@@ -204,7 +211,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getPOVLeft();
       } else {
-        return buttonBoardRight.getRawButtonPressed(2);
+        return buttonBoardLeft.getRawButtonPressed(1) && buttonBoardLeft.getRawButtonPressed(11);
       }
     }
 
@@ -212,7 +219,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getPOVRight();
       } else {
-        return buttonBoardRight.getRawButtonPressed(3);
+        return buttonBoardLeft.getRawButtonPressed(1) && buttonBoardLeft.getRawButtonPressed(10);
       }
     }
 
@@ -220,7 +227,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getPOVDown();
       } else {
-        return buttonBoardRight.getRawButtonPressed(4);
+        return buttonBoardLeft.getRawButtonPressed(2);
       }
     }
 
@@ -228,7 +235,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getPOVUp();
       } else {
-        return buttonBoardRight.getRawButtonPressed(5);
+        return buttonBoardLeft.getRawButtonPressed(3);
       }
     }
   }
