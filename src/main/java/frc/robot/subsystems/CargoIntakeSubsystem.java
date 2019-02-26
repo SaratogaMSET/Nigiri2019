@@ -93,6 +93,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     leftIntake.set(ControlMode.PercentOutput, power);
     rightIntake.set(ControlMode.PercentOutput, -power);
     frontIntake.set(ControlMode.PercentOutput, power);
+
   }
 
   public void runIntake(boolean in, double power) {

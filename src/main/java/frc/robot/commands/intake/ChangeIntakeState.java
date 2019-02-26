@@ -10,21 +10,37 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
+import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.util.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 
 public class ChangeIntakeState extends Command {
 
   CargoIntakeState targetState;
+  HatchState targetHatchState;
+  Timer time;
+  double targetTime;
   public ChangeIntakeState(CargoIntakeState targetState) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.targetState = targetState;
+    targetHatchState = HatchState.hatchIn;
+    time = new Timer();
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    
+    time.start();
+    CargoIntakeState currentState = RobotState.cargoIntakeState;
+    HatchState currentHatchState = RobotState.hatchState;
+
+    if(currentState == targetState || currentHatchState == targetHatchState){
+      targetTime = 0;
+    }else {
+      targetTime = 1.0;
+      Robot.hatch.moveHatch(HatchState.hatchIn);
+    }
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -35,12 +51,14 @@ public class ChangeIntakeState extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return time.get() > targetTime;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    time.stop();
+    time.reset();
     CargoIntakeState currentState = RobotState.cargoIntakeState;
     
     if(targetState == currentState) {

@@ -26,6 +26,7 @@ import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
+import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.RobotState;
@@ -306,31 +307,48 @@ public class Robot extends TimedRobot {
   public void teleopLoop() {
     //******************************* INTAKE ***********************************************/
     if(oi.gamePad.getLeftButtonPressed()) {
-      new RunCargoIntake(.75).start();
+      if(RobotState.cargoIntakeState != CargoIntakeState.OUT){
+        new ChangeIntakeState(CargoIntakeState.OUT).start();
+      }
+      new SetIntakeRollers(true, 0.75).start();
+      //switch lift state to cargo
     } else if(oi.gamePad.getLeftButtonReleased()) {
       SmartDashboard.putBoolean("Intake Pressed", false);
-      new ChangeIntakeState(CargoIntakeState.MID).start();
+      if(RobotState.cargoIntakeState != CargoIntakeState.MID){
+        new ChangeIntakeState(CargoIntakeState.MID).start();
+      }
       new SetIntakeRollers(false, 0).start();
     }
 
     //****************************** LIFTING *************************************************/
     if(oi.gamePad.getButtonAPressed()) { // ****************************** LIFT TO LOW
       new MoveLiftCommand(LiftPositions.LOW, 2).start();
+      new MoveHatchCommand(HatchState.hatchOut).start();
     } 
     if(oi.gamePad.getButtonXPressed()) { // *********************** LIFT TO HATCH MID
       new MoveLiftCommand(LiftPositions.HATCH_MID, 2).start();
+      new MoveHatchCommand(HatchState.hatchOut).start();
+
     }
     if(oi.gamePad.getButtonYPressed()) { // *********************** LIFT TO HATCH HIGH
       new MoveLiftCommand(LiftPositions.HATCH_HIGH, 2).start();
+      new MoveHatchCommand(HatchState.hatchOut).start();
+
     }
     if(oi.gamePad.getButtonXPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO LOW ROCKET
       new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
+      new MoveHatchCommand(HatchState.hatchIn).start();
     }
     if(oi.gamePad.getButtonYPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO MID ROCKET
       new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
+      new MoveHatchCommand(HatchState.hatchIn).start();
+
     }
     if(oi.gamePad.getButtonBPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO HIGH ROCKET
       new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 2).start();
+      new MoveHatchCommand(HatchState.hatchIn).start();
+      new MoveHatchCommand(HatchState.hatchIn).start();
+
     }
     if(oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
       new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
