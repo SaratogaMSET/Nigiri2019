@@ -306,12 +306,15 @@ public class Robot extends TimedRobot {
   public void teleopLoop() {
     //******************************* INTAKE ***********************************************/
     if(oi.gamePad.getLeftButtonPressed()) {
-      new ChangeIntakeState(CargoIntakeState.OUT).start();
-      new SetIntakeRollers(true, 0.75).start();
+      new RunCargoIntake(.75).start();
     } else if(oi.gamePad.getLeftButtonReleased()) {
       SmartDashboard.putBoolean("Intake Pressed", false);
       new ChangeIntakeState(CargoIntakeState.MID).start();
+<<<<<<< HEAD
       new SetIntakeRollers(false, 0).start();
+=======
+      new SetIntakePistons(false).start();
+>>>>>>> intake timeouts
     }
 
     //****************************** LIFTING *************************************************/

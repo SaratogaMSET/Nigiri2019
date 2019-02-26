@@ -16,12 +16,12 @@ public class SetMidStatePistons extends Command {
   boolean out;
   boolean isFinished;
   Timer time;
-  double timeout;
-  public SetMidStatePistons(boolean out, double timeout) {
+  final double timeout;
+  public SetMidStatePistons(boolean out) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.out = out;
-    this.timeout = timeout;
+    timeout = 2;
   }
 
   // Called just before this Command runs the first time

@@ -14,10 +14,10 @@ public class CargoIntakeInToMid extends CommandGroup {
    * Add your docs here.
    */
   public CargoIntakeInToMid() {
-    addSequential(new SetMidStatePistons(true,2));
-    addSequential(new SetIntakePistons(true, 2));
-    addSequential(new SetMidStatePistons(false, 2));
-    addSequential(new SetIntakePistons(false, 2));
+    addSequential(new SetMidStatePistons(true));
+    addSequential(new SetIntakePistons(true));
+    addSequential(new SetMidStatePistons(false));
+    addSequential(new SetIntakePistons(false));
     addSequential(new UpdateIntakeStateCommand());
   }
 }
