@@ -9,26 +9,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.HatchSubsystem.HatchPositions;
+import frc.robot.subsystems.HatchSubsystem.HatchState;
 
 public class MoveHatchCommand extends Command {
 
-  public MoveHatchCommand() {
+  HatchState hatchPosition;
+
+  public MoveHatchCommand(HatchState hatchPosition) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    this.hatchPosition = hatchPosition;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    if (Robot.hatch.getHatchPosition() == HatchPositions.hatchIn) {
-      Robot.hatch.moveHatchToPosition(HatchPositions.hatchOut);
-      Robot.hatch.setPosition(HatchPositions.hatchOut);
-    }
-    else {
-      Robot.hatch.moveHatchToPosition(HatchPositions.hatchIn);
-      Robot.hatch.setPosition(HatchPositions.hatchIn);
-    }
+    Robot.hatch.moveHatch(hatchPosition);
   }
 
   // Called repeatedly when this Command is scheduled to run

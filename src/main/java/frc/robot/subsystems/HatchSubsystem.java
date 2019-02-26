@@ -19,61 +19,71 @@ public class HatchSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public static enum HatchPositions {
+  public static enum HatchState {
     hatchIn,
-    hatchOut
+    hatchOut,
+    hatchDeploy
   }
 
   public Solenoid hatchSol;
   public Solenoid hatchDeploySol1;
   public Solenoid hatchDeploySol2;
   public DigitalInput hatchAcquired;
-  public HatchPositions currentPosition;
+  public HatchState currentState;
 
   public HatchSubsystem() {
     hatchSol = new Solenoid(RobotMap.Hatch.HATCH_PISTON[0], RobotMap.Hatch.HATCH_PISTON[1]);
     hatchDeploySol1 = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON[1]);
     //hatchAcquired = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
-    currentPosition = HatchPositions.hatchIn;
+    currentState = HatchState.hatchIn;
   }
 
   public void hatchOut() {
     hatchSol.set(true);
+    currentState = HatchState.hatchOut;
   }
 
   public void hatchIn() {
     hatchSol.set(false);
+    currentState = HatchState.hatchIn;
   }
 
   public void hatchDeploy() {
     hatchDeploySol1.set(true);
+    currentState = HatchState.hatchDeploy;
   }
 
   public void hatchDeployIn() {
     hatchDeploySol1.set(false);
+    currentState = HatchState.hatchOut;
   }
 
   public boolean getHatchAcquired() {
     return hatchAcquired.get();
   }
 
-  public void moveHatchToPosition(HatchPositions pos) {
+  public void moveHatch(HatchState pos) {
     switch(pos) {
       case hatchIn:
+        hatchDeployIn();
         hatchIn();
         break;
       case hatchOut:
+        hatchDeployIn();
         hatchOut();
+        break;
+      case hatchDeploy:
+        hatchDeploy();
         break;
     }
   }
 
-  public void setPosition(HatchPositions pos) {
-    currentPosition = pos;
+  public void setHatchState(HatchState pos) {
+    currentState = pos;
   }
 
-  public HatchPositions getHatchPosition() {
-    return currentPosition;
+  public HatchState getHatchState() {
+    return currentState;
   }
 
   @Override
