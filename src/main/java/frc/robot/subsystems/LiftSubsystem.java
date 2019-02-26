@@ -58,8 +58,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
     public static final double CARGO_ROCKET_LEVEL_THREE = 50; // not sure yet
     public static final double CARGO_LOADING_STATION = 0;
-    public static final double HATCH_MID = 46.6;
-    public static final double HATCH_HIGH = 74.6;
+    public static final double HATCH_MID = 27.88;
+    public static final double HATCH_HIGH = 54.4;
     public static final double CLIMB_HAB_TWO = 0;
     public static final double CLIMB_HAB_THREE = 0;
   }
