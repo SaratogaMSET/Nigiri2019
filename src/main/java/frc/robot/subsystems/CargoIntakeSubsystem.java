@@ -97,13 +97,13 @@ public class CargoIntakeSubsystem extends Subsystem {
 
   public void runIntake(boolean in, double power) {
     if(in) {
-      leftIntake.set(ControlMode.PercentOutput, -power);
-      rightIntake.set(ControlMode.PercentOutput, power);
-      frontIntake.set(ControlMode.PercentOutput, -power);
-    } else {
       leftIntake.set(ControlMode.PercentOutput, power);
       rightIntake.set(ControlMode.PercentOutput, -power);
       frontIntake.set(ControlMode.PercentOutput, power);
+    } else {
+      leftIntake.set(ControlMode.PercentOutput, -power);
+      rightIntake.set(ControlMode.PercentOutput, power);
+      frontIntake.set(ControlMode.PercentOutput, -power);
     }
   }
 
@@ -133,9 +133,9 @@ public class CargoIntakeSubsystem extends Subsystem {
   }
 
   public CargoIntakeState getIntakeState() {
-    if(getOutHal()) {
+    if(intakeSol.get()) {
       return CargoIntakeState.OUT;
-    } else if(getInHal()) {
+    } else if(intakeSol.get() == false && intakeMidSol.get()) {
       return CargoIntakeState.IN;
     } else {
       return CargoIntakeState.MID;

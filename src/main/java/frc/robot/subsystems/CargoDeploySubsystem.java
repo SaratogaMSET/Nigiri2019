@@ -43,7 +43,7 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
       running = true; 
     else 
       running = false;
-    intakeWheel.set(ControlMode.PercentOutput, power);
+    intakeWheel.set(ControlMode.PercentOutput, -power);
   }
 
   public void anglePistons() {
