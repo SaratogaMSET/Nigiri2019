@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
+import frc.robot.util.RobotState;
 
 /**
  * Add your docs here.
@@ -40,22 +41,30 @@ public class HatchSubsystem extends Subsystem {
 
   public void hatchOut() {
     hatchSol.set(true);
-    currentState = HatchState.hatchOut;
+    // currentState = HatchState.hatchOut;
   }
 
   public void hatchIn() {
     hatchSol.set(false);
-    currentState = HatchState.hatchIn;
+    // currentState = HatchState.hatchIn;
   }
 
   public void hatchDeploy() {
     hatchDeploySol1.set(true);
-    currentState = HatchState.hatchDeploy;
+    // currentState = HatchState.hatchDeploy;
   }
 
   public void hatchDeployIn() {
     hatchDeploySol1.set(false);
-    currentState = HatchState.hatchOut;
+    // currentState = HatchState.hatchOut;
+  }
+
+  public void changeHatchState() {
+    if(!hatchSol.get()) {
+      RobotState.hatchState = HatchState.hatchOut;
+    } else {
+      RobotState.hatchState = HatchState.hatchIn;
+    }
   }
 
   public boolean getHatchAcquired() {
@@ -67,10 +76,12 @@ public class HatchSubsystem extends Subsystem {
       case hatchIn:
         hatchDeployIn();
         hatchIn();
+        // changeHatchState();
         break;
       case hatchOut:
         hatchDeployIn();
         hatchOut();
+        // changeHatchState();
         break;
       case hatchDeploy:
         hatchDeploy();

@@ -337,6 +337,12 @@ public class Robot extends TimedRobot {
         SmartDashboard.putBoolean("Intake Pressed", false);
         new ChangeIntakeState(CargoIntakeState.MID).start();
         new SetIntakeRollers(false, 0).start();
+      } else if(oi.driver.driverDeploy()) {
+        new SetIntakeRollers(false, 0.75).start();
+        hatch.hatchDeploy();
+      } else if(!oi.driver.driverDeploy() && !oi.gamePad.getLeftButton() && !lift.getIsMoving()  && !oi.gamePad.getBackButton()) {
+        new SetIntakeRollers(false, 0).start();
+        hatch.hatchDeployIn();
       }
   
       //****************************** LIFTING *************************************************/
@@ -388,18 +394,16 @@ public class Robot extends TimedRobot {
   
       // *************************** DEPLOY **********************************************/
       if(oi.gamePad.getBackButtonPressed()) { 
-        if(robotState.liftPosition == RobotState.liftPosition.HATCH_LOW||robotState.liftPosition == RobotState.liftPosition.HATCH_MID||robotState.liftPosition == RobotState.liftPosition.HATCH_HIGH){
+        if(RobotState.liftPosition == LiftPositions.HATCH_LOW||RobotState.liftPosition == LiftPositions.HATCH_MID||RobotState.liftPosition == LiftPositions.HATCH_HIGH){
           hatch.hatchDeploy();
-        }else if(robotState.liftPosition == RobotState.liftPosition.CARGO_LOW){
+        }else {
           new SetIntakeRollers(false, 0.75).start();
-          cargoDeploy.runIntake(0.75);
-        }else{
           cargoDeploy.runIntake(0.75);
         }
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0).start();
         hatch.hatchDeployIn();
-      }
+      } 
   
       // if(oi.driver.driverDeploy()) {
       //   new SetIntakeRollers(false, 0.75).start();

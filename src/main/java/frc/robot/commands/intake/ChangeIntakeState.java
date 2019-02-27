@@ -35,9 +35,9 @@ public class ChangeIntakeState extends Command {
     CargoIntakeState currentState = RobotState.cargoIntakeState;
     HatchState currentHatchState = RobotState.hatchState;
 
-    if(currentState == targetState || currentHatchState == targetHatchState){
+    if(currentHatchState == targetHatchState){
       targetTime = 0;
-    }else {
+    } else {
       targetTime = 0.5;
       Robot.hatch.moveHatch(HatchState.hatchIn);
     }

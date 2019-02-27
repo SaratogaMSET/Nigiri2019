@@ -178,6 +178,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         break;
       case HATCH_LOW:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
+        break;
       case CARGO_SHIP:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP));
         break;

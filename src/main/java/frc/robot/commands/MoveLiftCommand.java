@@ -43,7 +43,11 @@ public class MoveLiftCommand extends Command {
 
     if(current == target) {
       isFinished = true;
-    } else {
+    } else if (target == LiftPositions.CARGO_LOW && current == LiftPositions.HATCH_LOW) {
+      isFinished = true;
+    } else if (target == LiftPositions.HATCH_LOW && current == LiftPositions.CARGO_LOW) {
+      isFinished = true;
+    }else {
       goingUp = Robot.lift.goingUp(target, current);
     }
     time = new Timer();
@@ -54,12 +58,12 @@ public class MoveLiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.robotState.canRunLift()) {
+    if(Robot.robotState.canRunLift() && !isFinished) {
       Robot.lift.moveLiftToPos(target);
       Robot.lift.setIsMoving(true);
       SmartDashboard.putString("Target Position", target.toString());
       RobotState.liftPosition = LiftPositions.MOVING;
-      Robot.cargoIntake.runFrontRoller(goingUp, 0.6);
+      Robot.cargoIntake.runFrontRoller(goingUp, 0.8);
       Robot.cargoDeploy.runIntake(0.2);
     } else {
       isFinished = true;
@@ -68,6 +72,7 @@ public class MoveLiftCommand extends Command {
     SmartDashboard.putBoolean("is interrupted", false);
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", isFinished);
+    SmartDashboard.putBoolean("Is Going Up", goingUp);
   }
 
   // Make this return true when this Command no longer needs to run execute()

@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.util.RobotState;
 
 public class MoveHatchCommand extends Command {
 
@@ -41,6 +42,7 @@ public class MoveHatchCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    RobotState.hatchState = hatchPosition;
   }
 
   // Called when another command which requires one or more of the same
