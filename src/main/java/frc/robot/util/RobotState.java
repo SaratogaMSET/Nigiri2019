@@ -27,7 +27,7 @@ public class RobotState {
     public static GamePiece gamepiece;
 
     public RobotState() {
-        liftPosition = LiftPositions.LOW;
+        liftPosition = LiftPositions.CARGO_LOW;
         cargoIntakeState = CargoIntakeState.MID;
         hatchState = HatchState.hatchOut;
         intakeState = CargoIntakeState.NONE;
@@ -41,7 +41,7 @@ public class RobotState {
     }
 
     public boolean canBringIntakeIn() {
-        if(liftPosition == LiftPositions.LOW) {
+        if(liftPosition == LiftPositions.CARGO_LOW) {
             return true;
         }
         return false;

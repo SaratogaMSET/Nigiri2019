@@ -23,7 +23,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   public static enum LiftPositions {
-    LOW,
+    HATCH_LOW,
+    CARGO_LOW,
     CARGO_SHIP,
     CARGO_ROCKET_LEVEL_ONE,
     CARGO_ROCKET_LEVEL_TWO,
@@ -114,7 +115,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor1.config_kF(0, PIDConstants.k_f);
 
     motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    currentPosition = LiftPositions.LOW;
+    currentPosition = LiftPositions.CARGO_LOW;
     
     isMoving = false;
   }
@@ -172,9 +173,11 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public void moveLiftToPos(LiftPositions pos) {
     switch(pos) {
-      case LOW:
+      case CARGO_LOW:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
         break;
+      case HATCH_LOW:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
       case CARGO_SHIP:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP));
         break;
@@ -241,7 +244,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public int getLiftPositionEncoders(LiftPositions pos) {
     switch(pos) {
-      case LOW:
+      case CARGO_LOW:
+        return getTicksFromDistance(LiftDistanceConstants.INTAKE);
+      case HATCH_LOW:
         return getTicksFromDistance(LiftDistanceConstants.INTAKE);
       case CARGO_SHIP:
         return getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP);

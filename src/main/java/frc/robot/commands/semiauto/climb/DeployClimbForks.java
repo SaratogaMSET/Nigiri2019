@@ -7,12 +7,19 @@
 
 package frc.robot.commands.semiauto.climb;
 
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
+import frc.robot.subsystems.JackSubsystem;
+import frc.robot.subsystems.LiftSubsystem.LiftPositions;
+import edu.wpi.first.wpilibj.RobotState;
 
 public class DeployClimbForks extends Command {
+  boolean isDone;
   public DeployClimbForks() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    isDone = false;
   }
 
   // Called just before this Command runs the first time
@@ -23,12 +30,16 @@ public class DeployClimbForks extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    if(Robot.robotState.liftPosition == LiftPositions.CARGO_LOW){
+      Robot.jack.releaseForks();
+      isDone = true;
+    }
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return isDone;
   }
 
   // Called once after isFinished returns true
