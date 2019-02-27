@@ -21,6 +21,7 @@ public class MoveLiftCommand extends Command {
 
   boolean isFinished;
   boolean onTarget;
+  boolean goingUp;
 
   Timer time;
 
@@ -42,6 +43,8 @@ public class MoveLiftCommand extends Command {
 
     if(current == target) {
       isFinished = true;
+    } else {
+      goingUp = Robot.lift.goingUp(target, current);
     }
     time = new Timer();
     time.reset();
@@ -55,7 +58,9 @@ public class MoveLiftCommand extends Command {
       Robot.lift.moveLiftToPos(target);
       Robot.lift.setIsMoving(true);
       SmartDashboard.putString("Target Position", target.toString());
-      // RobotState.liftPosition = LiftPositions.MOVING;
+      RobotState.liftPosition = LiftPositions.MOVING;
+      Robot.cargoIntake.runFrontRoller(goingUp, 0.6);
+      Robot.cargoDeploy.runIntake(0.2);
     } else {
       isFinished = true;
     }
@@ -74,6 +79,7 @@ public class MoveLiftCommand extends Command {
     } else if (time.get() > timeout) {
       return true;
     }
+    
     return isFinished;
   }
 
@@ -84,6 +90,8 @@ public class MoveLiftCommand extends Command {
     if(onTarget) {
       RobotState.liftPosition = target;
     }
+    Robot.cargoIntake.runFrontRoller(goingUp, 0);
+    Robot.cargoDeploy.runIntake(0);
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);
 

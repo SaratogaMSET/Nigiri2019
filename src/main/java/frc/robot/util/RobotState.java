@@ -15,16 +15,23 @@ import frc.robot.subsystems.LiftSubsystem.LiftPositions;
  * Add your docs here.
  */
 public class RobotState {
+    public static enum GamePiece {
+        CARGO,
+        HATCH,
+        NONE
+    }
     public static LiftPositions liftPosition;
     public static CargoIntakeState cargoIntakeState;
     public static HatchState hatchState;
     public static CargoIntakeState intakeState;
+    public static GamePiece gamepiece;
 
     public RobotState() {
         liftPosition = LiftPositions.LOW;
         cargoIntakeState = CargoIntakeState.MID;
         hatchState = HatchState.hatchOut;
         intakeState = CargoIntakeState.NONE;
+        gamepiece = GamePiece.NONE;
     }
     public boolean canRunLift() {
         if (cargoIntakeState == CargoIntakeState.MID || cargoIntakeState == CargoIntakeState.OUT) {

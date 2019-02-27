@@ -108,6 +108,14 @@ public class CargoIntakeSubsystem extends Subsystem {
     }
   }
 
+  public void runFrontRoller(boolean in, double power) {
+    if(in) {
+      frontIntake.set(ControlMode.PercentOutput, power);
+    } else {
+      frontIntake.set(ControlMode.PercentOutput, -power);
+    }
+  }
+
   public void switchSol(boolean state){
     intakeSol.set(state);
     SmartDashboard.putBoolean("is Out", state);

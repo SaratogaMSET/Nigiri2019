@@ -290,6 +290,16 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     return LiftEncoderConstants.DISTANCE_PER_PULSE * getRawEncoder();
   }
 
+  public boolean goingUp(LiftPositions target, LiftPositions current) {
+    int tick;
+    if (current == LiftPositions.MOVING) {
+      tick = getRawEncoder();
+    } else {
+      tick = getLiftPositionEncoders(current);
+    }
+    return (getLiftPositionEncoders(target) - tick > 0) ? true : false;
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
