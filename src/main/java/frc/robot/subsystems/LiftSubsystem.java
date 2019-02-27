@@ -37,15 +37,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public static class LiftEncoderConstants {
-    public static final int INTAKE = 0;
-    public static final int CARGO_ROCKET_LEVEL_ONE = 0;
-    public static final int CARGO_ROCKET_LEVEL_TWO = 10000;
-    public static final int CARGO_ROCKET_LEVEL_THREE = 0;
-    public static final int CARGO_LOADING_STATION = 0;
-    public static final int HATCH_MID = 5000;
-    public static final int HATCH_HIGH = 0;
-    public static final int CLIMB_HAB_TWO = 2728 + 440;
-    public static final int CLIMB_HAB_THREE = 12500 + 440;
+    public static final int CLIMB_HAB_TWO = 3200;
+    public static final int CLIMB_HAB_THREE = 13100;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
     public static final int TOLERANCE = 100;
@@ -56,12 +49,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
     public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
-    public static final double CARGO_ROCKET_LEVEL_THREE = 50; // not sure yet
+    public static final double CARGO_ROCKET_LEVEL_THREE = 69.0;
     public static final double CARGO_LOADING_STATION = 0;
     public static final double HATCH_MID = 27.88;
     public static final double HATCH_HIGH = 54.4;
-    public static final double CLIMB_HAB_TWO = 0;
-    public static final double CLIMB_HAB_THREE = 0;
   }
 
   public static class LiftPidConstants {
@@ -206,10 +197,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.HATCH_HIGH));
         break;
       case CLIMB_HAB_TWO:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_TWO));
+        motionMagicLift(LiftEncoderConstants.CLIMB_HAB_TWO);
         break;
       case CLIMB_HAB_THREE:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_THREE));
+        motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE);
         break;    
     }
   }
@@ -267,9 +258,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case HATCH_HIGH:
         return getTicksFromDistance(LiftDistanceConstants.HATCH_HIGH);
       case CLIMB_HAB_TWO:
-        return getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_TWO);
+        return LiftEncoderConstants.CLIMB_HAB_TWO;
       case CLIMB_HAB_THREE:
-        return getTicksFromDistance(LiftDistanceConstants.CLIMB_HAB_THREE);    
+        return LiftEncoderConstants.CLIMB_HAB_THREE;    
     }
     return 0;
   }

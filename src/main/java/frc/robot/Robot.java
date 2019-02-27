@@ -22,6 +22,8 @@ import frc.robot.commands.intake.RunCargoIntake;
 import frc.robot.commands.intake.SetIntakePistons;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.SetMidStatePistons;
+import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
+import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.subsystems.*;
@@ -111,6 +113,8 @@ public class Robot extends TimedRobot {
     robotState = new RobotState();
 
     drive.changeBrakeCoast(false);
+    lift.resetEncoder();
+    jack.resetJackEncoder();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -146,12 +150,18 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
-    // SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
+    SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
     // SmartDashboard.putBoolean("CARGO IR SENSOR", cargoDeploy.hasCargo());
     // SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
     smartdashboardTesting();
 
     // Safety Checks
+
+    if(Robot.lift.getBottomHal()) {
+      Robot.lift.resetEncoder();
+      RobotState.liftPosition = LiftPositions.LOW;
+    }
+
   }
 
   /**
@@ -170,6 +180,12 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     gyro.resetGyro();
     // new HAB1LxCLFxLOADLxCL1().start();
+    // (new MotionProfileCommand("TestPath", false)).start();
+    // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
+    // new TestJackDriveMotors().start();
+    new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
+
+
   }
   /**
    * This function is called periodically during autonomous.
@@ -186,7 +202,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     Robot.drive.rawDrive(0.0, 0.0);
-    Robot.lift.resetEncoder();
+    // Robot.lift.resetEncoder();
     gyro.resetGyro();
     drive.changeBrakeCoast(false);
 
@@ -212,8 +228,6 @@ public class Robot extends TimedRobot {
   public void testInit() {
     gyro.resetGyro();
     drive.resetEncoders();
-    Command c = (new MotionProfileCommand("TestPath", false));
-    c.start();
   }
 
   /**

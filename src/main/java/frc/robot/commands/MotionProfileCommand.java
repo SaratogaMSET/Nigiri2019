@@ -130,8 +130,8 @@ public class MotionProfileCommand extends FishyCommand {
         rightSpeed = -leftFollower.calculate(-Robot.drive.getRawLeftEncoder());
       }
       else {
-        leftSpeed = leftFollower.calculate(Robot.drive.getRawRightEncoder());
-        rightSpeed = rightFollower.calculate(Robot.drive.getRawLeftEncoder());
+        leftSpeed = leftFollower.calculate(Robot.drive.getRawLeftEncoder());
+        rightSpeed = rightFollower.calculate(Robot.drive.getRawRightEncoder());
         
       }
       

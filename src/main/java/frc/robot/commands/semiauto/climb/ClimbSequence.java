@@ -17,7 +17,7 @@ public class ClimbSequence extends CommandGroup {
    * Add your docs here.
    */
   public ClimbSequence() {
-    addSequential(new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,true,Robot.timeoutMs));
+    // addSequential(new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,true,Robot.timeoutMs));
     
     // Add Commands here:
     // e.g. addSequential(new Command1());

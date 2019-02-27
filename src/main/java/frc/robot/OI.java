@@ -60,7 +60,7 @@ public class OI {
   }
 
   public class Driver {
-    private JoystickFilter verticalFilter = new JoystickFilter(0.025, 0.0, 1.0, Mode.LINEAR);
+    private JoystickFilter verticalFilter = new JoystickFilter(0.0, 0.0, 1.0, Mode.LINEAR);
     private JoystickFilter horizontalFilter = new JoystickFilter(0.025, 0.0, 1.0, Mode.LINEAR);
 
     public double getDriverVertical() {
