@@ -7,17 +7,21 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Add your docs here.
  */
-public class LedSubsystem extends Subsystem {
+public class LedSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  private static Spark led = new Spark(0);
+  Spark led;
+
+  public LedSubsystem(){
+    led = new Spark(0);
+  }
 
   @Override
   public void initDefaultCommand() {
@@ -36,4 +40,19 @@ public class LedSubsystem extends Subsystem {
   public void chase(){
     led.set(.31); //lightchase red
   }
+
+  public void off(){
+    led.set(.99);
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
+  }
+
 }

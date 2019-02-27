@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
 public class RunCargoDeployCommand extends Command {
@@ -25,19 +26,17 @@ public class RunCargoDeployCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if (Robot.oi.gamePad.getButtonA()) {
-      Robot.cargoDeploy.runMotors(1);
-    } else if (Robot.oi.gamePad.getButtonY()) {
-      Robot.cargoDeploy.runMotors(-1);
-    } else {
-      Robot.cargoDeploy.runMotors(0);
-    }
+    Robot.cargoDeploy.runIntake(Robot.oi.driverVertical.getY());
+    if(Robot.oi.driverVertical.getTriggerPressed()) {
+      Robot.cargoDeploy.anglePistons();
+    } 
+    SmartDashboard.putBoolean("Acquired Cargo", Robot.cargoDeploy.hasCargo());
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return Robot.oi.driverVertical.getRawButton(6);
   }
 
   // Called once after isFinished returns true

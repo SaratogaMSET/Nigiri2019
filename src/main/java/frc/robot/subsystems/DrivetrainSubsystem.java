@@ -7,81 +7,133 @@
 
 package frc.robot.subsystems;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.PathfinderFRC;
+import jaci.pathfinder.PathfinderJNI;
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Trajectory.Segment;
+import jaci.pathfinder.followers.EncoderFollower;
+
 
 /**
  * Add your docs here.
  */
-public class DrivetrainSubsystem extends Subsystem {
+public class DrivetrainSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public TalonSRX[] motors;
+  // motors[0] is the right master, motors [1,2] right followers
+  // motors[3] is the left master, motors [4,5] left followers
+  public static class DriveStraightGyroConstants {
+    public static double kp = 0;
+    public static double ki = 0;
+    public static double kd = 0;
+    public static double cumError = 0;
+    public static double lastError = 0;
+  }
 
-  public double wheelSize = 4;
-  public double scalingFactor = 4;
+  public static class DriveStraightConstants {
+    public static double kp = 0;
+    public static double ki = 0;
+    public static double kd = 0;
+    public static double cumError = 0;
+    public static double lastError = 0;
+  }
+
+  public static class PathFollowingConstants {
+    public static class Left {
+      public static final double kp = 0.025;
+      public static final double kd = 0.0;
+      public static final double kv = 0.083333333;
+      public static final double ka = 0.02;
+    }
+    public static class Right {
+      public static final double kp = 0.025;
+      public static final double kd = 0.0;
+      public static final double kv = 0.083333333;
+      public static final double ka = 0.02;
+    }
+
+    public static final double kp_gyro = 0.01;
+  }
+
+
+  // NEED TO RETUNE EVERY TIME ROBOT CHANGES
+  // These are the values that go into path code PIDVA
+  public static final double ROBOT_TRUE_MAX_VELOCITY = 12.0; // ft/s
+
+  // wouldn't want to tip, now would we?
+  // these are the values that go into pathfinder
+  public static final double ROBOT_TARGET_MAX_VELOCITY = 9.0; // ft/s
+  public static final double ROBOT_TARGET_MAX_ACCELERATION = 16.0; // ft/s^2
+
+  public TalonSRX[] motors;
+  public Encoder rightEncoder;
+  public Encoder leftEncoder;
+  public boolean isPathRunning;
+  public int motor;
+
+
+  public static final double WHEEL_DIAMETER = (4.06/12.0); // feet
+  public static final int TICKS_PER_REV = 1024;
 
   public double kP, kI, kD, kF;
 
+
   public DrivetrainSubsystem() {
-    motors = new TalonSRX[4];
-    
+    motors = new TalonSRX[6];
     for (int i = 0; i < motors.length; i++) {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
     }
-
-    kP = Robot.prefs.getDouble("kP", 0.0);
-    kI = Robot.prefs.getDouble("kI", 0.0);
-    kD = Robot.prefs.getDouble("kD", 0.0);
-    kF = Robot.prefs.getDouble("kF", 0.0);
-
-    motors[0].configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
-    motors[0].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[0].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[0].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[0].configPeakOutputReverse(-1, Robot.timeoutMs);
-		motors[0].configMotionCruiseVelocity(20000, Robot.timeoutMs);
-    motors[0].configMotionAcceleration(11000, Robot.timeoutMs);
-    motors[0].config_kP(0, kP, Robot.timeoutMs);
-    motors[0].config_kI(0, kI, Robot.timeoutMs);
-    motors[0].config_kP(0, kP, Robot.timeoutMs);
-    motors[0].config_kF(0, kF, Robot.timeoutMs);
-    motors[0].setInverted(false);
-
-    motors[1].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[1].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[1].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[1].configPeakOutputReverse(-1, Robot.timeoutMs);
-    motors[1].setInverted(false);
-    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
+    leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], true, EncodingType.k1X);
     
-		motors[2].configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, Robot.timeoutMs);
-    motors[2].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[2].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[2].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[2].configPeakOutputReverse(-1, Robot.timeoutMs);
-		motors[2].configMotionCruiseVelocity(20000, Robot.timeoutMs);
-		motors[2].configMotionAcceleration(11000, Robot.timeoutMs);
-    motors[2].config_kP(0, kP, Robot.timeoutMs);
-    motors[2].config_kI(0, kI, Robot.timeoutMs);
-    motors[2].config_kP(0, kP, Robot.timeoutMs);
-    motors[2].config_kF(0, kF, Robot.timeoutMs);
-    motors[2].setInverted(true);
+    rightEncoder.setDistancePerPulse(WHEEL_DIAMETER * Math.PI / (double) TICKS_PER_REV);
+    leftEncoder.setDistancePerPulse(WHEEL_DIAMETER * Math.PI /  (double) TICKS_PER_REV);
 
-    motors[3].configNominalOutputForward(0, Robot.timeoutMs);
-    motors[3].configNominalOutputReverse(0, Robot.timeoutMs);
-    motors[3].configPeakOutputForward(1, Robot.timeoutMs);
-    motors[3].configPeakOutputReverse(-1, Robot.timeoutMs);
-    motors[3].setInverted(true);
-    motors[3].set(ControlMode.Follower, motors[2].getDeviceID());
+    leftEncoder.setSamplesToAverage(127);
+    rightEncoder.setSamplesToAverage(127);
+    
+    kP = 0.0;
+    kI = 0.0;
+    kD = 0.0;
+    kF = 0.0;
 
+    // follow right master
+    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());  
+
+    // follow left master
+    motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
+    motors[5].set(ControlMode.Follower, motors[3].getDeviceID());
+
+    // invert right side DT motors
+    motors[0].setInverted(InvertType.InvertMotorOutput);
+    motors[1].setInverted(InvertType.InvertMotorOutput);
+    motors[2].setInverted(InvertType.InvertMotorOutput);
+
+    motor = 0;
   }
 
   public void changeBrakeCoast(boolean isBrake) {
@@ -90,33 +142,146 @@ public class DrivetrainSubsystem extends Subsystem {
       motors[1].setNeutralMode(NeutralMode.Brake);
       motors[2].setNeutralMode(NeutralMode.Brake);
       motors[3].setNeutralMode(NeutralMode.Brake);
+      motors[4].setNeutralMode(NeutralMode.Brake);
+      motors[5].setNeutralMode(NeutralMode.Brake);
     }
     else {
       motors[0].setNeutralMode(NeutralMode.Coast);
       motors[1].setNeutralMode(NeutralMode.Coast);
       motors[2].setNeutralMode(NeutralMode.Coast);
       motors[3].setNeutralMode(NeutralMode.Coast);
+      motors[4].setNeutralMode(NeutralMode.Coast);
+      motors[5].setNeutralMode(NeutralMode.Coast);
     }
   }
 
   public void rawDrive(double left, double right) {
-    motors[0].set(ControlMode.PercentOutput, left);
-    motors[2].set(ControlMode.PercentOutput, right);
+    motors[0].set(ControlMode.PercentOutput, right);
+    motors[3].set(ControlMode.PercentOutput, left);
   }
   
-  public int convert(double d) {
-    int i = (int)((scalingFactor*d*50*4096)/(Math.PI*wheelSize*24));
-    return i;
+  public int getRawLeftEncoder() {
+    return leftEncoder.get();
+  }
+
+  public void driveFwdRotate(double fwd, double rot){
+		double left = fwd + rot, right = fwd - rot;
+		double max = Math.max(1, Math.max(Math.abs(left), Math.abs(right)));
+		left /= max;
+		right /= max;
+		
+		rawDrive(left, right);
+  }
+  
+  public int getRawRightEncoder() {
+    return rightEncoder.get();
+  }
+
+  public double getRightEncoderDistance() {
+    return rightEncoder.getDistance();
+  }
+
+  public double getLeftEncoderDistance() {
+    return leftEncoder.getDistance();
   }
 
   public void resetEncoders() {
-    motors[0].setSelectedSensorPosition(0, 0, Robot.timeoutMs);
-    motors[2].setSelectedSensorPosition(0, 0, Robot.timeoutMs);
+    leftEncoder.reset();
+    rightEncoder.reset();
   }
+
+  public void testDrivetrain(double fwd, boolean changeMotor, boolean resetEncoders) {
+    if (resetEncoders) {
+      resetEncoders();
+    }
+    if (changeMotor) {
+      if (motor < 6) {
+        motor++;
+      }
+      else {
+        motor = 0;
+      }
+    }
+    
+    if (motor < 6) {
+      SmartDashboard.putNumber("Motor", motors[motor].getDeviceID());
+      testMotor(fwd);
+    }
+    else {
+      SmartDashboard.putString("Motor", "all");
+      testAllMotors(fwd);
+    }
+    SmartDashboard.putNumber("Left Encoder", getRawLeftEncoder());
+    SmartDashboard.putNumber("Right Encoder", getRawRightEncoder());
+  }
+
+  public void testMotor(double fwd) {
+    motors[motor].set(ControlMode.PercentOutput, fwd);
+  }
+
+  public void testAllMotors(double fwd) {
+    motors[0].set(ControlMode.PercentOutput, fwd);    
+    motors[1].set(ControlMode.PercentOutput, fwd);
+    motors[2].set(ControlMode.PercentOutput, fwd);
+    motors[3].set(ControlMode.PercentOutput, fwd);
+    motors[4].set(ControlMode.PercentOutput, fwd);
+    motors[5].set(ControlMode.PercentOutput, fwd);
+  }
+
+  public void resetControlMode() {
+    for (int i = 0; i < motors.length; i++) {
+      motors[i].set(ControlMode.PercentOutput, 0);
+    }
+  }
+
   
+  
+  public double getGyroStraightPIDOutput(double error) {
+    double p = DriveStraightGyroConstants.kp * error;
+    DriveStraightGyroConstants.cumError += error;
+    double i = DriveStraightGyroConstants.ki * DriveStraightGyroConstants.cumError;
+    double dError = error - DriveStraightGyroConstants.lastError;
+    DriveStraightGyroConstants.lastError = error;
+    double d = DriveStraightGyroConstants.kd * dError;
+
+    return p + i + d;
+  }
+
+  public double getStraightPIDOutput(double error) {
+    double p = DriveStraightConstants.kp * error;
+    DriveStraightConstants.cumError += error;
+    double i = DriveStraightConstants.ki * DriveStraightConstants.cumError;
+    double dError = error - DriveStraightConstants.lastError;
+    DriveStraightConstants.lastError = error;
+    double d = DriveStraightConstants.kd * dError;
+
+    return p + i + d;
+  }
+
+  public void PIDReset() {
+    DriveStraightConstants.cumError = 0;
+    DriveStraightGyroConstants.cumError = 0;
+    DriveStraightConstants.lastError = 0;
+    DriveStraightGyroConstants.lastError = 0;
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    ShuffleboardTab drive = Shuffleboard.getTab("Drive");
+    drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
+    drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    ShuffleboardTab drive = Shuffleboard.getTab("Drive");
+    drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
+    drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
   }
 }
