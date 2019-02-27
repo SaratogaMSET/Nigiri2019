@@ -266,7 +266,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case CLIMB_HAB_TWO:
         return LiftEncoderConstants.CLIMB_HAB_TWO;
       case CLIMB_HAB_THREE:
-        return LiftEncoderConstants.CLIMB_HAB_THREE;    
+        return LiftEncoderConstants.CLIMB_HAB_THREE;  
+      case MOVING:
+        return getRawEncoder();  
     }
     return 0;
   }

@@ -47,6 +47,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class Robot extends TimedRobot {
   public static OI oi;
   public static RobotState robotState;
+  //*******************FOR GAMEPAD V BUTTON BOARD*************************** */
   public static boolean isGamepad = true;
 
   // Subsystems
@@ -135,25 +136,25 @@ public class Robot extends TimedRobot {
     // System.out.println(camera.max);
     double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
     SmartDashboard.putNumber("GYRO HEADING", gyro.getGyroAngle());
-    SmartDashboard.putNumber("V", vel);
-    SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, vel));  
+    // SmartDashboard.putNumber("V", vel);
+    // SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, vel));  
     // only calculate avg A over 0.5 seconds because instantaneous stuff is way off (? why ?)
-    if(prev_time + 0.5 <= accelTime.get()) {
-      double curA = (vel - prev_vel)/(accelTime.get() - prev_time);
-      SmartDashboard.putNumber("A", curA);
-      SmartDashboard.putNumber("MAX A", max_accel = Math.max(max_accel, -curA));
-      prev_vel = vel;
-      prev_time = accelTime.get();
-      SmartDashboard.putNumber("PREV TIME", prev_time);
-    }  
-    SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
-    SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
+    // if(prev_time + 0.5 <= accelTime.get()) {
+      // double curA = (vel - prev_vel)/(accelTime.get() - prev_time);
+      // SmartDashboard.putNumber("A", curA);
+      // SmartDashboard.putNumber("MAX A", max_accel = Math.max(max_accel, -curA));
+      // prev_vel = vel;
+      // prev_time = accelTime.get();
+      // SmartDashboard.putNumber("PREV TIME", prev_time);
+    // }  
+    // SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
+    // SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
     // SmartDashboard.putNumber("TIME", accelTime.get());
 
     // SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
-    SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
+    // SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
     // SmartDashboard.putBoolean("CARGO IR SENSOR", cargoDeploy.hasCargo());
     // SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
     smartdashboardTesting();
@@ -228,7 +229,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    teleopLoop();
+    if(isGamepad) {
+      teleopLoop();
+    } else {
+      teleopLoopButtonBoard();
+    }
+    
     
   }
 
@@ -428,6 +434,121 @@ public class Robot extends TimedRobot {
   
       if(oi.gamePad.getStartButton()) { // ****************** MANUAL MODE
         double pow = oi.gamePad.getLeftJoystickY()/2;
+        if(lift.getBottomHal() && pow < 0){
+          pow = 0;
+        }
+        lift.setManualLift(pow);
+        if(lift.getBottomHal()) {
+          lift.resetEncoder();
+        }
+      }
+  
+      //******************************* DRIVE ****************************************/
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+    }else{
+      if(oi.gamePad.getPOVDown()) {
+        // push down jack
+      } else if(oi.gamePad.getPOVUp()) {
+        // push up jack
+      }
+    }
+   
+  }
+
+  public void teleopLoopButtonBoard() {
+    //******************************* INTAKE ***********************************************/
+    if(!isClimb){
+      if(oi.operator.intakePressed()) {
+        new ChangeIntakeState(CargoIntakeState.OUT).start();
+        new SetIntakeRollers(true, 0.75).start();
+        //switch lift state to cargo
+      } else if(oi.operator.intakeReleased()) {
+        SmartDashboard.putBoolean("Intake Pressed", false);
+        new ChangeIntakeState(CargoIntakeState.MID).start();
+        new SetIntakeRollers(false, 0).start();
+      } else if(oi.driver.driverDeploy()) {
+        new SetIntakeRollers(false, 0.75).start();
+        hatch.hatchDeploy();
+      } else if(!oi.driver.driverDeploy() && !oi.operator.intake() && !lift.getIsMoving()  && !oi.operator.deploy()) {
+        new SetIntakeRollers(false, 0).start();
+        hatch.hatchDeployIn();
+      }
+  
+      //****************************** LIFTING *************************************************/
+      if(oi.operator.liftToLowCargo()) { // ****************************** LIFT TO LOW
+          SmartDashboard.putString("Lifting to", "LOW");
+          new MoveLiftCommand(LiftPositions.CARGO_LOW, 2).start();
+          new MoveHatchCommand(HatchState.hatchIn).start();
+          SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(oi.operator.liftToLowHatch()) {
+          SmartDashboard.putString("Lifting to", "LOW");
+          new MoveLiftCommand(LiftPositions.HATCH_LOW, 2).start();
+          new MoveHatchCommand(HatchState.hatchOut).start();
+          SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(oi.operator.liftToCargoRocketLow()) { // **** LIFT TO LOW ROCKET
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
+        new MoveHatchCommand(HatchState.hatchIn).start();
+        SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(oi.operator.liftToHatchMid()) {
+        new MoveLiftCommand(LiftPositions.HATCH_MID, 2).start();
+        new MoveHatchCommand(HatchState.hatchOut).start();
+        SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(oi.operator.liftToCargoRocketMid()) { // **** LIFT TO MID ROCKET
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
+        new MoveHatchCommand(HatchState.hatchIn).start();
+      } else if(oi.operator.liftToHatchHigh()) {
+        new MoveLiftCommand(LiftPositions.HATCH_HIGH, 2).start();
+        new MoveHatchCommand(HatchState.hatchOut).start();
+        SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(oi.operator.liftToCargoRocketHigh()) { // **** LIFT TO HIGH ROCKET
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 2).start();
+        new MoveHatchCommand(HatchState.hatchIn).start();
+        SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(oi.operator.liftToCargoShip()) { // ******************* LIFT TO CARGO SHIP
+        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
+        SmartDashboard.putBoolean("Is Stalling", false);
+      } else if(RobotState.liftPosition != LiftPositions.MOVING) {
+        lift.moveLiftToPos(RobotState.liftPosition);
+        SmartDashboard.putBoolean("Is Stalling", true);
+      } 
+  
+  
+      // *************************** DEPLOY **********************************************/
+      if(oi.operator.deployPressed()) { 
+        if(RobotState.liftPosition == LiftPositions.HATCH_LOW||RobotState.liftPosition == LiftPositions.HATCH_MID||RobotState.liftPosition == LiftPositions.HATCH_HIGH){
+          hatch.hatchDeploy();
+        }else {
+          new SetIntakeRollers(false, 0.75).start();
+          cargoDeploy.runIntake(0.75);
+        }
+      } else if(oi.operator.deployReleased()) {
+        new SetIntakeRollers(false, 0).start();
+        hatch.hatchDeployIn();
+      } 
+  
+      // if(oi.driver.driverDeploy()) {
+      //   new SetIntakeRollers(false, 0.75).start();
+      //   hatch.hatchDeploy();
+      // } else {
+      //   new SetIntakeRollers(false, 0).start();
+      //   hatch.hatchDeployIn();
+      // }
+  
+      // ****************************** JACK ***********************************************/
+      if(oi.operator.startClimbHAB2()) {
+        // start climb sequence level 2
+        isClimb = true;
+        new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO, 2).start();
+        new DeployClimbForks().start();
+      } else if(oi.operator.startClimbHAB3()) {
+        // start climb sequence level 3
+        isClimb = true;
+        new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 2).start();
+        new DeployClimbForks().start();
+      }
+  
+      if(oi.operatorJoystick.getRawButton(8)) { // ****************** MANUAL MODE
+        double pow = -oi.operatorJoystick.getY()/2;
         if(lift.getBottomHal() && pow < 0){
           pow = 0;
         }

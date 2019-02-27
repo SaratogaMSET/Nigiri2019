@@ -127,11 +127,27 @@ public class OI {
   }
 
   public class Operator{
-    public boolean deploy() {
+    public boolean deployPressed() {
       if(Robot.isGamepad) {
         return gamePad.getBackButtonPressed();
       } else {
         return buttonBoardLeft.getRawButtonPressed(5);
+      }
+    }
+
+    public boolean deploy() {
+      if(Robot.isGamepad) {
+        return gamePad.getBackButton();
+      } else {
+        return buttonBoardLeft.getRawButton(5);
+      }
+    }
+
+    public boolean deployReleased() {
+      if(Robot.isGamepad) {
+        return gamePad.getBackButtonReleased();
+      } else {
+        return buttonBoardLeft.getRawButtonReleased(5);
       }
     }
 
@@ -143,11 +159,19 @@ public class OI {
       }
     }
 
-    public boolean liftToLow() {
+    public boolean liftToLowCargo() {
       if(Robot.isGamepad) {
         return gamePad.getButtonAPressed();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(6);
+        return buttonBoardLeft.getRawButtonPressed(7);
+      }
+    }
+
+    public boolean liftToLowHatch() {
+      if(Robot.isGamepad) {
+        return gamePad.getButtonAPressed();
+      } else {
+        return buttonBoardRight.getRawButtonPressed(7);
       }
     }
 
@@ -155,7 +179,7 @@ public class OI {
       if(Robot.isGamepad) {
         return gamePad.getButtonXPressed();
       } else {
-        return buttonBoardLeft.getRawButtonPressed(3);
+        return buttonBoardLeft.getRawButtonPressed(6);
       }
     }
 
@@ -199,11 +223,27 @@ public class OI {
       }
     }
 
+    public boolean intakePressed() {
+      if(Robot.isGamepad) {
+        return gamePad.getLeftButtonPressed();
+      } else {
+        return buttonBoardRight.getRawButtonPressed(4);
+      }
+    }
+
     public boolean intake() {
       if(Robot.isGamepad) {
         return gamePad.getLeftButton();
       } else {
-        return buttonBoardRight.getRawButtonPressed(4);
+        return buttonBoardRight.getRawButton(4);
+      }
+    }
+
+    public boolean intakeReleased() {
+      if(Robot.isGamepad) {
+        return gamePad.getLeftButtonReleased();
+      } else {
+        return buttonBoardRight.getRawButtonReleased(4);
       }
     }
 
