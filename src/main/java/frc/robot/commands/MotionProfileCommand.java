@@ -40,7 +40,7 @@ public class MotionProfileCommand extends FishyCommand {
   // The command MUST implement this method - the fields which you want to log
   protected String[] getLogFields() {
     // velocities for MP
-    return new String[] {"Right Target", "Left Target", "Left Actual", "Right Actual"};
+    return new String[] {"Right Target", "Left Target", "Left Actual", "Right Actual", "Left Power", "Right Power"};
   }
 
   // Called just before this Command runs the first time
@@ -63,6 +63,8 @@ public class MotionProfileCommand extends FishyCommand {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    logger.drain();
+    logger.flush();
     if(followerNotifier != null) {
       followerNotifier.stop();
     }
@@ -118,7 +120,6 @@ public class MotionProfileCommand extends FishyCommand {
     if(leftFollower.isFinished() && rightFollower.isFinished()){
       Robot.drive.isPathRunning = false;
       followerNotifier.stop();
-      Robot.drive.rawDrive(0, 0);
       followerNotifier = null;
     } else {
       log("Right Target", rightFollower.getSegment().velocity);
@@ -144,9 +145,31 @@ public class MotionProfileCommand extends FishyCommand {
       log("Right Actual", Robot.drive.rightEncoder.getRate());
       log("Left Actual", Robot.drive.leftEncoder.getRate());
 
+
+      double left = leftSpeed + turn;
+      double right = rightSpeed - turn;
+      
+      double normalizer = Math.max(Math.max(left, right), 1.0);
+
+      left /= normalizer;
+      right /= normalizer;
+
+      if(rightFollower.getSegment().acceleration > 0.0 && rightFollower.getSegment().velocity < 1.5) {
+        left = Math.signum(left) * Math.max(Math.abs(left), 0.6);
+        right = Math.signum(right) * Math.max(Math.abs(right), 0.6);
+
+        Robot.drive.rawDrive(left, right);
+
+      }
+      else {
+        Robot.drive.rawDrive(left, right);
+      }
+
+      log("Left Power", left);
+      log("Right Power", right);
+
       logger.write();
 
-      Robot.drive.rawDrive(leftSpeed + turn, rightSpeed - turn);
     }
   }
 

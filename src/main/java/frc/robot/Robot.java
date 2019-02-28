@@ -33,6 +33,7 @@ import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.RobotState;
+import jaci.pathfinder.Pathfinder;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -149,12 +150,14 @@ public class Robot extends TimedRobot {
     // }  
     // SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
     // SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
+    SmartDashboard.putNumber("LEFT DIST", drive.leftEncoder.getDistance());
+    SmartDashboard.putNumber("RIGHT DIST", drive.rightEncoder.getDistance());
     // SmartDashboard.putNumber("TIME", accelTime.get());
 
     // SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
-    // SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
+    SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
     // SmartDashboard.putBoolean("CARGO IR SENSOR", cargoDeploy.hasCargo());
     // SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
     smartdashboardTesting();
@@ -192,10 +195,10 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     gyro.resetGyro();
     // new HAB1LxCLFxLOADLxCL1().start();
-    // (new MotionProfileCommand("TestPath", false)).start();
+    (new MotionProfileCommand("FarRocketLeft", false)).start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
     // new TestJackDriveMotors().start();
-    new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
+    // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
 
 
   }
@@ -337,14 +340,14 @@ public class Robot extends TimedRobot {
     if(!isClimb){
       if(oi.gamePad.getLeftButtonPressed()) {
         new ChangeIntakeState(CargoIntakeState.OUT).start();
-        new SetIntakeRollers(true, 0.75).start();
+        new SetIntakeRollers(true, 1.0, 1.0, 1.0).start();
         //switch lift state to cargo
       } else if(oi.gamePad.getLeftButtonReleased()) {
         SmartDashboard.putBoolean("Intake Pressed", false);
         new ChangeIntakeState(CargoIntakeState.MID).start();
         new SetIntakeRollers(false, 0).start();
       } else if(oi.driver.driverDeploy()) {
-        new SetIntakeRollers(false, 0.75).start();
+        new SetIntakeRollers(false, 1.0, 1.0, 1.0).start();
         hatch.hatchDeploy();
       } else if(!oi.driver.driverDeploy() && !oi.gamePad.getLeftButton() && !lift.getIsMoving()  && !oi.gamePad.getBackButton()) {
         new SetIntakeRollers(false, 0).start();
@@ -444,7 +447,10 @@ public class Robot extends TimedRobot {
       }
   
       //******************************* DRIVE ****************************************/
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+      Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
+      SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
+      Robot.gyro.gyroPIDController.enable();
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
     }else{
       if(oi.gamePad.getPOVDown()) {
         // push down jack
@@ -559,7 +565,10 @@ public class Robot extends TimedRobot {
       }
   
       //******************************* DRIVE ****************************************/
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), oi.driver.getDriverHorizontal());
+      Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
+      SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
+      Robot.gyro.gyroPIDController.enable();
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
     }else{
       if(oi.gamePad.getPOVDown()) {
         // push down jack

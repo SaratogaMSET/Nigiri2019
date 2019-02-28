@@ -108,6 +108,18 @@ public class CargoIntakeSubsystem extends Subsystem {
     }
   }
 
+  public void runIntake(boolean in, double topPower, double sidePower) {
+    if(in) {
+      leftIntake.set(ControlMode.PercentOutput, sidePower);
+      rightIntake.set(ControlMode.PercentOutput, -sidePower);
+      frontIntake.set(ControlMode.PercentOutput, topPower);
+    } else {
+      leftIntake.set(ControlMode.PercentOutput, -sidePower);
+      rightIntake.set(ControlMode.PercentOutput, sidePower);
+      frontIntake.set(ControlMode.PercentOutput, -topPower);
+    }
+  }
+
   public void runFrontRoller(boolean in, double power) {
     if(in) {
       frontIntake.set(ControlMode.PercentOutput, power);

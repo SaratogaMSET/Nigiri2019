@@ -11,13 +11,27 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class SetIntakeRollers extends Command {
-  
-  double power;
   boolean intake;
+
+  double sidePower;
+  double topPower;
+  double carriagePower;
+
   public SetIntakeRollers(boolean intake, double power) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    this.power = power;
+    this.topPower = power;
+    this.sidePower = power;
+    this.carriagePower = power;
+    this.intake = intake;
+  }
+
+  public SetIntakeRollers(boolean intake, double topRollerPower, double sideRollersPower, double carriagePower) {
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
+    this.topPower = topRollerPower;
+    this.sidePower = sideRollersPower;
+    this.carriagePower = carriagePower;
     this.intake = intake;
   }
 
@@ -25,11 +39,11 @@ public class SetIntakeRollers extends Command {
   @Override
   protected void initialize() {
     if(intake) {
-      Robot.cargoDeploy.runIntake(power);
+      Robot.cargoDeploy.runIntake(carriagePower);
     } else {
-      Robot.cargoDeploy.runIntake(-power);
+      Robot.cargoDeploy.runIntake(-carriagePower);
     }
-    Robot.cargoIntake.runIntake(intake, power);
+    Robot.cargoIntake.runIntake(intake, topPower, sidePower);
 
   }
 
