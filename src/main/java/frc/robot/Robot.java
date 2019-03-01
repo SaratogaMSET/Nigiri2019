@@ -425,7 +425,7 @@ public class Robot extends TimedRobot {
           new SetIntakeRollers(false, 0.75).start();
           cargoDeploy.runIntake(0.75);
         }
-      } else if(!oi.driver.driverDeploy() && !oi.gamePad.getLeftButton() && !lift.getIsMoving()  && !oi.gamePad.getBackButton()) {
+      } else if(!oi.driver.driverDeploy() || !oi.gamePad.getLeftButton() || !lift.getIsMoving()  || !oi.gamePad.getBackButton()) {
         new SetIntakeRollers(false, 0).start();
         hatch.hatchDeployIn();
       }
