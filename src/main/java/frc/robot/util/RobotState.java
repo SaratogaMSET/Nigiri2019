@@ -7,6 +7,7 @@
 
 package frc.robot.util;
 
+import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
@@ -46,4 +47,16 @@ public class RobotState {
         }
         return false;
     }
+
+    public double setIntakesForLifting(LiftPositions target, LiftPositions current) {
+        if(Robot.lift.goingUp(target, current) && current == LiftPositions.CARGO_LOW) {    
+            return 0.6;
+        } 
+        return 0;
+    }
+
+    public boolean runIntakesWhileLifting() {
+        return (Robot.lift.getRawEncoder() < Robot.lift.getLiftPositionEncoders(LiftPositions.CARGO_ROCKET_LEVEL_ONE))? true : false;
+    }
+
 }

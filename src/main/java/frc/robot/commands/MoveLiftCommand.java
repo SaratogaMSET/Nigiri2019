@@ -24,10 +24,12 @@ public class MoveLiftCommand extends Command {
   boolean isFinished;
   boolean onTarget;
   boolean goingUp;
+  boolean goingToBottom;
 
   Timer time;
 
   double timeout;
+  double intakePower;
 
   public MoveLiftCommand(LiftPositions target, double timeout) {
     // Use requires() here to declare subsystem dependencies
@@ -42,6 +44,7 @@ public class MoveLiftCommand extends Command {
     current = RobotState.liftPosition;
     isFinished = false;
     onTarget = false;
+    goingToBottom = false;
 
     if(current == target) {
       isFinished = true;
@@ -49,9 +52,12 @@ public class MoveLiftCommand extends Command {
       isFinished = true;
     } else if (target == LiftPositions.HATCH_LOW && current == LiftPositions.CARGO_LOW) {
       isFinished = true;
-    }else {
+    } else if(target == LiftPositions.CARGO_LOW || target == LiftPositions.HATCH_LOW) {
+      goingToBottom = true;
+    } else {
       goingUp = Robot.lift.goingUp(target, current);
     }
+    intakePower = Robot.robotState.setIntakesForLifting(target, current);
     time = new Timer();
     time.reset();
     time.start();
@@ -65,8 +71,14 @@ public class MoveLiftCommand extends Command {
       Robot.lift.setIsMoving(true);
       SmartDashboard.putString("Target Position", target.toString());
       RobotState.liftPosition = LiftPositions.MOVING;
-      Robot.cargoIntake.runFrontRoller(goingUp, 0.8);
-      Robot.cargoDeploy.runIntake(0.2);
+      if(goingUp) {
+        if(Robot.robotState.runIntakesWhileLifting()) {
+          Robot.cargoIntake.runFrontRoller(goingUp, intakePower);
+        } else if(!goingToBottom) {
+          Robot.cargoIntake.runFrontRoller(goingUp, 0);
+        }
+        Robot.cargoDeploy.runIntake(0.2);
+      }
     } else {
       isFinished = true;
     }
@@ -97,11 +109,10 @@ public class MoveLiftCommand extends Command {
     if(onTarget) {
       RobotState.liftPosition = target;
     }
-    if(RobotState.cargoIntakeState != CargoIntakeState.OUT) {
+    if(!goingToBottom && !(RobotState.intakeState == CargoIntakeState.OUT)) {
       Robot.cargoIntake.runFrontRoller(goingUp, 0);
       Robot.cargoDeploy.runIntake(0);
     }
-    
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);
 

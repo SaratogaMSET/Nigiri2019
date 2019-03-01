@@ -167,6 +167,12 @@ public class CargoIntakeSubsystem extends Subsystem {
     return intakeMidSol.get();
   }
 
+  public void smartdashboard() {
+    SmartDashboard.putNumber("Left Intake Current", leftIntake.getOutputCurrent());
+    SmartDashboard.putNumber("Right Intake Current", rightIntake.getOutputCurrent());
+    SmartDashboard.putNumber("Front Intake Current", frontIntake.getOutputCurrent());
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
