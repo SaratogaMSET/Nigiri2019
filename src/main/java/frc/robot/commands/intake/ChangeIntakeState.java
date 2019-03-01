@@ -59,6 +59,7 @@ public class ChangeIntakeState extends Command {
   protected void end() {
     time.stop();
     time.reset();
+
     CargoIntakeState currentState = RobotState.cargoIntakeState;
     
     if(targetState == currentState) {

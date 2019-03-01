@@ -35,7 +35,6 @@ public class CameraSubsystem extends Subsystem implements ILogger {
   
 
   public CameraSubsystem(){
-    axis = new AxisCamera("axis", "10.6.49.17");
     CameraServer.getInstance().addAxisCamera("axis", "10.6.49.17");
     SmartDashboard.putBoolean("In Camera Constructor", true);
   }

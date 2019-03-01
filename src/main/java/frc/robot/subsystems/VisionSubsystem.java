@@ -38,8 +38,10 @@ public class VisionSubsystem extends Subsystem {
         // The vision module on Jevois runs at YUV 640x480 @ 30fps.
         // TODO: comment this out. Streaming from the Jevois camera is not needed for production/comp-level purposes, only for debugging.
         // TODO: Create a NONE output module for vision on the jevois.
-        jevoisCamera = CameraServer.getInstance().startAutomaticCapture(0);
-        jevoisCamera.setVideoMode(PixelFormat.kYUYV, 320, 240, 30);
+        jevoisCamera = new UsbCamera("Jevois Camera", 0);
+        jevoisCamera.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
+
+        CameraServer.getInstance().addCamera(jevoisCamera);
 
         // To read angle data, open serial-over-USB port @ 115200 baud rate.
         jevoisSerial = new SerialPort(115200, SerialPort.Port.kUSB);

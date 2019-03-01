@@ -109,9 +109,10 @@ public class Robot extends TimedRobot {
     isClimb = false; 
     try {
       vision = new VisionSubsystem();
+      SmartDashboard.putString("VISION INIT", "1");
     }
     catch(Exception e){
-      SmartDashboard.putString("VISION INIT FAILED", "1");
+      SmartDashboard.putString("VISION INIT", "0");
       e.printStackTrace();
     }
     prefs = Preferences.getInstance();
@@ -219,9 +220,11 @@ public class Robot extends TimedRobot {
     Robot.drive.rawDrive(0.0, 0.0);
     gyro.resetGyro();
     drive.changeBrakeCoast(false);
+    visionFixCommand = new VisionFixCommand();
 
     compressor.setClosedLoopControl(true);
     compressor.start();
+    
     RobotState.hatchState = hatch.getHatchState();
 
   }
@@ -245,6 +248,8 @@ public class Robot extends TimedRobot {
   public void testInit() {
     gyro.resetGyro();
     drive.resetEncoders();
+
+    
   }
 
   /**
@@ -341,11 +346,13 @@ public class Robot extends TimedRobot {
       if(oi.gamePad.getLeftButtonPressed()) {
         new ChangeIntakeState(CargoIntakeState.OUT).start();
         new SetIntakeRollers(true, 1.0, 1.0, 1.0).start();
+        compressor.stop();
         //switch lift state to cargo
       } else if(oi.gamePad.getLeftButtonReleased()) {
         SmartDashboard.putBoolean("Intake Pressed", false);
         new ChangeIntakeState(CargoIntakeState.MID).start();
         new SetIntakeRollers(false, 0).start();
+        compressor.start();
       } else if(oi.driver.driverDeploy()) {
         new SetIntakeRollers(false, 1.0, 1.0, 1.0).start();
         hatch.hatchDeploy();
@@ -447,10 +454,16 @@ public class Robot extends TimedRobot {
       }
   
       //******************************* DRIVE ****************************************/
-      Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
-      SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
-      Robot.gyro.gyroPIDController.enable();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+      if(oi.visionFixButton.get()) {
+        visionFixCommand.start();
+      }
+      else {
+        Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
+        SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
+        Robot.gyro.gyroPIDController.enable();
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+      }
+      
     }else{
       if(oi.gamePad.getPOVDown()) {
         // push down jack

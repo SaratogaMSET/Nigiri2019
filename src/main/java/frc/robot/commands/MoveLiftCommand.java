@@ -9,7 +9,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
 import frc.robot.util.RobotState;
@@ -95,8 +97,11 @@ public class MoveLiftCommand extends Command {
     if(onTarget) {
       RobotState.liftPosition = target;
     }
-    Robot.cargoIntake.runFrontRoller(goingUp, 0);
-    Robot.cargoDeploy.runIntake(0);
+    if(RobotState.cargoIntakeState != CargoIntakeState.OUT) {
+      Robot.cargoIntake.runFrontRoller(goingUp, 0);
+      Robot.cargoDeploy.runIntake(0);
+    }
+    
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);
 

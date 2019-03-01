@@ -43,7 +43,7 @@ public class VisionFixCommand extends FishyCommand {
     // Activate vision target hold
     Robot.vision.readData();
     Double angle = Robot.vision.getAngleDisplacement();
-    log("Angle", angle);
+    // log("Angle", angle);
     if(numUpdates < 3) {
       if(angle != null) {
         SmartDashboard.putNumber("VISION CA", angle);
@@ -56,7 +56,7 @@ public class VisionFixCommand extends FishyCommand {
         return;
       }
     }
-    logger.write();
+    // logger.write();
     Robot.drive.driveFwdRotate(Robot.oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
     
   }
