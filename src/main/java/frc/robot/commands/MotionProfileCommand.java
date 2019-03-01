@@ -46,6 +46,8 @@ public class MotionProfileCommand extends FishyCommand {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    Robot.drive.resetEncoders();
+    Robot.gyro.resetGyro();
     runPath(pathName, this.isReversePath);
   }
 
@@ -90,8 +92,8 @@ public class MotionProfileCommand extends FishyCommand {
     rightFollower = new EncoderFollower(rightTraj);
 
     if(reversePath) {
-      leftFollower.configureEncoder(Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
-      rightFollower.configureEncoder(Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
+      leftFollower.configureEncoder(-Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
+      rightFollower.configureEncoder(-Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
     }
     else {
       leftFollower.configureEncoder(Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
@@ -141,7 +143,9 @@ public class MotionProfileCommand extends FishyCommand {
 
       double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
       double turn = DrivetrainSubsystem.PathFollowingConstants.kp_gyro * headingDiff;
-
+      if(isReversePath) {
+        turn *= -1.0;
+      }
       log("Right Actual", Robot.drive.rightEncoder.getRate());
       log("Left Actual", Robot.drive.leftEncoder.getRate());
 
