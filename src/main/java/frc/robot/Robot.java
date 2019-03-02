@@ -22,6 +22,7 @@ import frc.robot.commands.intake.RunCargoIntake;
 import frc.robot.commands.intake.SetIntakePistons;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.SetMidStatePistons;
+import frc.robot.commands.intake.WaitUntilLiftDownIntake;
 import frc.robot.commands.semiauto.climb.DeployClimbForks;
 import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
 import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
@@ -350,7 +351,7 @@ public class Robot extends TimedRobot {
           new SetIntakeRollers(true, 0, 0, 1).start();
         } else {
           new ChangeIntakeState(CargoIntakeState.OUT).start();
-          new SetIntakeRollers(true, 1, 1, 1).start();
+          new WaitUntilLiftDownIntake(true, 1, 1, 1, 3).start();
         }
         compressor.stop();
       } else if(oi.gamePad.getLeftButtonReleased()) {
@@ -413,8 +414,7 @@ public class Robot extends TimedRobot {
         if(RobotState.liftPosition == LiftPositions.HATCH_LOW||RobotState.liftPosition == LiftPositions.HATCH_MID||RobotState.liftPosition == LiftPositions.HATCH_HIGH){
           hatch.hatchDeploy();
         }else {
-          new SetIntakeRollers(false, 0.75).start();
-          cargoDeploy.runIntake(0.75);
+          new SetIntakeRollers(false, 1, 1, 1).start();
         }
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0).start();
@@ -423,8 +423,7 @@ public class Robot extends TimedRobot {
         if(RobotState.liftPosition == LiftPositions.HATCH_LOW||RobotState.liftPosition == LiftPositions.HATCH_MID||RobotState.liftPosition == LiftPositions.HATCH_HIGH){
           hatch.hatchDeploy();
         }else {
-          new SetIntakeRollers(false, 0.75).start();
-          cargoDeploy.runIntake(-0.75);
+          new SetIntakeRollers(false, 1, 1, 1).start();
         }
       } else if(!oi.operator.intake() && !(RobotState.liftPosition == LiftPositions.MOVING)  && !oi.operator.deploy()) {
         new SetIntakeRollers(false, 0).start();
