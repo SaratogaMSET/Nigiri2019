@@ -95,9 +95,9 @@ public class CommandLogger {
         base.mkdirs();
 
         int counter = 0;
-        File result = new File(base, String.format("%s-%05d.log", prefix, counter));
+        File result = new File(base, String.format("%s-%05d.csv", prefix, counter));
         while (result.exists()) {
-            result = new File(base, String.format("%s-%05d.log", prefix, ++counter));
+            result = new File(base, String.format("%s-%05d.csv", prefix, ++counter));
         }
 
         return result;

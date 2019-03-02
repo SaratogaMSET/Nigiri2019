@@ -143,9 +143,7 @@ public class MotionProfileCommand extends FishyCommand {
 
       double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
       double turn = DrivetrainSubsystem.PathFollowingConstants.kp_gyro * headingDiff;
-      if(isReversePath) {
-        turn *= -1.0;
-      }
+      
       log("Right Actual", Robot.drive.rightEncoder.getRate());
       log("Left Actual", Robot.drive.leftEncoder.getRate());
 
@@ -155,8 +153,8 @@ public class MotionProfileCommand extends FishyCommand {
       
       double normalizer = Math.max(Math.max(left, right), 1.0);
 
-      left /= normalizer;
-      right /= normalizer;
+      // left /= normalizer;
+      // right /= normalizer;
 
       if(rightFollower.getSegment().acceleration > 0.0 && rightFollower.getSegment().velocity < 1.5) {
         left = Math.signum(left) * Math.max(Math.abs(left), 0.6);

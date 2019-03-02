@@ -27,6 +27,7 @@ import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
 import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
+import frc.robot.commands.test.TestDTMaxVA;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot {
   public static OI oi;
   public static RobotState robotState;
   //*******************FOR GAMEPAD V BUTTON BOARD*************************** */
-  public static boolean isGamepad = true;
+  public static boolean isGamepad = false;
 
   // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
@@ -196,11 +197,11 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     gyro.resetGyro();
     // new HAB1LxCLFxLOADLxCL1().start();
-    (new MotionProfileCommand("FarRocketLeft", false)).start();
+    (new MotionProfileCommand("TestPath", false)).start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
     // new TestJackDriveMotors().start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
-
+    // new TestDTMaxVA(10.0).start();
 
   }
   /**
@@ -222,8 +223,8 @@ public class Robot extends TimedRobot {
     drive.changeBrakeCoast(false);
     visionFixCommand = new VisionFixCommand();
 
-    compressor.setClosedLoopControl(true);
-    compressor.start();
+    // compressor.setClosedLoopControl(true);
+    // compressor.start();
     
     RobotState.hatchState = hatch.getHatchState();
 
@@ -293,7 +294,8 @@ public class Robot extends TimedRobot {
 
     // Stop drivetrain motion
     drive.rawDrive(0, 0);
-
+    hatch.changeHatchState();
+    new ChangeIntakeState(CargoIntakeState.MID).start();
     // Stop lift motion
 
     // Stop jack motion - note: robot safety is priority. Is it safe for the robot's jack to stop running?
@@ -423,12 +425,16 @@ public class Robot extends TimedRobot {
           hatch.hatchDeploy();
         }else {
           new SetIntakeRollers(false, 0.75).start();
-          cargoDeploy.runIntake(0.75);
+          cargoDeploy.runIntake(-0.75);
         }
-      } else if(!oi.driver.driverDeploy() || !oi.gamePad.getLeftButton() || !lift.getIsMoving()  || !oi.gamePad.getBackButton()) {
+      } else if(!oi.operator.intake() && !(RobotState.liftPosition == LiftPositions.MOVING)  && !oi.operator.deploy()) {
         new SetIntakeRollers(false, 0).start();
         hatch.hatchDeployIn();
       }
+      // else if(!oi.driver.driverDeploy() && !oi.gamePad.getLeftButton() && !lift.getIsMoving()  && !oi.gamePad.getBackButton()) {
+        // new SetIntakeRollers(false, 0).start();
+        // hatch.hatchDeployIn();
+      // }
   
       // ****************************** JACK ***********************************************/
       if(oi.gamePad.getPOVLeft()) {
@@ -550,12 +556,17 @@ public class Robot extends TimedRobot {
           hatch.hatchDeploy();
         }else {
           new SetIntakeRollers(false, 0.75).start();
-          cargoDeploy.runIntake(0.75);
+          cargoDeploy.runIntake(-0.75);
         }
-      } else if(!oi.driver.driverDeploy() && !oi.operator.intake() && !lift.getIsMoving()  && !oi.operator.deploy() && !oi.operator.deployCargo()) {
+      } else if(!oi.operator.intake() && !(RobotState.liftPosition == LiftPositions.MOVING)  && !oi.operator.deploy()) {
         new SetIntakeRollers(false, 0).start();
         hatch.hatchDeployIn();
       }
+      //  else if(!oi.driver.driverDeploy() && !oi.operator.intake() && !(RobotState.liftPosition == LiftPositions.MOVING)  && !oi.operator.deploy()) {
+      //   new SetIntakeRollers(false, 0).start();
+      //   hatch.hatchDeployIn();
+      // }
+      
   
       // ****************************** JACK ***********************************************/
       if(oi.operator.startClimbHAB2()) {

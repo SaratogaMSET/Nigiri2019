@@ -63,19 +63,19 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
   public static class PathFollowingConstants {
     public static class Left {
-      public static final double kp = 1.1;
+      public static final double kp = 0.1;
       public static final double kd = 0.0;
-      public static final double kv = 0.083333333;
-      public static final double ka = 0.03;
+      public static final double kv = 0.09;
+      public static final double ka = 0.02;
     }
     public static class Right {
-      public static final double kp = 1.1;
+      public static final double kp = 0.1;
       public static final double kd = 0.0;
-      public static final double kv = 0.083333333;
-      public static final double ka = 0.03;
+      public static final double kv = 0.09;
+      public static final double ka = 0.02;
     }
 
-    public static final double kp_gyro = 0.02;
+    public static final double kp_gyro = 0.01;
   }
 
 

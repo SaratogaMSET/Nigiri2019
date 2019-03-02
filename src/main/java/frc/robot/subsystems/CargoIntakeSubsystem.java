@@ -61,6 +61,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     leftIntake.configNominalOutputReverse(0, Robot.timeoutMs);
     leftIntake.configPeakOutputForward(1, Robot.timeoutMs);
     leftIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
+    leftIntake.setInverted(true);
 
     rightIntake.configNominalOutputForward(0, Robot.timeoutMs);
     rightIntake.configNominalOutputReverse(0, Robot.timeoutMs);
@@ -99,11 +100,11 @@ public class CargoIntakeSubsystem extends Subsystem {
   public void runIntake(boolean in, double power) {
     if(in) {
       leftIntake.set(ControlMode.PercentOutput, power);
-      rightIntake.set(ControlMode.PercentOutput, -power);
+      rightIntake.set(ControlMode.PercentOutput, power);
       frontIntake.set(ControlMode.PercentOutput, power);
     } else {
       leftIntake.set(ControlMode.PercentOutput, -power);
-      rightIntake.set(ControlMode.PercentOutput, power);
+      rightIntake.set(ControlMode.PercentOutput, -power);
       frontIntake.set(ControlMode.PercentOutput, -power);
     }
   }
@@ -111,11 +112,11 @@ public class CargoIntakeSubsystem extends Subsystem {
   public void runIntake(boolean in, double topPower, double sidePower) {
     if(in) {
       leftIntake.set(ControlMode.PercentOutput, sidePower);
-      rightIntake.set(ControlMode.PercentOutput, -sidePower);
+      rightIntake.set(ControlMode.PercentOutput, sidePower);
       frontIntake.set(ControlMode.PercentOutput, topPower);
     } else {
       leftIntake.set(ControlMode.PercentOutput, -sidePower);
-      rightIntake.set(ControlMode.PercentOutput, sidePower);
+      rightIntake.set(ControlMode.PercentOutput, -sidePower);
       frontIntake.set(ControlMode.PercentOutput, -topPower);
     }
   }

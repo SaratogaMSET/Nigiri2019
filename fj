@@ -1,0 +1,46 @@
+[1mdiff --git a/src/main/java/frc/robot/Robot.java b/src/main/java/frc/robot/Robot.java[m
+[1mindex dadecbb..9b0dfdc 100644[m
+[1m--- a/src/main/java/frc/robot/Robot.java[m
+[1m+++ b/src/main/java/frc/robot/Robot.java[m
+[36m@@ -27,6 +27,7 @@[m [mimport frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;[m
+ import frc.robot.commands.semiauto.climb.TestJackDriveMotors;[m
+ import frc.robot.commands.test.IntakeMotorsTest;[m
+ import frc.robot.commands.test.LiftTest;[m
+[32m+[m[32mimport frc.robot.commands.test.TestDTMaxVA;[m
+ import frc.robot.subsystems.*;[m
+ import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;[m
+ import frc.robot.subsystems.HatchSubsystem.HatchState;[m
+[36m@@ -196,11 +197,11 @@[m [mpublic class Robot extends TimedRobot {[m
+     drive.resetEncoders();[m
+     gyro.resetGyro();[m
+     // new HAB1LxCLFxLOADLxCL1().start();[m
+[31m-    (new MotionProfileCommand("FarRocketLeft", false)).start();[m
+[32m+[m[32m    (new MotionProfileCommand("TestPath", false)).start();[m
+     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();[m
+     // new TestJackDriveMotors().start();[m
+     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();[m
+[31m-[m
+[32m+[m[32m    // new TestDTMaxVA(10.0).start();[m
+ [m
+   }[m
+   /**[m
+[36m@@ -222,8 +223,8 @@[m [mpublic class Robot extends TimedRobot {[m
+     drive.changeBrakeCoast(false);[m
+     visionFixCommand = new VisionFixCommand();[m
+ [m
+[31m-    compressor.setClosedLoopControl(true);[m
+[31m-    compressor.start();[m
+[32m+[m[32m    // compressor.setClosedLoopControl(true);[m
+[32m+[m[32m    // compressor.start();[m
+     [m
+     RobotState.hatchState = hatch.getHatchState();[m
+ [m
+[36m@@ -552,7 +553,7 @@[m [mpublic class Robot extends TimedRobot {[m
+           new SetIntakeRollers(false, 0.75).start();[m
+           cargoDeploy.runIntake(0.75);[m
+         }[m
+[31m-      } else if(!oi.driver.driverDeploy() && !oi.operator.intake() && !lift.getIsMoving()  && !oi.operator.deploy() && !oi.operator.deployCargo()) {[m
+[32m+[m[32m      } else if(!oi.driver.driverDeploy() || !oi.operator.intake() || !lift.getIsMoving()  || !oi.operator.deploy() || !oi.operator.deployCargo()) {[m
+         new SetIntakeRollers(false, 0).start();[m
+         hatch.hatchDeployIn();[m
+       }[m

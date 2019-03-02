@@ -42,7 +42,7 @@ public class MoveHatchCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    RobotState.hatchState = hatchPosition;
+    // RobotState.hatchState = hatchPosition;
   }
 
   // Called when another command which requires one or more of the same
