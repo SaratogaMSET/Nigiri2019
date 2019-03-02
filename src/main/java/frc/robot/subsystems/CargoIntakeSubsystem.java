@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.Robot;
+import frc.robot.util.RobotState;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -32,6 +33,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     IN,
     INTAKE,
     EXTAKE,
+    TOP_BAR_ONLY,
     NONE
   }
   
@@ -172,6 +174,18 @@ public class CargoIntakeSubsystem extends Subsystem {
     SmartDashboard.putNumber("Left Intake Current", leftIntake.getOutputCurrent());
     SmartDashboard.putNumber("Right Intake Current", rightIntake.getOutputCurrent());
     SmartDashboard.putNumber("Front Intake Current", frontIntake.getOutputCurrent());
+  }
+
+  public void setIntakeRollerState(boolean intake, double topPower, double sidePower, double carriagePower) {
+    if(topPower == 0 && sidePower == 0 && carriagePower == 0) {
+      RobotState.intakeState = CargoIntakeState.NONE;
+    } else if(topPower != 0 && sidePower == 0 && carriagePower == 0) {
+      RobotState.intakeState = CargoIntakeState.TOP_BAR_ONLY;
+    } else if(intake) {
+      RobotState.intakeState = CargoIntakeState.INTAKE;
+    } else {
+      RobotState.intakeState = CargoIntakeState.EXTAKE;
+    }
   }
 
   @Override

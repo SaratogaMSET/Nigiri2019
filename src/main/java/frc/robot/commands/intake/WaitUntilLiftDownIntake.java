@@ -7,46 +7,38 @@
 
 package frc.robot.commands.intake;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-import frc.robot.Robot;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
+import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.util.RobotState;
 
-public class SetIntakeRollers extends Command {
+public class WaitUntilLiftDownIntake extends Command {
+
   boolean intake;
 
   double sidePower;
   double topPower;
   double carriagePower;
+  double timeout;
 
-  public SetIntakeRollers(boolean intake, double power) {
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
-    this.topPower = power;
-    this.sidePower = power;
-    this.carriagePower = power;
-    this.intake = intake;
-  }
+  Timer timer;
 
-  public SetIntakeRollers(boolean intake, double topRollerPower, double sideRollersPower, double carriagePower) {
+  public WaitUntilLiftDownIntake(boolean intake, double topRollerPower, double sideRollersPower, double carriagePower, double timeout) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.topPower = topRollerPower;
     this.sidePower = sideRollersPower;
     this.carriagePower = carriagePower;
     this.intake = intake;
+    this.timeout = timeout;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    if(intake) {
-      Robot.cargoDeploy.runIntake(carriagePower);
-    } else {
-      Robot.cargoDeploy.runIntake(-carriagePower);
-    }
-    Robot.cargoIntake.runIntake(intake, topPower, sidePower);
-
+    timer = new Timer();
+    timer.reset();
+    timer.start();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -57,13 +49,13 @@ public class SetIntakeRollers extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return true;
+    return timer.get() > timeout || RobotState.liftPosition == LiftPositions.CARGO_LOW;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.cargoIntake.setIntakeRollerState(intake, topPower, sidePower, carriagePower);
+    new SetIntakeRollers(intake, topPower, sidePower, carriagePower).start();
   }
 
   // Called when another command which requires one or more of the same

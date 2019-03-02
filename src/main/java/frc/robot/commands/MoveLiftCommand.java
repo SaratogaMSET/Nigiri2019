@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
+import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.util.RobotState;
 
 public class MoveLiftCommand extends Command {
@@ -73,9 +74,11 @@ public class MoveLiftCommand extends Command {
       RobotState.liftPosition = LiftPositions.MOVING;
       if(goingUp) {
         if(Robot.robotState.runIntakesWhileLifting()) {
-          Robot.cargoIntake.runFrontRoller(goingUp, intakePower);
-        } else if(!goingToBottom) {
-          Robot.cargoIntake.runFrontRoller(goingUp, 0);
+          if(RobotState.intakeState == CargoIntakeState.NONE) {
+            new SetIntakeRollers(true, intakePower, 0, 0).start();
+          }
+        } else if(!goingToBottom && RobotState.intakeState != CargoIntakeState.NONE) {
+          new SetIntakeRollers(true, 0, 0, 0).start();
         }
         Robot.cargoDeploy.runIntake(0.2);
       }
@@ -110,8 +113,7 @@ public class MoveLiftCommand extends Command {
       RobotState.liftPosition = target;
     }
     if(!goingToBottom && !(RobotState.intakeState == CargoIntakeState.OUT)) {
-      Robot.cargoIntake.runFrontRoller(goingUp, 0);
-      Robot.cargoDeploy.runIntake(0);
+      new SetIntakeRollers(true, 0).start();
     }
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);

@@ -346,14 +346,13 @@ public class Robot extends TimedRobot {
     //******************************* INTAKE ***********************************************/
     if(!isClimb){
       if(oi.gamePad.getLeftButtonPressed()) {
-        if(RobotState.liftPosition == LiftPositions.CARGO_LOADING_STATION) {
+        if(RobotState.liftPosition != LiftPositions.CARGO_LOW) {
           new SetIntakeRollers(true, 0, 0, 1).start();
         } else {
           new ChangeIntakeState(CargoIntakeState.OUT).start();
           new SetIntakeRollers(true, 1, 1, 1).start();
         }
         compressor.stop();
-        //switch lift state to cargo
       } else if(oi.gamePad.getLeftButtonReleased()) {
         SmartDashboard.putBoolean("Intake Pressed", false);
         new ChangeIntakeState(CargoIntakeState.MID).start();
