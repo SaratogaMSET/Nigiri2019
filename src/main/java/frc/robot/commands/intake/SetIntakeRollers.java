@@ -8,6 +8,7 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.util.RobotState;
@@ -46,7 +47,8 @@ public class SetIntakeRollers extends Command {
       Robot.cargoDeploy.runIntake(-carriagePower);
     }
     Robot.cargoIntake.runIntake(intake, topPower, sidePower);
-
+    String string = String.format("%.2f %.2f %.2f", topPower, sidePower, carriagePower);
+    SmartDashboard.putString("Run Intakes", string);
   }
 
   // Called repeatedly when this Command is scheduled to run

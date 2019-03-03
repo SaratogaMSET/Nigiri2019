@@ -35,6 +35,7 @@ public class MoveLiftCommand extends Command {
   public MoveLiftCommand(LiftPositions target, double timeout) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    requires(Robot.lift);
     this.target = target;
     this.timeout = timeout;
   }

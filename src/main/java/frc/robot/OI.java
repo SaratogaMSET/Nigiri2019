@@ -100,29 +100,87 @@ public class OI {
       return driverVertical.getRawButton(6) || driverHorizontal.getRawButton(6);
     }
 
+    public boolean getDriverButton6Pressed() {
+      return driverVertical.getRawButtonPressed(6) || driverHorizontal.getRawButtonPressed(6);
+    }
+
+    public boolean getDriverButton6Released() {
+      return driverVertical.getRawButtonReleased(6) || driverHorizontal.getRawButtonReleased(6);
+    }
+
     public boolean getDriverButton7() {
       return driverVertical.getRawButton(7) || driverHorizontal.getRawButton(7);
+    }
+
+    public boolean getDriverButton7Pressed() {
+      return driverVertical.getRawButtonPressed(7) || driverHorizontal.getRawButtonPressed(7);
+    }
+
+    public boolean getDriverButton7Released() {
+      return driverVertical.getRawButtonReleased(7) || driverHorizontal.getRawButtonReleased(7);
     }
 
     public boolean getDriverButton8() {
       return driverVertical.getRawButton(8) || driverHorizontal.getRawButton(8);
     }
 
+    public boolean getDriverButton8Pressed() {
+      return driverVertical.getRawButtonPressed(8) || driverHorizontal.getRawButtonPressed(8);
+    }
+
+    public boolean getDriverButton8Released() {
+      return driverVertical.getRawButtonReleased(8) || driverHorizontal.getRawButtonReleased(8);
+    }
+
     public boolean getDriverButton9() {
       return driverVertical.getRawButton(9) || driverHorizontal.getRawButton(9);
+    }
+
+    public boolean getDriverButton9Pressed() {
+      return driverVertical.getRawButtonPressed(9) || driverHorizontal.getRawButtonPressed(9);
+    }
+
+    public boolean getDriverButton9Released() {
+      return driverVertical.getRawButtonReleased(9) || driverHorizontal.getRawButtonReleased(9);
     }
 
     public boolean getDriverButton10() {
       return driverVertical.getRawButton(10) || driverHorizontal.getRawButton(10);
     }
 
+    public boolean getDriverButton10Pressed() {
+      return driverVertical.getRawButtonPressed(10) || driverHorizontal.getRawButtonPressed(10);
+    }
+
+    public boolean getDriverButton10Released() {
+      return driverVertical.getRawButtonReleased(10) || driverHorizontal.getRawButtonReleased(10);
+    }
+
     public boolean getDriverButton11() {
       return driverVertical.getRawButton(11) || driverHorizontal.getRawButton(11);
+    }
+
+    public boolean getDriverButton11Pressed() {
+      return driverVertical.getRawButtonPressed(11) || driverHorizontal.getRawButtonPressed(11);
+    }
+
+    public boolean getDriverButton11Released() {
+      return driverVertical.getRawButtonReleased(11) || driverHorizontal.getRawButtonReleased(11);
     }
 
     public boolean driverDeploy() {
       return getDriverButton6() || getDriverButton7() || getDriverButton8() || getDriverButton9()
             || getDriverButton10() || getDriverButton11();
+    }
+
+    public boolean driverDeployPressed() {
+      return getDriverButton6Pressed() || getDriverButton7Pressed() || getDriverButton8Pressed() || getDriverButton9Pressed()
+            || getDriverButton10Pressed() || getDriverButton11Pressed();
+    }
+
+    public boolean driverDeployReleased() {
+      return getDriverButton6Released() || getDriverButton7Released() || getDriverButton8Released() || getDriverButton9Released()
+            || getDriverButton10Released() || getDriverButton11Released();
     }
   }
 
@@ -397,8 +455,24 @@ public class OI {
       return gamepad.getRawButton(9);
     }
 
+    public boolean getLeftJoystickButtonPressed() {
+      return gamepad.getRawButtonPressed(9);
+    }
+
+    public boolean getLeftJoystickButtonReleased() {
+      return gamepad.getRawButtonReleased(9);
+    }
+
     public boolean getRightJoystickButton() {
       return gamepad.getRawButton(10);
+    }
+
+    public boolean getRightJoystickButtonPressed() {
+      return gamepad.getRawButtonPressed(10);
+    }
+
+    public boolean getRightJoystickButtonReleased() {
+      return gamepad.getRawButtonReleased(10);
     }
 
     public double getRightJoystickX() {

@@ -40,12 +40,10 @@ public class DeployCommand extends Command {
 
     if (pos == LiftPositions.CARGO_LOW || pos == LiftPositions.CARGO_SHIP || pos == LiftPositions.CARGO_LOADING_STATION ||
     pos == LiftPositions.CARGO_ROCKET_LEVEL_ONE || pos == LiftPositions.CARGO_ROCKET_LEVEL_TWO || pos == LiftPositions.CARGO_ROCKET_LEVEL_THREE) {
-      new DeployCargoCommand(power).start();
-    }
-    else if (pos == LiftPositions.HATCH_LOW || pos == LiftPositions.HATCH_MID || pos == LiftPositions.HATCH_HIGH) {
+      new DeployCargoCommand(-power).start();
+    } else if (pos == LiftPositions.HATCH_LOW || pos == LiftPositions.HATCH_MID || pos == LiftPositions.HATCH_HIGH) {
       new DeployHatchCommand().start();
-    }
-    else {
+    } else {
       isFinished = true;
     }
   }

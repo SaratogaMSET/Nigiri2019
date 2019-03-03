@@ -21,6 +21,7 @@ public class RobotState {
         HATCH,
         NONE
     }
+
     public static LiftPositions liftPosition;
     public static CargoIntakeState cargoIntakeState;
     public static HatchState hatchState;
@@ -57,6 +58,13 @@ public class RobotState {
 
     public boolean runIntakesWhileLifting() {
         return (Robot.lift.getRawEncoder() < Robot.lift.getLiftPositionEncoders(LiftPositions.CARGO_ROCKET_LEVEL_ONE))? true : false;
+    }
+
+    public boolean isLiftCargoState(LiftPositions current) {
+        if(current != LiftPositions.HATCH_LOW || current != liftPosition.HATCH_MID || current != LiftPositions.HATCH_HIGH) {
+            return true;
+        }
+        return false;
     }
 
 }
