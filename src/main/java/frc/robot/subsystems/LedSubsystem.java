@@ -33,9 +33,13 @@ public class LedSubsystem extends Subsystem implements ILogger {
     led.set(.11); //green
   }
 
-  public void solid(){
-    led.set(.59); //solid color lime
+  public void solidRed(){
+    led.set(.59); //solid color red
   }
+
+  public void solidBlue(){
+    led.set(.87); //solid color blue
+  }  
 
   public void chase(){
     led.set(.31); //lightchase red

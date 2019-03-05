@@ -1,10 +1,16 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -19,9 +25,6 @@ public class VisionSubsystem extends Subsystem {
         
     }
 
-    // Const
-    private static final Double CAMERA_OFFSET_FT = 0.5;
-
     // Sensors
     public SerialPort jevoisSerial;
     public UsbCamera jevoisCamera;
@@ -31,6 +34,9 @@ public class VisionSubsystem extends Subsystem {
     private Double angleDisplacement;
     private Double distance;
 
+    public ArrayList<Double> angleHistory; // can contain null
+    private static final int ANGLE_HISTORY_LENGTH = 300;
+
     // Comm
     private NetworkTable visionTable;
 
@@ -38,16 +44,18 @@ public class VisionSubsystem extends Subsystem {
         // The vision module on Jevois runs at YUV 640x480 @ 30fps.
         // TODO: comment this out. Streaming from the Jevois camera is not needed for production/comp-level purposes, only for debugging.
         // TODO: Create a NONE output module for vision on the jevois.
-        jevoisCamera = new UsbCamera("Jevois Camera", 0);
+        jevoisCamera = CameraServer.getInstance().startAutomaticCapture("Jevois", 0);
         jevoisCamera.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
-
-        CameraServer.getInstance().addCamera(jevoisCamera);
-
+        jevoisCamera.setConnectVerbose(1);
+        jevoisCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+        
         // To read angle data, open serial-over-USB port @ 115200 baud rate.
         jevoisSerial = new SerialPort(115200, SerialPort.Port.kUSB);
 
         // NT Table for logging
         visionTable = NetworkTableInstance.getDefault().getTable("Vision");
+
+        angleHistory = new ArrayList<>();
     }
 
     public void readData() {
@@ -55,7 +63,7 @@ public class VisionSubsystem extends Subsystem {
         NetworkTableEntry jevoisAngleEntry = visionTable.getEntry("jevoisAngle");
         NetworkTableEntry angleEntry = visionTable.getEntry("angle");
 
-        jevoisData = jevoisSerial.readString();
+        jevoisData += jevoisSerial.readString();
         jevoisDataEntry.setString(jevoisData);
 
         // Extract angle
@@ -63,20 +71,32 @@ public class VisionSubsystem extends Subsystem {
         Pattern distRegex = Pattern.compile(".*(DISTANCE [-\\d.]+)");
 
         Matcher am = angleRegex.matcher(jevoisData);
-        Matcher dm = distRegex.matcher(jevoisData);
 
         if(am.find()) {
             SmartDashboard.putNumber("VISION TARGET", 1);
             angleDisplacement = Double.parseDouble(am.group(1).substring(5));
-            angleEntry.setNumber(angleDisplacement);
+            if(Math.abs(angleDisplacement) > 30.0) {
+                angleDisplacement = null;
+            }
+            else {
+                angleEntry.setNumber(angleDisplacement);
+                SmartDashboard.putNumber("VISION ANGLE", angleDisplacement);
+            }
+            angleHistory.add(angleDisplacement);
+            if(angleHistory.size() > ANGLE_HISTORY_LENGTH) {
+                angleHistory.remove(0);
+            }
+            jevoisData = jevoisData.substring(am.start(1));
         }
         else {
             SmartDashboard.putNumber("VISION TARGET", 0);
             angleDisplacement = null;
         }
+        Matcher dm = distRegex.matcher(jevoisData);
         if(dm.find()) {
             SmartDashboard.putNumber("VISION DIST", 1);
             distance = Double.parseDouble(dm.group(1).substring(8));
+            jevoisData = jevoisData.substring(dm.start(1));
         }
         else {
             SmartDashboard.putNumber("VISION DIST", 0);
@@ -90,19 +110,6 @@ public class VisionSubsystem extends Subsystem {
 
     public Double getDistance() {
         return distance;
-    }
-
-    public Double getOffsetCorrectedAngle() {
-        if(angleDisplacement == null || distance == null) {
-            return null;
-        }
-        Double d = Math.sqrt(distance*distance + CAMERA_OFFSET_FT*CAMERA_OFFSET_FT - 2 * CAMERA_OFFSET_FT * distance * Math.sin(Math.toRadians(angleDisplacement)));
-        Double correctedAngle = Math.toDegrees(Math.asin(Math.cos(Math.toRadians(angleDisplacement)) * distance/d))-90;
-        if(Math.abs(Math.sin(Math.toRadians(angleDisplacement)))*distance > CAMERA_OFFSET_FT) {
-            correctedAngle = -correctedAngle;
-        }
-        SmartDashboard.putNumber("Corrected Angle", correctedAngle);
-        return correctedAngle;
     }
 
     @Override

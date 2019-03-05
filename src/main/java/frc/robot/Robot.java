@@ -29,6 +29,7 @@ import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.commands.test.TestDTMaxVA;
+import frc.robot.commands.vision.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
@@ -103,7 +104,7 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
-    camera = new CameraSubsystem();
+    // camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
     hatch = new HatchSubsystem();
@@ -125,6 +126,8 @@ public class Robot extends TimedRobot {
     drive.changeBrakeCoast(false);
     lift.resetEncoder();
     jack.resetJackEncoder();
+
+    led.solidRed();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -158,6 +161,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LEFT DIST", drive.leftEncoder.getDistance());
     SmartDashboard.putNumber("RIGHT DIST", drive.rightEncoder.getDistance());
     // SmartDashboard.putNumber("TIME", accelTime.get());
+    SmartDashboard.putNumber("Vision Gyro Setpoint", Robot.gyro.gyroPIDController.getSetpoint());
 
     // SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
@@ -172,7 +176,25 @@ public class Robot extends TimedRobot {
       jack.setJackMotorMP(JackSubsystem.JackEncoderConstatns.UP_STATE);
     }
 
+    // Vision
+    if(vision != null && visionFixCommand != null && !visionFixCommand.isRunning()) {
+      vision.readData();
+    }
+
+    Double angle = vision.getAngleDisplacement();
+    if(angle != null) {
+      if(Math.abs(angle) < 5.0) {
+        led.solidBlue();
+        SmartDashboard.putBoolean("VSTATUS", true);
+      }
+      else {
+        led.solidRed();
+        SmartDashboard.putBoolean("VSTATUS", false);
+      }
+    }
   }
+
+  GyroRotationalHoldCommand ghold;
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -189,12 +211,15 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     drive.resetEncoders();
     gyro.resetGyro();
-    // new HAB1LxCLFxLOADLxCL1().start();
-    (new MotionProfileCommand("TestPath", false)).start();
+    new HAB1LxCLFxLOADLxCL1().start();
+    // (new MotionProfileCommand("TestPath", false)).start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
     // new TestJackDriveMotors().start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
+    // ghold = new GyroRotationalHoldCommand();
+    // ghold.start();
+    // ghold.setTargetAngle(0.0);
 
   }
   /**
@@ -215,6 +240,7 @@ public class Robot extends TimedRobot {
     gyro.resetGyro();
     drive.changeBrakeCoast(false);
     visionFixCommand = new VisionFixCommand();
+    compressor.stop();
 
     // compressor.setClosedLoopControl(true);
     // compressor.start();
@@ -288,7 +314,10 @@ public class Robot extends TimedRobot {
     // Stop drivetrain motion
     drive.rawDrive(0, 0);
     // hatch.changeHatchState();
+
+    // WHOEVER WROTE THIS, IT WON'T WORK; YOU CAN'T RUN COMMANDS IN DISABLED. USE SUSBYSTEM CODE.
     new ChangeIntakeState(CargoIntakeState.MID).start();
+
     // Stop lift motion
 
     // Stop jack motion - note: robot safety is priority. Is it safe for the robot's jack to stop running?
@@ -390,6 +419,7 @@ public class Robot extends TimedRobot {
         lift.moveLiftToPos(RobotState.liftPosition);
       } 
   
+
   
       // *************************** DEPLOY **********************************************/
       if(oi.gamePad.getBackButtonPressed()) { 
@@ -431,13 +461,15 @@ public class Robot extends TimedRobot {
   
       //******************************* DRIVE ****************************************/
       if(oi.visionFixButton.get()) {
-        visionFixCommand.start();
+        if(!visionFixCommand.isRunning()) {
+          visionFixCommand.start();
+        }
       }
       else {
-        Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
-        SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
-        Robot.gyro.gyroPIDController.enable();
-        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+        visionFixCommand.cancel();
+        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
+        Robot.gyro.driverGyroPID.enable();
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }
       
     }else{

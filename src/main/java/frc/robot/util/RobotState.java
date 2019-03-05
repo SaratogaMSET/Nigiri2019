@@ -50,7 +50,7 @@ public class RobotState {
     }
 
     public double setIntakesForLifting(LiftPositions target, LiftPositions current) {
-        if(Robot.lift.goingUp(target, current) && current == LiftPositions.CARGO_LOW) {    
+        if(Robot.lift.goingUp(target, current) && (current == LiftPositions.CARGO_LOW || current == LiftPositions.HATCH_LOW)) {    
             return 0.6;
         } 
         return 0;

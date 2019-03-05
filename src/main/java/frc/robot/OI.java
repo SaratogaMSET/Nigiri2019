@@ -61,7 +61,7 @@ public class OI {
 
   public class Driver {
     private JoystickFilter verticalFilter = new JoystickFilter(0.0, 0.0, 1.0, Mode.LINEAR);
-    private JoystickFilter horizontalFilter = new JoystickFilter(0.0, 0.0, 1.0, Mode.LINEAR);
+    private JoystickFilter horizontalFilter = new JoystickFilter(0.0, 0.0, 1.0, Mode.SQUARED);
 
     public double getDriverVertical() {
       double y = -driverVertical.getY(); // Y is reversed

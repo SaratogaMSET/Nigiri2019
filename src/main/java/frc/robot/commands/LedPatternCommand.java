@@ -35,7 +35,7 @@ public class LedPatternCommand extends Command {
         Robot.led.blink();
         break;
       case 2:
-        Robot.led.solid();
+        Robot.led.solidRed();
         break;
       case 3:
         Robot.led.chase();

@@ -5,20 +5,29 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.vision;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.commands.FishyCommand;
 
-public class VisionFixCommand extends FishyCommand {
+/**
+ * Takes driver input for forward and freezes input on rotational axis of robot, using a Gyro PID controller instead.
+ */
+public class GyroRotationalHoldCommand extends FishyCommand {
   
   Timer time;
-  int numUpdates = 0;
+  double targetAngle;
 
-  public VisionFixCommand() {
-    super(Robot.drive, Robot.gyro);
+  public 
+  GyroRotationalHoldCommand() {
     time = new Timer();
   }
 
@@ -30,35 +39,15 @@ public class VisionFixCommand extends FishyCommand {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    time.start();
-    Robot.drive.changeBrakeCoast(false);
-    numUpdates = 0;
-    Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.getGyroAngle());
-    Robot.gyro.gyroPIDController.enable(); // doesn't actuate motors, only writes to gyroPIDOutput variables
+    targetAngle = Robot.gyro.getGyroAngle();
+    Robot.gyro.gyroPIDController.setSetpoint(targetAngle);
+    Robot.gyro.gyroPIDController.enable();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    // Activate vision target hold
-    Robot.vision.readData();
-    Double angle = Robot.vision.getAngleDisplacement();
-    // log("Angle", angle);
-    if(numUpdates < 3) {
-      if(angle != null) {
-        SmartDashboard.putNumber("VISION CA", angle);
-        Robot.gyro.gyroPIDController.setSetpoint(Robot.gyro.getGyroAngle() + angle);
-        numUpdates += 1;
-      }
-      else {
-        numUpdates = 0;
-        Robot.drive.driveFwdRotate(Robot.oi.driver.getDriverVertical(), Robot.oi.driver.getDriverHorizontal());
-        return;
-      }
-    }
-    // logger.write();
     Robot.drive.driveFwdRotate(Robot.oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
-    
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -71,6 +60,7 @@ public class VisionFixCommand extends FishyCommand {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.gyro.driverGyroPID.setSetpoint(Robot.gyro.getGyroAngle());
     Robot.gyro.gyroPIDController.disable();
     // SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoder());
     // SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoder());
@@ -80,5 +70,12 @@ public class VisionFixCommand extends FishyCommand {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+      end();
+  }
+
+  public void setTargetAngle(double angle) {
+    targetAngle = angle;
+    Robot.gyro.gyroPIDController.setSetpoint(targetAngle);
+    Robot.gyro.gyroPIDController.enable();
   }
 }

@@ -8,6 +8,8 @@
 package frc.robot.auto;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.MotionProfileCommand;
+import frc.robot.commands.WaitUntilEncoderCommand;
+import frc.robot.commands.DeployHatchCommand;
 
 
 public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
@@ -15,10 +17,11 @@ public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
    * Add your docs here.
    */
   public HAB1LxCLFxLOADLxCL1() {//215
+    addParallel(new WaitUntilEncoderCommand(5*12, new DeployHatchCommand(), 5));
     addSequential(new MotionProfileCommand("HAB1L-CLF", false));
-    addSequential(new MotionProfileCommand("3-point2", true)); //.002
+    // addSequential(new MotionProfileCommand("3-point2", true)); //.002
 
-    addSequential(new MotionProfileCommand("TurnToLoadingStation", false));
+    // addSequential(new MotionProfileCommand("TurnToLoadingStation", false));
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());
