@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Robot;
+import frc.robot.RobotMap.Drivetrain;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import jaci.pathfinder.*;
@@ -144,8 +145,8 @@ public class MotionProfileCommand extends FishyCommand {
       double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
       double turn = DrivetrainSubsystem.PathFollowingConstants.kp_gyro * headingDiff;
       
-      log("Right Actual", Robot.drive.rightEncoder.getRate());
-      log("Left Actual", Robot.drive.leftEncoder.getRate());
+      log("Right Actual", (Robot.drive.motors[0].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
+      log("Left Actual", (Robot.drive.motors[3].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
 
 
       double left = leftSpeed + turn;
@@ -156,16 +157,18 @@ public class MotionProfileCommand extends FishyCommand {
       // left /= normalizer;
       // right /= normalizer;
 
-      if(rightFollower.getSegment().acceleration > 0.0 && rightFollower.getSegment().velocity < 1.5) {
-        left = Math.signum(left) * Math.max(Math.abs(left), 0.6);
-        right = Math.signum(right) * Math.max(Math.abs(right), 0.6);
+      // if(rightFollower.getSegment().acceleration > 0.0 && rightFollower.getSegment().velocity < 1.5) {
+      //   left = Math.signum(left) * Math.max(Math.abs(left), 0.6);
+      //   right = Math.signum(right) * Math.max(Math.abs(right), 0.6);
 
-        Robot.drive.rawDrive(left, right);
+      //   Robot.drive.rawDrive(left, right);
 
-      }
-      else {
-        Robot.drive.rawDrive(left, right);
-      }
+      // }
+      // else {
+      //   Robot.drive.rawDrive(left, right);
+      // }
+
+      Robot.drive.rawDrive(left, right);
 
       log("Left Power", left);
       log("Right Power", right);

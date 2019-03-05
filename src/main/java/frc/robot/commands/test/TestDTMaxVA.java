@@ -47,14 +47,14 @@ public class TestDTMaxVA extends FishyCommand {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    log("Right Vel", Robot.drive.rightEncoder.getRate());
-    log("Left Vel", Robot.drive.leftEncoder.getRate());
-    log("Right A", (Robot.drive.rightEncoder.getRate() - prevRV)/(time.get() - prevTime));
-    log("Left A", (Robot.drive.leftEncoder.getRate() - prevLV)/(time.get() - prevTime));
+    // log("Right Vel", Robot.drive.rightEncoder.getRate());
+    // log("Left Vel", Robot.drive.leftEncoder.getRate());
+    // log("Right A", (Robot.drive.rightEncoder.getRate() - prevRV)/(time.get() - prevTime));
+    // log("Left A", (Robot.drive.leftEncoder.getRate() - prevLV)/(time.get() - prevTime));
 
-    prevTime = time.get();
-    prevLV = Robot.drive.leftEncoder.getRate();
-    prevRV = Robot.drive.rightEncoder.getRate();
+    // prevTime = time.get();
+    // prevLV = Robot.drive.leftEncoder.getRate();
+    // prevRV = Robot.drive.rightEncoder.getRate();
 
     log("NavX Accel", Robot.gyro.gyro.getWorldLinearAccelY() * 32.17405); // ft/s^2
 

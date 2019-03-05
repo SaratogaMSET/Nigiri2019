@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
 public class WaitUntilEncoderCommand extends Command {
@@ -46,10 +47,12 @@ public class WaitUntilEncoderCommand extends Command {
     Robot.drive.getRightEncoderDistance() > distance) {
       isFinished = true;
       command.start();
+      SmartDashboard.putBoolean("Starting Command", true);
     }
     if (timer.get() > timeout) {
       isFinished = true;
     }
+    SmartDashboard.putBoolean("Starting Command", false);
   }
 
   // Make this return true when this Command no longer needs to run execute()

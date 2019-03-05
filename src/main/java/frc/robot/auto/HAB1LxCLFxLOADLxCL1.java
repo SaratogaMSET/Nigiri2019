@@ -8,7 +8,11 @@
 package frc.robot.auto;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.MotionProfileCommand;
+import frc.robot.commands.MoveHatchCommand;
 import frc.robot.commands.WaitUntilEncoderCommand;
+import frc.robot.commands.intake.ChangeIntakeState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
+import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.commands.DeployHatchCommand;
 
 
@@ -17,8 +21,10 @@ public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
    * Add your docs here.
    */
   public HAB1LxCLFxLOADLxCL1() {//215
-    addParallel(new WaitUntilEncoderCommand(5*12, new DeployHatchCommand(), 5));
-    addSequential(new MotionProfileCommand("HAB1L-CLF", false));
+    addParallel(new ChangeIntakeState(CargoIntakeState.MID));
+    addParallel(new WaitUntilEncoderCommand(2, new MoveHatchCommand(HatchState.hatchOut), 10));
+    addParallel(new WaitUntilEncoderCommand(6, new DeployHatchCommand(), 20));
+    addSequential(new MotionProfileCommand("Straight", false));
     // addSequential(new MotionProfileCommand("3-point2", true)); //.002
 
     // addSequential(new MotionProfileCommand("TurnToLoadingStation", false));

@@ -58,7 +58,9 @@ public class SetIntakePistons extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if(Robot.cargoIntake.getIntakeSolState() == out) {
+    if(Robot.cargoIntake.getOutHal() && out) {
+      return true;
+    } else if(!Robot.cargoIntake.getOutHal() && !out) {
       return true;
     }
     return isFinished;

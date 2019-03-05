@@ -89,14 +89,13 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public static final double ROBOT_TARGET_MAX_ACCELERATION = 16.0; // ft/s^2
 
   public TalonSRX[] motors;
-  public Encoder rightEncoder;
-  public Encoder leftEncoder;
+
   public boolean isPathRunning;
   public int motor;
 
 
   public static final double WHEEL_DIAMETER = (4.06/12.0); // feet
-  public static final int TICKS_PER_REV = 1024;
+  public static final int TICKS_PER_REV = 4096;
 
   public double kP, kI, kD, kF;
 
@@ -106,6 +105,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     for (int i = 0; i < motors.length; i++) {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
     }
+    /*
     rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
     leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], true, EncodingType.k1X);
     
@@ -117,7 +117,12 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
     leftEncoder.setMinRate((0.2/12.0));
     rightEncoder.setMinRate((0.2/12.0));
-    
+
+    */
+
+    motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+
     kP = 0.0;
     kI = 0.0;
     kD = 0.0;
@@ -164,7 +169,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
   
   public int getRawLeftEncoder() {
-    return leftEncoder.get();
+    return motors[3].getSelectedSensorPosition();
   }
 
   public void driveFwdRotate(double fwd, double rot){
@@ -177,20 +182,20 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
   
   public int getRawRightEncoder() {
-    return rightEncoder.get();
+    return motors[0].getSelectedSensorPosition();
   }
 
   public double getRightEncoderDistance() {
-    return rightEncoder.getDistance();
+    return (motors[0].getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
   }
 
   public double getLeftEncoderDistance() {
-    return leftEncoder.getDistance();
+    return (motors[3].getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
   }
 
   public void resetEncoders() {
-    leftEncoder.reset();
-    rightEncoder.reset();
+    motors[0].setSelectedSensorPosition(0);
+    motors[3].setSelectedSensorPosition(0);
   }
 
   public void testDrivetrain(double fwd, boolean changeMotor, boolean resetEncoders) {
@@ -277,14 +282,14 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   @Override
   public void diagnosticShuffleboard() {
     ShuffleboardTab drive = Shuffleboard.getTab("Drive");
-    drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
-    drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
+    // drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
+    // drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
   }
 
   @Override
   public void essentialShuffleboard() {
     ShuffleboardTab drive = Shuffleboard.getTab("Drive");
-    drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
-    drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
+    // drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
+    // drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
   }
 }

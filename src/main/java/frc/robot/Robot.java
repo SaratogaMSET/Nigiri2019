@@ -144,7 +144,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
-    double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
+    // double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
     SmartDashboard.putNumber("GYRO HEADING", gyro.getGyroAngle());
     // SmartDashboard.putNumber("V", vel);
     // SmartDashboard.putNumber("MAX V", max_vel = Math.max(max_vel, vel));  
@@ -157,12 +157,12 @@ public class Robot extends TimedRobot {
       // prev_time = accelTime.get();
       // SmartDashboard.putNumber("PREV TIME", prev_time);
     // }  
-    // SmartDashboard.putNumber("LEFT ENCODER", drive.leftEncoder.get());
-    // SmartDashboard.putNumber("RIGHT ENCODER", drive.rightEncoder.get());
-    SmartDashboard.putNumber("LEFT DIST", drive.leftEncoder.getDistance());
-    SmartDashboard.putNumber("RIGHT DIST", drive.rightEncoder.getDistance());
+    SmartDashboard.putNumber("LEFT ENCODER", drive.getRawLeftEncoder());
+    SmartDashboard.putNumber("RIGHT ENCODER", drive.getRawRightEncoder());
+    // SmartDashboard.putNumber("LEFT DIST", drive.leftEncoder.getDistance());
+    // SmartDashboard.putNumber("RIGHT DIST", drive.rightEncoder.getDistance());
     // SmartDashboard.putNumber("TIME", accelTime.get());
-    SmartDashboard.putNumber("Vision Gyro Setpoint", Robot.gyro.gyroPIDController.getSetpoint());
+    // SmartDashboard.putNumber("Vision Gyro Setpoint", Robot.gyro.gyroPIDController.getSetpoint());
 
     // SmartDashboard.putNumber("SAMPLE RATE", drive.leftEncoder.getSamplesToAverage());
     // SmartDashboard.putNumber("SAMPLE RATE R", drive.rightEncoder.getSamplesToAverage());
@@ -223,8 +223,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     drive.resetEncoders();
     gyro.resetGyro();
-    new HAB1LxCLFxLOADLxCL1().start();
-    // (new MotionProfileCommand("TestPath", false)).start();
+    // new HAB1LxCLFxLOADLxCL1().start();
+    (new MotionProfileCommand("TestPath", false)).start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
     // new TestJackDriveMotors().start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
@@ -253,6 +253,7 @@ public class Robot extends TimedRobot {
     compressor.setClosedLoopControl(true);
     compressor.start();
     
+    new WaitUntilEncoderCommand(2, new LedPatternCommand(3, 5), 30).start();
 
   }
 
@@ -267,8 +268,6 @@ public class Robot extends TimedRobot {
     } else {
       teleopLoopButtonBoard();
     }
-    
-    
   }
 
   @Override
@@ -600,7 +599,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
-    SmartDashboard.putNumber("Right Encoder Raw", drive.getRightEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
 
     //***************************************************** LIFT */
     SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());

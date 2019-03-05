@@ -23,8 +23,8 @@ public class RobotMap {
   public static final int BUTTON_BOARD_LEFT = 4;
  
   public static class Drivetrain {
-    // Right: 16, 17, 20 Left: 6, 7, 11
-    public static final int[] DRIVETRAIN_MOTOR_PORTS = {16, 17, 20, 6, 7, 11};
+    // Right: 20, 17, 16 Left: 11, 7, 6
+    public static final int[] DRIVETRAIN_MOTOR_PORTS = {20, 17, 16, 11, 7, 6};
     public static final int[] DRIVE_RIGHT_ENCODER = { 2, 3 };
     public static final int[] DRIVE_LEFT_ENCODER = { 0, 1 };
   }
