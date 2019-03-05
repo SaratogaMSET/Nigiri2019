@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -141,6 +142,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    Robot.vision.readData();
+    if(Robot.vision.getAngleDisplacement() != null) {
+      SmartDashboard.putNumber("VISION ANGLE", Robot.vision.getAngleDisplacement());
+    }
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
     double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
@@ -269,7 +274,8 @@ public class Robot extends TimedRobot {
     gyro.resetGyro();
     drive.resetEncoders();
 
-    
+    gyro.gyroPIDController.setSetpoint(90.0);
+    gyro.gyroPIDController.enable();
   }
 
   /**
@@ -279,10 +285,9 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     Scheduler.getInstance().run();
 
-    // TEST GYRO PID
-    // gyro.gyroPIDController.enable();
-    // double pidOut = gyro.getGyroPIDOutput();
-    // drive.rawDrive(pidOut, -pidOut);
+    gyro.gyroPIDController.enable();
+    double pidOut = gyro.getGyroPIDOutput();
+    drive.rawDrive(pidOut, -pidOut);
 
   }
 

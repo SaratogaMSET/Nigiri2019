@@ -12,9 +12,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import java.util.Arrays;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.OI;
 import frc.robot.Robot;
 import frc.robot.commands.FishyCommand;
 import jaci.pathfinder.Pathfinder;
