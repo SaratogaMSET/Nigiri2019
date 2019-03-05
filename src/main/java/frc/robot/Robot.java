@@ -142,10 +142,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Robot.vision.readData();
-    if(Robot.vision.getAngleDisplacement() != null) {
-      SmartDashboard.putNumber("VISION ANGLE", Robot.vision.getAngleDisplacement());
-    }
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
     double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
@@ -176,30 +172,41 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
     smartdashboardTesting();
 
+
+    // Robot State
+    RobotState.updateIntakeSusbystemState();
+    RobotState.updateHatchSubsystemState();
+
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
       jack.setJackMotorMP(JackSubsystem.JackEncoderConstatns.UP_STATE);
     }
 
     // Vision
-    if(vision != null && visionFixCommand != null && !visionFixCommand.isRunning()) {
-      vision.readData();
-    }
+    if(vision != null) {
+      if(visionFixCommand != null && !visionFixCommand.isRunning()) {
+        vision.readData();
+      }
 
-    Double angle = vision.getAngleDisplacement();
-    if(angle != null) {
-      if(Math.abs(angle) < 5.0) {
-        led.solidBlue();
-        SmartDashboard.putBoolean("VSTATUS", true);
+      Double angle = vision.getAngleDisplacement();
+      if(angle != null) {
+        if(Math.abs(angle) < 3.0) {
+          led.solidGreen();
+          SmartDashboard.putBoolean("VSTATUS", true);
+        }
+        else {
+          led.solidBlue();
+          SmartDashboard.putBoolean("VSTATUS", false);
+        }
       }
       else {
         led.solidRed();
-        SmartDashboard.putBoolean("VSTATUS", false);
       }
     }
+    else {
+      led.solidRed();
+    }
   }
-
-  GyroRotationalHoldCommand ghold;
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -222,9 +229,6 @@ public class Robot extends TimedRobot {
     // new TestJackDriveMotors().start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
-    // ghold = new GyroRotationalHoldCommand();
-    // ghold.start();
-    // ghold.setTargetAngle(0.0);
 
   }
   /**
@@ -245,12 +249,10 @@ public class Robot extends TimedRobot {
     gyro.resetGyro();
     drive.changeBrakeCoast(false);
     visionFixCommand = new VisionFixCommand();
-    compressor.stop();
 
-    // compressor.setClosedLoopControl(true);
-    // compressor.start();
+    compressor.setClosedLoopControl(true);
+    compressor.start();
     
-    // RobotState.hatchState = hatch.getHatchState();
 
   }
 

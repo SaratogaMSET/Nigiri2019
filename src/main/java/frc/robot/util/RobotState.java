@@ -7,6 +7,7 @@
 
 package frc.robot.util;
 
+import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
@@ -30,8 +31,8 @@ public class RobotState {
 
     public RobotState() {
         liftPosition = LiftPositions.CARGO_LOW;
-        cargoIntakeState = CargoIntakeState.MID;
-        hatchState = HatchState.hatchOut;
+        cargoIntakeState = CargoIntakeState.IN;
+        hatchState = HatchState.hatchIn;
         intakeState = CargoIntakeState.NONE;
         gamepiece = GamePiece.NONE;
     }
@@ -67,4 +68,12 @@ public class RobotState {
         return false;
     }
 
+    public static void updateIntakeSusbystemState() {
+        cargoIntakeState = Robot.cargoIntake.getCargoIntakeState();
+        intakeState = Robot.cargoIntake.getCargoRollerState();
+    }
+
+    public static void updateHatchSubsystemState() {
+        Robot.hatch.changeHatchState();
+    }
 }

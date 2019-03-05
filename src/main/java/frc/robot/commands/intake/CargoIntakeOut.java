@@ -9,13 +9,12 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
-public class CargoIntakeInToOut extends CommandGroup {
+public class CargoIntakeOut extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public CargoIntakeInToOut() {
-    addSequential(new SetMidStatePistons(true));
+  public CargoIntakeOut() {
     addSequential(new SetIntakePistons(true));
-    addSequential(new UpdateIntakeStateCommand());
+    addSequential(new SetMidStatePistons(true));
   }
 }

@@ -18,8 +18,7 @@ public class CargoIntakeOutToMid extends CommandGroup {
 
   public CargoIntakeOutToMid() {
     addParallel(new SetIntakeRollers(true, 0, 0, 0)); //run intake while going from out to mid
-    addSequential(new SetMidStatePistons(false));
+    addSequential(new SetMidStatePistons(true));
     addSequential(new SetIntakePistons(false));
-    addSequential(new UpdateIntakeStateCommand());
   }
 }

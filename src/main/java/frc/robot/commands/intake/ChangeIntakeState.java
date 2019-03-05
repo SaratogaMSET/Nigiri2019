@@ -8,6 +8,7 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
@@ -66,20 +67,26 @@ public class ChangeIntakeState extends Command {
       // it be done;
     } else if(targetState == CargoIntakeState.IN && Robot.robotState.canBringIntakeIn()) {
       if(currentState == CargoIntakeState.OUT) {
+        SmartDashboard.putString("INTAKE COMMAND", "OUT TO IN");
         new CargoIntakeOutToIn().start();
       } else if(currentState == CargoIntakeState.MID) {
+        SmartDashboard.putString("INTAKE COMMAND", "MID TO IN");
         new CargoIntakeMidToIn().start();
       }
     } else if(targetState == CargoIntakeState.OUT) {
       if(currentState == CargoIntakeState.IN) {
-        new CargoIntakeOutToIn().start();
+        SmartDashboard.putString("INTAKE COMMAND", "IN TO OUT");
+        new CargoIntakeOut().start();
       } else if(currentState == CargoIntakeState.MID) {
-        new CargoIntakeMidToOut().start();
+        SmartDashboard.putString("INTAKE COMMAND", "MID TO OUT");
+        new CargoIntakeOut().start();
       }
     } else if(targetState == CargoIntakeState.MID) {
       if(currentState == CargoIntakeState.IN) {
+        SmartDashboard.putString("INTAKE COMMAND", "IN TO MID");
         new CargoIntakeInToMid().start();
       } else if(currentState == CargoIntakeState.OUT) {
+        SmartDashboard.putString("INTAKE COMMAND", "OUT TO MID");
         new CargoIntakeOutToMid().start();
       }
     }

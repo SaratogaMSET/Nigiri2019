@@ -34,7 +34,8 @@ public class CargoIntakeSubsystem extends Subsystem {
     INTAKE,
     EXTAKE,
     TOP_BAR_ONLY,
-    NONE
+    NONE,
+    FAIL_STATE
   }
   
   private TalonSRX leftIntake, rightIntake, frontIntake;
@@ -156,13 +157,48 @@ public class CargoIntakeSubsystem extends Subsystem {
     return !inHal.get();
   }
 
-  public CargoIntakeState getIntakeState() {
-    if(intakeSol.get()) {
-      return CargoIntakeState.OUT;
-    } else if(intakeSol.get() == false && intakeMidSol.get()) {
-      return CargoIntakeState.IN;
-    } else {
-      return CargoIntakeState.MID;
+  public CargoIntakeState getCargoIntakeState() {
+    if(Robot.cargoIntake.getInHal() && !Robot.cargoIntake.getOutHal()) {
+      if(Robot.cargoIntake.getIntakeSolState()) {
+        // !!!!!!!! ONE OR MORE INTAKE HALL EFFECTS IS BROKEN !!!!!!
+        return CargoIntakeState.FAIL_STATE;
+      }
+      else {
+        return CargoIntakeState.IN;
+      }
+    }
+    else if(Robot.cargoIntake.getOutHal() && !Robot.cargoIntake.getInHal()){
+      if(Robot.cargoIntake.getIntakeSolState()) {
+        return CargoIntakeState.OUT;
+      }
+      else {
+        // !!!!!!!! ONE OR MORE INTAKE HALL EFFECTS IS BROKEN !!!!!!
+        return CargoIntakeState.FAIL_STATE;
+      }
+    }
+    else {
+      if(Robot.cargoIntake.getMidStateSolState()) {
+        return CargoIntakeState.MID;
+      }
+      else {
+        // !!!!!!!! ONE OR MORE INTAKE HALL EFFECTS IS BROKEN !!!!!!
+        return CargoIntakeState.FAIL_STATE;
+      }
+    }
+  }
+
+  public CargoIntakeState getCargoRollerState() {
+    if(frontIntake.getMotorOutputPercent() != 0.0 && leftIntake.getMotorOutputPercent() == 0.0 && rightIntake.getMotorOutputPercent() == 0.0) {
+      return CargoIntakeState.TOP_BAR_ONLY;
+    }
+    else if (frontIntake.getMotorOutputPercent() > 0.0 && leftIntake.getMotorOutputPercent() > 0.0 && rightIntake.getMotorOutputPercent() > 0.0) {
+      return CargoIntakeState.INTAKE;
+    }
+    else if (frontIntake.getMotorOutputPercent() < 0.0 && leftIntake.getMotorOutputPercent() < 0.0 && rightIntake.getMotorOutputPercent() < 0.0) {
+      return CargoIntakeState.EXTAKE;
+    }
+    else {
+      return CargoIntakeState.FAIL_STATE;
     }
   }
 
@@ -176,17 +212,6 @@ public class CargoIntakeSubsystem extends Subsystem {
     SmartDashboard.putNumber("Front Intake Current", frontIntake.getOutputCurrent());
   }
 
-  public void setIntakeRollerState(boolean intake, double topPower, double sidePower, double carriagePower) {
-    if(topPower == 0 && sidePower == 0 && carriagePower == 0) {
-      RobotState.intakeState = CargoIntakeState.NONE;
-    } else if(topPower != 0 && sidePower == 0 && carriagePower == 0) {
-      RobotState.intakeState = CargoIntakeState.TOP_BAR_ONLY;
-    } else if(intake) {
-      RobotState.intakeState = CargoIntakeState.INTAKE;
-    } else {
-      RobotState.intakeState = CargoIntakeState.EXTAKE;
-    }
-  }
 
   @Override
   public void initDefaultCommand() {
