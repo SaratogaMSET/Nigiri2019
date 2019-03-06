@@ -247,6 +247,7 @@ public class Robot extends TimedRobot {
     if(autoDriverControl) {
       teleopLoop();
     } else {
+      // Put all the auto code here–the stuff you normally run in auto
       // lift.pidLift(100);
       // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,
       // true, 10.0).start();
