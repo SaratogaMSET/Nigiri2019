@@ -237,6 +237,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    // Auto-Teleop Shifting (For now just use the button 7 on the vertical joystick)
     if(oi.driverVertical.getRawButton(7)) {
       autoDriverControl = !autoDriverControl;
       if(autoDriverControl) {
