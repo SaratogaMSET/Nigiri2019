@@ -16,15 +16,14 @@ import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.commands.DeployHatchCommand;
 
 
-public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
+public class HAB1LxROCKLF extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public HAB1LxCLFxLOADLxCL1() {//215
-    addParallel(new ChangeIntakeState(CargoIntakeState.MID));
-    addParallel(new WaitUntilEncoderCommand(2, new MoveHatchCommand(HatchState.hatchOut), 10));
-    addParallel(new WaitUntilEncoderCommand(6, new DeployHatchCommand(), 20));
-    addSequential(new MotionProfileCommand("Straight", false, false));
+  public HAB1LxROCKLF() {//215
+    addSequential(new MotionProfileCommand("FarRocketLeft1", true, true));
+    addSequential(new MotionProfileCommand("FarRocketLeft2", false, true));
+
     // addSequential(new MotionProfileCommand("3-point2", true)); //.002
 
     // addSequential(new MotionProfileCommand("TurnToLoadingStation", false));

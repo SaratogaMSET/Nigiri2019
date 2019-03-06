@@ -224,11 +224,12 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     gyro.resetGyro();
     // new HAB1LxCLFxLOADLxCL1().start();
-    (new MotionProfileCommand("TestPath", false)).start();
+    // (new MotionProfileCommand("FarRocketLeft1", true)).start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
     // new TestJackDriveMotors().start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
+    new HAB1LxROCKLF().start();
 
   }
   /**
@@ -253,7 +254,7 @@ public class Robot extends TimedRobot {
     compressor.setClosedLoopControl(true);
     compressor.start();
     
-    new WaitUntilEncoderCommand(2, new LedPatternCommand(3, 5), 30).start();
+    // new WaitUntilEncoderCommand(2, new LedPatternCommand(3, 5), 30).start();
 
   }
 
@@ -333,6 +334,10 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     
   }
+
+  public void minpower() {
+    Robot.drive.rawDrive(0.4, 0.4);
+  }
   
   public void testMotors(){
     if(oi.driverVertical.getRawButton(7)){
@@ -350,7 +355,7 @@ public class Robot extends TimedRobot {
     else if(oi.driverVertical.getRawButton(11)){
       drive.motors[4].set(ControlMode.PercentOutput, 0.6);
     }
-    else if(oi.driverVertical.getRawButton(12)){
+    else if(oi.driverVertical.getRawButton(4)){
       drive.motors[5].set(ControlMode.PercentOutput, 0.6);
     }else{
       drive.motors[0].set(ControlMode.PercentOutput, 0.0);
