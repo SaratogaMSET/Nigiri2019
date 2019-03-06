@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
   //*******************FOR GAMEPAD V BUTTON BOARD*************************** */
   public static boolean isGamepad = true;
   public static boolean isDefenseMode = false;
-
+  public static boolean autoDriverControl = false;
 
   // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
@@ -237,10 +237,21 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    // lift.pidLift(100);
-    // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE, true, 10.0).start();
-    SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
-    // lift.motionMagicLift(LiftSubsystem.LiftEncoderConstants.INTAKE);
+    if(oi.driverVertical.getRawButton(7)) {
+      autoDriverControl = !autoDriverControl;
+      if(autoDriverControl) {
+        teleopInit();
+      } else autonomousInit();
+    }
+    if(autoDriverControl) {
+      teleopLoop();
+    } else {
+      // lift.pidLift(100);
+      // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,
+      // true, 10.0).start();
+      // lift.motionMagicLift(LiftSubsystem.LiftEncoderConstants.INTAKE);
+      SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
+    }
   }
 
   @Override
