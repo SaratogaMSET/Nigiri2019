@@ -19,6 +19,7 @@ import jaci.pathfinder.*;
 import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.EncoderFollower;
 
+
 public class MotionProfileCommand extends FishyCommand {
   
   String pathName;
