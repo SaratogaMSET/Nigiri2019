@@ -4,18 +4,31 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - FishyPathCreator",
+      "request": "launch",
+      "mainClass": "com.team319x649.FishyPathCreator",
+      "projectName": "Nigiri2019"
+    },
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - NigiriPathCreator",
+      "request": "launch",
+      "mainClass": "frc.paths_external.NigiriPathCreator",
+      "projectName": "Nigiri2019"
+    },
     {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
-      "desktop": true,
+      "desktop": true
     },
     {
       "type": "wpilib",
       "name": "WPILib roboRIO Debug",
       "request": "launch",
-      "desktop": false,
+      "desktop": false
     }
   ]
 }
