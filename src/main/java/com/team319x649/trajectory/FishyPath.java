@@ -1,5 +1,6 @@
 package com.team319x649.trajectory;
 
+import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.WaypointSequence;
 import com.team254.lib.trajectory.TrajectoryGenerator.Config;
 import com.team254.lib.trajectory.WaypointSequence.Waypoint;
@@ -11,6 +12,7 @@ public class FishyPath {
 	private boolean isBackwards;
 	private String name;
 	private double wheelbase;
+	private Path path;
 
 	public FishyPath(Config config, String name, double wheelbaseFeet) {
 		this(config, name, wheelbaseFeet, false);
@@ -104,5 +106,12 @@ public class FishyPath {
 
 	public double getWheelbaseFeet() {
 		return wheelbase;
+	}
+
+	public Path getPath() {
+		if(path == null) {
+			return FishyPathGenerator.makePath(this);
+		}
+		return path;
 	}
 }

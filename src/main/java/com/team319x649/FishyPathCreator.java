@@ -25,9 +25,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	
 	private FishyPathCreator() {
 		config.dt = 0.02;
-		config.max_acc = 7.0; // Maximum acceleration in FPS
-		config.max_vel = 12.0; // Maximum velocity in FPS
-		config.max_jerk = 197.0;
+		config.max_acc = 1.0; // Maximum acceleration in FPS^2
+		config.max_vel = 11.0; // Maximum velocity in FPS
+		config.max_jerk = 2.0;
 	}
 
     @Override

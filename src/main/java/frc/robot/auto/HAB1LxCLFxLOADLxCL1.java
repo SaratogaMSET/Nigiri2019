@@ -24,7 +24,7 @@ public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
     addParallel(new ChangeIntakeState(CargoIntakeState.MID));
     addParallel(new WaitUntilEncoderCommand(2, new MoveHatchCommand(HatchState.hatchOut), 10));
     addParallel(new WaitUntilEncoderCommand(6, new DeployHatchCommand(), 20));
-    addSequential(new MotionProfileCommand("Straight", false, false));
+    // addSequential(new MotionProfileCommand("Straight", false, false));
     // addSequential(new MotionProfileCommand("3-point2", true)); //.002
 
     // addSequential(new MotionProfileCommand("TurnToLoadingStation", false));

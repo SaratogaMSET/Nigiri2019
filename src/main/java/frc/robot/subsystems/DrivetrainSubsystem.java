@@ -90,7 +90,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
         public static final double ka = 0.055;
       }
     }
-    public static final double kp_gyro = 0.015;
+    public static final double kp_gyro = 0.15;
   }
 
 
@@ -123,7 +123,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       motors[i].configNominalOutputReverse(-0.02, Robot.timeoutMs);
       motors[i].configPeakOutputForward(1, Robot.timeoutMs);
       motors[i].configPeakOutputReverse(-1, Robot.timeoutMs);
-
     }
     /*
     rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
@@ -140,8 +139,19 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
     */
 
-    motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+    motors[0].config_kF(0, 0.24133352745410850646539813001682);
+    motors[0].config_kP(0, 0.8);
+    motors[0].config_kI(0, 0.0);
+    motors[0].config_kD(0, 0.0);
+
+
+    motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+    motors[3].config_kF(0, 0.24133352745410850646539813001682);
+    motors[3].config_kP(0, 0.8);
+    motors[3].config_kI(0, 0.0);
+    motors[3].config_kD(0, 0.0);
+
 
     kP = 0.0;
     kI = 0.0;

@@ -36,6 +36,7 @@ import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
 import frc.robot.subsystems.HatchSubsystem.HatchState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
+import frc.robot.util.FishyMath;
 import frc.robot.util.RobotState;
 import jaci.pathfinder.Pathfinder;
 
@@ -229,7 +230,8 @@ public class Robot extends TimedRobot {
     // new TestJackDriveMotors().start();
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
-    new HAB1LxROCKLF().start();
+    // new HAB1LxROCKLF().start();
+    new MotionProfileCommand("DistanceScaling").start();
 
   }
   /**
@@ -275,9 +277,8 @@ public class Robot extends TimedRobot {
   public void testInit() {
     gyro.resetGyro();
     drive.resetEncoders();
-
-    gyro.gyroPIDController.setSetpoint(90.0);
-    gyro.gyroPIDController.enable();
+    // gyro.gyroPIDController.setSetpoint(90.0);
+    // gyro.gyroPIDController.enable();
   }
 
   /**
@@ -287,9 +288,9 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     Scheduler.getInstance().run();
 
-    gyro.gyroPIDController.enable();
-    double pidOut = gyro.getGyroPIDOutput();
-    drive.rawDrive(pidOut, -pidOut);
+    // gyro.gyroPIDController.enable();
+    // double pidOut = gyro.getGyroPIDOutput();
+    // drive.rawDrive(pidOut, -pidOut);
 
   }
 

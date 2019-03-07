@@ -65,6 +65,9 @@ public class VisionSubsystem extends Subsystem {
 
         jevoisData += jevoisSerial.readString();
         jevoisDataEntry.setString(jevoisData);
+        if(jevoisData.length() > 500) {
+            jevoisData = "";
+        }
 
         // Extract angle
         Pattern angleRegex = Pattern.compile(".*(ANGLE [-\\d.]+)");
