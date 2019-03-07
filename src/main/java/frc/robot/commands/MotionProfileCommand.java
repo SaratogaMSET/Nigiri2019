@@ -16,6 +16,7 @@ import frc.robot.RobotMap.Drivetrain;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import jaci.pathfinder.*;
+import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.EncoderFollower;
 
 public class MotionProfileCommand extends FishyCommand {
@@ -28,14 +29,16 @@ public class MotionProfileCommand extends FishyCommand {
   private Notifier followerNotifier;
   
   private Trajectory leftTraj, rightTraj;
-  private boolean isReversePath = false;
+  private boolean isReversePath;
+  private boolean robotStartedBackwards;
 
 
-  public MotionProfileCommand(String pathName, boolean revPath) {
+  public MotionProfileCommand(String pathName, boolean revPath, boolean robotStartedBackwards) {
     super(Robot.drive, Robot.gyro); // call super with the subsystems that the command needs - this will block all other commands from using these subsystems while running
 
     this.pathName = pathName;
     this.isReversePath = revPath;
+    this.robotStartedBackwards = robotStartedBackwards;
   }
 
   // The command MUST implement this method - the fields which you want to log
@@ -47,8 +50,6 @@ public class MotionProfileCommand extends FishyCommand {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.drive.resetEncoders();
-    Robot.gyro.resetGyro();
     runPath(pathName, this.isReversePath);
   }
 
@@ -71,7 +72,7 @@ public class MotionProfileCommand extends FishyCommand {
     if(followerNotifier != null) {
       followerNotifier.stop();
     }
-    Robot.drive.rawDrive(0, 0);
+    Robot.drive.rawDrive(0.0, 0.0);
   }
 
   // Called when another command which requires one or more of the same
@@ -88,31 +89,64 @@ public class MotionProfileCommand extends FishyCommand {
     
     rightTraj = PathfinderFRC.getTrajectory(pathName + ".left");
     leftTraj = PathfinderFRC.getTrajectory(pathName + ".right");
+    if(reversePath) {
+      for(Segment s : rightTraj.segments) {
+        s.acceleration = -s.acceleration;
+        s.jerk = -s.jerk;
+        s.velocity = -s.velocity;
+        s.position = -s.position;
+      }
+      for(Segment s : leftTraj.segments) {
+        s.acceleration = -s.acceleration;
+        s.jerk = -s.jerk;
+        s.velocity = -s.velocity;
+        s.position = -s.position;
+      }
+    }
+    
 
     leftFollower = new EncoderFollower(leftTraj);
     rightFollower = new EncoderFollower(rightTraj);
 
     if(reversePath) {
-      leftFollower.configureEncoder(-Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
-      rightFollower.configureEncoder(-Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
+      leftFollower.configureEncoder(Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
+      rightFollower.configureEncoder(Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
+
     }
     else {
       leftFollower.configureEncoder(Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
       rightFollower.configureEncoder(Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
     }
-
-    leftFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Left.kp, 
+    
+    if(reversePath) {
+      leftFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.kp, 
                                 0.0, 
-                                DrivetrainSubsystem.PathFollowingConstants.Left.kd,
-                                DrivetrainSubsystem.PathFollowingConstants.Left.kv,
-                                DrivetrainSubsystem.PathFollowingConstants.Left.ka);
+                                DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.kd,
+                                DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.kv,
+                                DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.ka);
 
-    rightFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Right.kp, 
+      rightFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.kp, 
                                 0.0, 
-                                DrivetrainSubsystem.PathFollowingConstants.Right.kd,
-                                DrivetrainSubsystem.PathFollowingConstants.Right.kv,
-                                DrivetrainSubsystem.PathFollowingConstants.Right.ka);
+                                DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.kd,
+                                DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.kv,
+                                DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.ka);
 
+    }
+    else {
+      leftFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Forward.Left.kp, 
+                                0.0, 
+                                DrivetrainSubsystem.PathFollowingConstants.Forward.Left.kd,
+                                DrivetrainSubsystem.PathFollowingConstants.Forward.Left.kv,
+                                DrivetrainSubsystem.PathFollowingConstants.Forward.Left.ka);
+
+      rightFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Forward.Right.kp, 
+                                0.0, 
+                                DrivetrainSubsystem.PathFollowingConstants.Forward.Right.kd,
+                                DrivetrainSubsystem.PathFollowingConstants.Forward.Right.kv,
+                                DrivetrainSubsystem.PathFollowingConstants.Forward.Right.ka);
+
+    }
+    
     this.isReversePath = reversePath;
 
     followerNotifier = new Notifier(this::followPath);
@@ -130,8 +164,8 @@ public class MotionProfileCommand extends FishyCommand {
 
       double leftSpeed, rightSpeed;
       if(isReversePath) {
-        leftSpeed = -rightFollower.calculate(-Robot.drive.getRawRightEncoder());
-        rightSpeed = -leftFollower.calculate(-Robot.drive.getRawLeftEncoder());
+        leftSpeed = rightFollower.calculate(Robot.drive.getRawLeftEncoder());
+        rightSpeed = leftFollower.calculate(Robot.drive.getRawRightEncoder());
       }
       else {
         leftSpeed = leftFollower.calculate(Robot.drive.getRawLeftEncoder());
@@ -141,10 +175,29 @@ public class MotionProfileCommand extends FishyCommand {
       
       double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle());
       double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
+      if(this.robotStartedBackwards) {
+        if(isReversePath) {
+
+        }
+        else {
+          desiredHeading = Pathfinder.boundHalfDegrees(desiredHeading + 180.0);
+        }
+      }
+      else {
+        if(isReversePath) {
+          desiredHeading = Pathfinder.boundHalfDegrees(desiredHeading + 180.0);
+        }
+        else {
+
+        }
+      }
 
       double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
       double turn = DrivetrainSubsystem.PathFollowingConstants.kp_gyro * headingDiff;
       
+      SmartDashboard.putNumber("PATH HEADING DIFF", headingDiff);
+
+      log("Heading Diff", headingDiff);
       log("Right Actual", (Robot.drive.motors[0].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
       log("Left Actual", (Robot.drive.motors[3].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
 
@@ -152,10 +205,10 @@ public class MotionProfileCommand extends FishyCommand {
       double left = leftSpeed + turn;
       double right = rightSpeed - turn;
       
-      double normalizer = Math.max(Math.max(left, right), 1.0);
+      double normalizer = Math.max(Math.max(Math.abs(left), Math.abs(right)), 1.0);
 
-      // left /= normalizer;
-      // right /= normalizer;
+      left /= normalizer;
+      right /= normalizer;
 
       // if(rightFollower.getSegment().acceleration > 0.0 && rightFollower.getSegment().velocity < 1.5) {
       //   left = Math.signum(left) * Math.max(Math.abs(left), 0.6);

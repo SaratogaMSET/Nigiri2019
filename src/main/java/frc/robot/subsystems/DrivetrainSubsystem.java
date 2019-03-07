@@ -62,20 +62,35 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public static class PathFollowingConstants {
-    public static class Left {
-      public static final double kp = 0.1;
-      public static final double kd = 0.0;
-      public static final double kv = 0.09;
-      public static final double ka = 0.02;
+    public static class Forward {
+      public static class Left { // tuned
+        public static final double kp = 1.8;
+        public static final double kd = 0.2;
+        public static final double kv = 0.11; //tuned
+        public static final double ka = 0.055;
+      }
+      public static class Right { // tuned
+        public static final double kp = 1.8;
+        public static final double kd = 0.2;
+        public static final double kv = 0.11; // tuned
+        public static final double ka = 0.055;
+      }
     }
-    public static class Right {
-      public static final double kp = 0.1;
-      public static final double kd = 0.0;
-      public static final double kv = 0.09;
-      public static final double ka = 0.02;
+    public static class Reverse {
+      public static class Left { // tuned
+        public static final double kp = 1.2;
+        public static final double kd = 0.1;
+        public static final double kv = 0.11; //tuned
+        public static final double ka = 0.055;
+      }
+      public static class Right { // tuned
+        public static final double kp = 1.6;
+        public static final double kd = 0.0;
+        public static final double kv = 0.11; // tuned
+        public static final double ka = 0.055;
+      }
     }
-
-    public static final double kp_gyro = 0.01;
+    public static final double kp_gyro = 0.015;
   }
 
 
@@ -104,6 +119,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors = new TalonSRX[6];
     for (int i = 0; i < motors.length; i++) {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
+      motors[i].configNominalOutputForward(0.02, Robot.timeoutMs);
+      motors[i].configNominalOutputReverse(-0.02, Robot.timeoutMs);
+      motors[i].configPeakOutputForward(1, Robot.timeoutMs);
+      motors[i].configPeakOutputReverse(-1, Robot.timeoutMs);
+
     }
     /*
     rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
@@ -137,9 +157,14 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[5].set(ControlMode.Follower, motors[3].getDeviceID());
 
     // invert right side DT motors
-    motors[0].setInverted(InvertType.InvertMotorOutput);
-    motors[1].setInverted(InvertType.InvertMotorOutput);
-    motors[2].setInverted(InvertType.InvertMotorOutput);
+    motors[0].setInverted(true);
+    motors[3].setInverted(false);
+    
+    motors[1].setInverted(InvertType.FollowMaster);
+    motors[2].setInverted(InvertType.FollowMaster);
+    motors[4].setInverted(InvertType.FollowMaster);
+    motors[5].setInverted(InvertType.FollowMaster);
+
 
     motor = 0;
   }
@@ -164,6 +189,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void rawDrive(double left, double right) {
+    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());
+    motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
+    motors[5].set(ControlMode.Follower, motors[3].getDeviceID());
+
     motors[0].set(ControlMode.PercentOutput, right);
     motors[3].set(ControlMode.PercentOutput, left);
   }
@@ -183,6 +213,14 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   
   public int getRawRightEncoder() {
     return motors[0].getSelectedSensorPosition();
+  }
+
+  public double getRightEncoderVelocity() {
+    return (double) ((double) Robot.drive.motors[0].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER;
+  }
+
+  public double getLeftEncoderVelocity() {
+    return (double) ((double) Robot.drive.motors[3].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER;
   }
 
   public double getRightEncoderDistance() {
