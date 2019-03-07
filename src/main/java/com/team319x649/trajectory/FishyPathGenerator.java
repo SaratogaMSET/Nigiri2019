@@ -8,11 +8,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.WaypointSequence;
+import com.team254.lib.trajectory.io.TextFileDeserializer;
 import com.team254.lib.trajectory.io.TextFileSerializer;
 
 public class FishyPathGenerator extends PathGenerator {
@@ -100,6 +104,32 @@ public class FishyPathGenerator extends PathGenerator {
 		
 		return true;
 	  }
+
+	  public static Path importPath(String pathName) {
+		return importPath("/home/lvuser/deploy/paths/", pathName);
+	  }
+
+	  public static Path importPath(String filePathPrefix, String pathName) {
+		String filePathLeft = filePathPrefix + pathName + "-left.csv";
+		String filePathCenter = filePathPrefix + pathName + "-center.csv";
+		String filePathRight = filePathPrefix + pathName + "-right.csv";
+		try {
+		  byte[] leftBytes = Files.readAllBytes(Paths.get(filePathLeft));
+		  byte[] rightBytes = Files.readAllBytes(Paths.get(filePathRight));
+		  byte[] centerBytes = Files.readAllBytes(Paths.get(filePathCenter));
+
+		  TextFileDeserializer js = new TextFileDeserializer();
+		  Trajectory left = js.deserialize(new String(leftBytes, Charset.defaultCharset()));
+		  Trajectory right = js.deserialize(new String(rightBytes, Charset.defaultCharset()));
+		  Trajectory center = js.deserialize(new String(centerBytes, Charset.defaultCharset()));
+
+		  return new Path(pathName, new Trajectory.Pair(left, center, right));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static void copyFilesToRelativeDirectory(String fromDirectoryRelative, String toDirectoryRelative) {
 		int fileCount = 0;

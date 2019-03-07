@@ -21,8 +21,8 @@ public class HAB1LxROCKLF extends CommandGroup {
    * Add your docs here.
    */
   public HAB1LxROCKLF() {//215
-    addSequential(new MotionProfileCommand("FarRocketLeft1", true, true));
-    addSequential(new MotionProfileCommand("FarRocketLeft2", false, true));
+    // addSequential(new MotionProfileCommand("FarRocketLeft1", true, true));
+    // addSequential(new MotionProfileCommand("FarRocketLeft2", false, true));
 
     // addSequential(new MotionProfileCommand("3-point2", true)); //.002
 

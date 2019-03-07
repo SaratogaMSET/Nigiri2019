@@ -26,7 +26,7 @@ deploy {
         // Built in artifact to deploy path files to the roboRIO.
         fileTreeArtifact('frcStaticFileDeploy') {
             // The directory below is the local directory to deploy
-            files = fileTree(dir: 'PathWeaver/output')
+            files = fileTree(dir: 'src/main/java/frc/paths')
             // Deploy to RoboRIO target, into /home/lvuser/deploy
             targets << "roborio"
             directory = '/home/lvuser/deploy/paths'
