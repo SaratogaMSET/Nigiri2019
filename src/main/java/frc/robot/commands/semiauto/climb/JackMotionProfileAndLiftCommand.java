@@ -57,7 +57,7 @@ public class JackMotionProfileAndLiftCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if(time.get()>timeout || Robot.jack.isJackAtBottom() || (Math.abs(Robot.jack.getJackEncoder() - jackHeight)) < JackSubsystem.JackEncoderConstatns.ABS_TOL){
+    if(time.get()>timeout || Robot.jack.isJackAtBottom() || (Math.abs(Robot.jack.getJackEncoder() - jackHeight)) < JackSubsystem.JackEncoderConstants.ABS_TOL){
       return true;
     }
     return false;

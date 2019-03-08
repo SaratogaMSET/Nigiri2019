@@ -26,7 +26,7 @@ public class RobotMap {
     // Right: 20, 17, 16 Left: 11, 7, 6
     public static final int[] DRIVETRAIN_MOTOR_PORTS = {20, 17, 16, 11, 7, 6};
     public static final int[] DRIVE_RIGHT_ENCODER = { 2, 3 };
-    public static final int[] DRIVE_LEFT_ENCODER = { 0, 1 };
+    public static final int[] DRIVE_LEFT_ENCODER = { 12, 13 };
   }
 
   public static class Lift {

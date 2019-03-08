@@ -9,14 +9,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.util.RobotState;
 
 public class MoveHatchCommand extends Command {
 
-  HatchState hatchPosition;
+  HatchPositionState hatchPosition;
 
-  public MoveHatchCommand(HatchState hatchPosition) {
+  public MoveHatchCommand(HatchPositionState hatchPosition) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.hatchPosition = hatchPosition;

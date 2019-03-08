@@ -11,8 +11,8 @@ import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.MoveHatchCommand;
 import frc.robot.commands.WaitUntilEncoderCommand;
 import frc.robot.commands.intake.ChangeIntakeState;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
-import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
+import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.commands.DeployHatchCommand;
 
 
@@ -21,8 +21,8 @@ public class HAB1LxCLFxLOADLxCL1 extends CommandGroup {
    * Add your docs here.
    */
   public HAB1LxCLFxLOADLxCL1() {//215
-    addParallel(new ChangeIntakeState(CargoIntakeState.MID));
-    addParallel(new WaitUntilEncoderCommand(2, new MoveHatchCommand(HatchState.hatchOut), 10));
+    addParallel(new ChangeIntakeState(CargoIntakePositionState.MID));
+    addParallel(new WaitUntilEncoderCommand(2, new MoveHatchCommand(HatchPositionState.HATCH_OUT), 10));
     addParallel(new WaitUntilEncoderCommand(6, new DeployHatchCommand(), 20));
     addSequential(new MotionProfileCommand("Straight", false, false));
     // addSequential(new MotionProfileCommand("3-point2", true)); //.002

@@ -37,24 +37,16 @@ public class OI {
 
   public Driver driver;
   public Gamepad gamePad;
-  public Operator operator;
 
   public OI() {
     driverHorizontal = new Joystick(RobotMap.JOYSTICK_DRIVE_HORIZONTAL);
     driverVertical = new Joystick(RobotMap.JOYSTICK_DRIVE_VERTICAL);
     operatorJoystick = new Joystick(RobotMap.OPERATOR_JOYSTICK);
 
-  if(Robot.isGamepad) {
     gamepad = new Joystick(RobotMap.JOYSTICK_GAMEPAD);
-  } else {
-    buttonBoardLeft = new Joystick(RobotMap.BUTTON_BOARD_LEFT);
-    buttonBoardRight = new Joystick(RobotMap.BUTTON_BOARD_RIGHT);
-  }
-
-
+  
     driver = new Driver();
     gamePad = new Gamepad();
-    operator = new Operator();
 
     visionFixButton = new JoystickButton(driverHorizontal, 1); // driver rot stick trigger
   }
@@ -181,176 +173,6 @@ public class OI {
     public boolean driverDeployReleased() {
       return getDriverButton6Released() || getDriverButton7Released() || getDriverButton8Released() || getDriverButton9Released()
             || getDriverButton10Released() || getDriverButton11Released();
-    }
-  }
-
-  public class Operator{
-    public boolean deployPressed() {
-      if(Robot.isGamepad) {
-        return gamePad.getBackButtonPressed();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(5);
-      }
-    }
-
-    public boolean deploy() {
-      if(Robot.isGamepad) {
-        return gamePad.getBackButton();
-      } else {
-        return buttonBoardLeft.getRawButton(5);
-      }
-    }
-
-    public boolean deployReleased() {
-      if(Robot.isGamepad) {
-        return gamePad.getBackButtonReleased();
-      } else {
-        return buttonBoardLeft.getRawButtonReleased(5);
-      }
-    }
-
-    public boolean deployCargo() {
-      if(Robot.isGamepad) {
-        return gamePad.getBackButtonPressed() && gamePad.getLeftTrigger();
-      } else {
-        return buttonBoardRight.getRawButton(5);
-      }
-    }
-
-    public boolean deployCargoPressed() {
-      if(Robot.isGamepad) {
-        return gamePad.getBackButtonPressed() && gamePad.getLeftTrigger();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(5);
-      }
-    }
-
-    public boolean deployCargoReleased() {
-      if(Robot.isGamepad) {
-        return gamePad.getBackButtonPressed() && gamePad.getLeftTrigger();
-      } else {
-        return buttonBoardRight.getRawButtonReleased(5);
-      }
-    }
-
-    public boolean liftToLowCargo() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonAPressed();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(8);
-      }
-    }
-
-    public boolean liftToLowHatch() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonAPressed();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(8);
-      }
-    }
-
-    public boolean liftToHatchMid() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonXPressed();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(7);
-      }
-    }
-
-    public boolean liftToHatchHigh() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonYPressed();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(4);
-      }
-    }
-
-    public boolean liftToCargoRocketLow() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonXPressed() && gamePad.getLeftTrigger();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(3);
-      }
-    }
-
-    public boolean liftToCargoRocketMid() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonYPressed() && gamePad.getLeftTrigger();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(2);
-      }
-    }
-
-    public boolean liftToCargoRocketHigh() {
-      if(Robot.isGamepad) {
-        return gamePad.getButtonBPressed() && gamePad.getLeftTrigger();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(1);
-      }
-    }
-
-    public boolean liftToCargoShip() {
-      if(Robot.isGamepad) {
-        return gamePad.getRightButtonPressed();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(7);
-      }
-    }
-
-    public boolean intakePressed() {
-      if(Robot.isGamepad) {
-        return gamePad.getLeftButtonPressed();
-      } else {
-        return buttonBoardRight.getRawButtonPressed(4);
-      }
-    }
-
-    public boolean intake() {
-      if(Robot.isGamepad) {
-        return gamePad.getLeftButton();
-      } else {
-        return buttonBoardRight.getRawButton(4);
-      }
-    }
-
-    public boolean intakeReleased() {
-      if(Robot.isGamepad) {
-        return gamePad.getLeftButtonReleased();
-      } else {
-        return buttonBoardRight.getRawButtonReleased(4);
-      }
-    }
-
-    public boolean startClimbHAB2() {
-      if(Robot.isGamepad) {
-        return gamePad.getPOVLeft();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(1) && buttonBoardLeft.getRawButtonPressed(11);
-      }
-    }
-
-    public boolean startClimbHAB3() {
-      if(Robot.isGamepad) {
-        return gamePad.getPOVRight();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(1) && buttonBoardLeft.getRawButtonPressed(10);
-      }
-    }
-
-    public boolean bringDownJack() {
-      if(Robot.isGamepad) {
-        return gamePad.getPOVDown();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(2);
-      }
-    }
-
-    public boolean bringUpJack() {
-      if(Robot.isGamepad) {
-        return gamePad.getPOVUp();
-      } else {
-        return buttonBoardLeft.getRawButtonPressed(3);
-      }
     }
   }
 

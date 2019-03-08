@@ -9,49 +9,57 @@ package frc.robot.util;
 
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.robot.Robot;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
-import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.subsystems.LiftSubsystem;
+import frc.robot.subsystems.CargoDeploySubsystem.CargoDeployMotorState;
+import frc.robot.subsystems.CargoDeploySubsystem.CargoGamePiece;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeMotorState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
+import frc.robot.subsystems.HatchSubsystem.HatchDeployState;
+import frc.robot.subsystems.HatchSubsystem.HatchGamePiece;
+import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 
 /**
  * Add your docs here.
  */
 public class RobotState {
-    public static enum GamePiece {
-        CARGO,
-        HATCH,
-        NONE
-    }
 
     public static LiftPositions liftPosition;
-    public static CargoIntakeState cargoIntakeState;
-    public static HatchState hatchState;
-    public static CargoIntakeState intakeState;
-    public static GamePiece gamepiece;
+    public static CargoIntakePositionState cargoIntakeState;
+    public static CargoIntakeMotorState intakeMotorState;
+    public static HatchPositionState hatchPositionState;
+    public static HatchDeployState hatchDeployState;
+    public static HatchGamePiece hatchGamePiece;
+    public static CargoDeployMotorState cargoDeployState;
+    public static CargoGamePiece cargoGamePiece;
 
     public RobotState() {
-        liftPosition = LiftPositions.CARGO_LOW;
-        cargoIntakeState = CargoIntakeState.IN;
-        hatchState = HatchState.hatchIn;
-        intakeState = CargoIntakeState.NONE;
-        gamepiece = GamePiece.NONE;
+        liftPosition = LiftPositions.LOW;
+        hatchPositionState = HatchPositionState.HATCH_OUT;
+        hatchDeployState = HatchDeployState.HOLD;
+        hatchGamePiece = HatchGamePiece.NO_HATCH;
+        intakeMotorState = CargoIntakeMotorState.NONE;
+        cargoIntakeState = CargoIntakePositionState.IN;
+        cargoDeployState = CargoDeployMotorState.NONE;
+        cargoGamePiece = CargoGamePiece.NO_CARGO;
     }
+
     public boolean canRunLift() {
-        if (cargoIntakeState == CargoIntakeState.MID || cargoIntakeState == CargoIntakeState.OUT) {
+        if (cargoIntakeState == CargoIntakePositionState.MID || cargoIntakeState == CargoIntakePositionState.OUT) {
             return true;
         }
         return false;
     }
 
     public boolean canBringIntakeIn() {
-        if(liftPosition == LiftPositions.CARGO_LOW) {
+        if(liftPosition == LiftPositions.LOW) {
             return true;
         }
         return false;
     }
 
     public double setIntakesForLifting(LiftPositions target, LiftPositions current) {
-        if(Robot.lift.goingUp(target, current) && (current == LiftPositions.CARGO_LOW || current == LiftPositions.HATCH_LOW)) {    
+        if(Robot.lift.goingUp(target, current) && Robot.lift.getDistance() < LiftSubsystem.LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE) {    
             return 0.6;
         } 
         return 0;
@@ -62,18 +70,9 @@ public class RobotState {
     }
 
     public boolean isLiftCargoState(LiftPositions current) {
-        if(current != LiftPositions.HATCH_LOW || current != liftPosition.HATCH_MID || current != LiftPositions.HATCH_HIGH) {
+        if(current != LiftPositions.LOW || current != liftPosition.HATCH_MID || current != LiftPositions.HATCH_HIGH) {
             return true;
         }
         return false;
-    }
-
-    public static void updateIntakeSusbystemState() {
-        cargoIntakeState = Robot.cargoIntake.getCargoIntakeState();
-        intakeState = Robot.cargoIntake.getCargoRollerState();
-    }
-
-    public static void updateHatchSubsystemState() {
-        Robot.hatch.changeHatchState();
     }
 }

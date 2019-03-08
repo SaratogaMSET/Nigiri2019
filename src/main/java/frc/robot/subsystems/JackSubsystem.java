@@ -29,8 +29,14 @@ public class JackSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
+  public static enum JackStates {
+    DEPLOYED,
+    STORED,
+    INBETWEEN,
+    MOVING
+  }
 
-  public static class JackEncoderConstatns{
+  public static class JackEncoderConstants{
     public static int UP_STATE = 0;
     public static int DOWN_STATE_LEVEL_3 = 21740;
     public static int DOWN_STATE_LEVEL_2 =  (int)(6/(1.2*Math.PI/4096) + 605);

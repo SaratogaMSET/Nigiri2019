@@ -5,17 +5,23 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.commands.semiauto;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.commands.intake.ChangeIntakeState;
+import frc.robot.commands.MoveHatchCommand;
+import frc.robot.commands.MoveLiftCommand;
+import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
+import frc.robot.subsystems.HatchSubsystem.*;
 
-public class RunCargoIntake extends CommandGroup {
+public class DefenseModeCommand extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public RunCargoIntake(double power) {
-    addParallel(new ChangeIntakeState(CargoIntakePositionState.OUT));
-    addSequential(new SetIntakeRollers(true, power));
+  public DefenseModeCommand() {
+    addSequential(new MoveLiftCommand(LiftPositions.LOW, 2));
+    addParallel(new ChangeIntakeState(CargoIntakePositionState.IN));
+    addSequential(new MoveHatchCommand(HatchPositionState.HATCH_IN));
   }
 }

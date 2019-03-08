@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
+import frc.robot.util.RobotState;
 
 /**
  * Add your docs here.
@@ -24,6 +25,18 @@ import frc.robot.RobotMap;
 public class CargoDeploySubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
+  
+  public static enum CargoDeployMotorState {
+    INTAKE,
+    EXTAKE,
+    NONE
+  }
+
+  public static enum CargoGamePiece {
+    NO_CARGO,
+    HAVE_CARGO
+  }
+
   private TalonSRX intakeWheel;
   private Solenoid piston;
   private DigitalInput cargoIR;
@@ -59,6 +72,25 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
 
   public boolean hasCargo() {
     return !cargoIR.get();
+  }
+
+  public void updateCargoGamePieceState() {
+    if(hasCargo()) {
+      RobotState.cargoGamePiece = CargoGamePiece.HAVE_CARGO;
+    } else {
+      RobotState.cargoGamePiece = CargoGamePiece.NO_CARGO;
+    }
+  }
+
+  public void updateCargoDeployState() {
+    double percentOutput = intakeWheel.getMotorOutputPercent();
+    if(percentOutput < 0) {
+      RobotState.cargoDeployState = CargoDeployMotorState.INTAKE;
+    } else if(percentOutput > 0) {
+      RobotState.cargoDeployState = CargoDeployMotorState.EXTAKE;
+    } else {
+      RobotState.cargoDeployState = CargoDeployMotorState.NONE;
+    }
   }
 
   @Override

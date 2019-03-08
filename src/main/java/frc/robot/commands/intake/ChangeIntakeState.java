@@ -10,22 +10,22 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
-import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
+import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.util.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 
 public class ChangeIntakeState extends Command {
 
-  CargoIntakeState targetState;
-  HatchState targetHatchState;
+  CargoIntakePositionState targetState;
+  HatchPositionState targetHatchState;
   Timer time;
   double targetTime;
-  public ChangeIntakeState(CargoIntakeState targetState) {
+  public ChangeIntakeState(CargoIntakePositionState targetState) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.targetState = targetState;
-    targetHatchState = HatchState.hatchIn;
+    targetHatchState = HatchPositionState.HATCH_IN;
     time = new Timer();
   }
 
@@ -33,14 +33,14 @@ public class ChangeIntakeState extends Command {
   @Override
   protected void initialize() {
     time.start();
-    CargoIntakeState currentState = RobotState.cargoIntakeState;
-    HatchState currentHatchState = RobotState.hatchState;
+    CargoIntakePositionState currentState = RobotState.cargoIntakeState;
+    HatchPositionState currentHatchState = RobotState.hatchPositionState;
 
     if(currentHatchState == targetHatchState){
       targetTime = 0;
     } else {
       targetTime = 0.5;
-      Robot.hatch.moveHatch(HatchState.hatchIn);
+      Robot.hatch.moveHatch(HatchPositionState.HATCH_IN);
     }
   }
 
@@ -61,33 +61,27 @@ public class ChangeIntakeState extends Command {
     time.stop();
     time.reset();
 
-    CargoIntakeState currentState = RobotState.cargoIntakeState;
+    CargoIntakePositionState currentState = RobotState.cargoIntakeState;
     
     if(targetState == currentState) {
       // it be done;
-    } else if(targetState == CargoIntakeState.IN && Robot.robotState.canBringIntakeIn()) {
-      if(currentState == CargoIntakeState.OUT) {
-        SmartDashboard.putString("INTAKE COMMAND", "OUT TO IN");
+    } else if(targetState == CargoIntakePositionState.IN && Robot.robotState.canBringIntakeIn()) {
+      if(currentState == CargoIntakePositionState.OUT) {
         new CargoIntakeOutToIn().start();
-      } else if(currentState == CargoIntakeState.MID) {
-        SmartDashboard.putString("INTAKE COMMAND", "MID TO IN");
+      } else if(currentState == CargoIntakePositionState.MID) {
+        new CargoIntakeMidToIn().start();
+      } else if(currentState == CargoIntakePositionState.MOVING) {
         new CargoIntakeMidToIn().start();
       }
-    } else if(targetState == CargoIntakeState.OUT) {
-      if(currentState == CargoIntakeState.IN) {
-        SmartDashboard.putString("INTAKE COMMAND", "IN TO OUT");
-        new CargoIntakeOut().start();
-      } else if(currentState == CargoIntakeState.MID) {
-        SmartDashboard.putString("INTAKE COMMAND", "MID TO OUT");
-        new CargoIntakeOut().start();
-      }
-    } else if(targetState == CargoIntakeState.MID) {
-      if(currentState == CargoIntakeState.IN) {
-        SmartDashboard.putString("INTAKE COMMAND", "IN TO MID");
+    } else if(targetState == CargoIntakePositionState.OUT) {
+      new CargoIntakeOut().start();
+    } else if(targetState == CargoIntakePositionState.MID) {
+      if(currentState == CargoIntakePositionState.IN) {
         new CargoIntakeInToMid().start();
-      } else if(currentState == CargoIntakeState.OUT) {
-        SmartDashboard.putString("INTAKE COMMAND", "OUT TO MID");
+      } else if(currentState == CargoIntakePositionState.OUT) {
         new CargoIntakeOutToMid().start();
+      } else if(currentState == CargoIntakePositionState.MOVING) {
+        new CargoIntakeInToMid().start();
       }
     }
   }

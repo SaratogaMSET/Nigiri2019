@@ -11,8 +11,8 @@ import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.MoveHatchCommand;
 import frc.robot.commands.WaitUntilEncoderCommand;
 import frc.robot.commands.intake.ChangeIntakeState;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
-import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
+import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.commands.DeployHatchCommand;
 
 

@@ -10,8 +10,8 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.MoveHatchCommand;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
-import frc.robot.subsystems.HatchSubsystem.HatchState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
+import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.util.RobotState;
 
@@ -52,14 +52,16 @@ public class WaitUntilLiftDownIntake extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return timer.get() > timeout || RobotState.liftPosition == LiftPositions.CARGO_LOW || RobotState.liftPosition == LiftPositions.HATCH_LOW;
+    return timer.get() > timeout || RobotState.liftPosition == LiftPositions.LOW;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    new MoveHatchCommand(HatchState.hatchIn).start();
-    new SetIntakeRollers(intake, topPower, sidePower, carriagePower).start();
+    if(RobotState.liftPosition == LiftPositions.LOW) {
+      new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
+      new SetIntakeRollers(intake, topPower, sidePower, carriagePower).start();
+    }
   }
 
   // Called when another command which requires one or more of the same

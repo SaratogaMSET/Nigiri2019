@@ -14,7 +14,7 @@ public class CargoIntakeOut extends CommandGroup {
    * Add your docs here.
    */
   public CargoIntakeOut() {
-    addSequential(new SetIntakePistons(true));
     addSequential(new SetMidStatePistons(false));
+    addSequential(new SetIntakePistons(true));
   }
 }

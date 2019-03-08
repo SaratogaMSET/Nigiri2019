@@ -7,12 +7,10 @@
 
 package frc.robot.commands.semiauto.climb;
 
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.JackSubsystem;
+import frc.robot.util.RobotState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import edu.wpi.first.wpilibj.RobotState;
 
 public class DeployClimbForks extends Command {
   boolean isDone;
@@ -30,7 +28,7 @@ public class DeployClimbForks extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.robotState.liftPosition == LiftPositions.CARGO_LOW){
+    if(RobotState.liftPosition == LiftPositions.LOW){
       Robot.jack.releaseForks();
       isDone = true;
     }

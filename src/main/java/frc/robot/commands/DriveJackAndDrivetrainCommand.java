@@ -27,7 +27,7 @@ public class DriveJackAndDrivetrainCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.drive.rawDrive(Robot.oi.driver.getDriverVertical() * JackSubsystem.JackEncoderConstatns.DRIVETRAIN_RATIO,Robot.oi.driver.getDriverVertical() * JackSubsystem.JackEncoderConstatns.DRIVETRAIN_RATIO);
+    Robot.drive.rawDrive(Robot.oi.driver.getDriverVertical() * JackSubsystem.JackEncoderConstants.DRIVETRAIN_RATIO,Robot.oi.driver.getDriverVertical() * JackSubsystem.JackEncoderConstants.DRIVETRAIN_RATIO);
     Robot.jack.setJackDriveMotor(Robot.oi.driver.getDriverVertical());
   }
 

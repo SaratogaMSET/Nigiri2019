@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
@@ -20,85 +21,102 @@ public class HatchSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public static enum HatchState {
-    hatchIn,
-    hatchOut,
-    hatchDeploy
+  public static enum HatchPositionState {
+    HATCH_IN,
+    HATCH_OUT
   }
 
+  public static enum HatchDeployState {
+    DEPLOY,
+    HOLD
+  }
+
+  public static enum HatchGamePiece {
+    NO_HATCH,
+    HAVE_HATCH
+  }  
+
   public Solenoid hatchSol;
-  public Solenoid hatchDeploySol1;
-  public Solenoid hatchDeploySol2;
+  public Solenoid hatchDeploySol;
   public DigitalInput hatchAcquired;
-  public HatchState currentState;
 
   public HatchSubsystem() {
     hatchSol = new Solenoid(RobotMap.Hatch.HATCH_PISTON[0], RobotMap.Hatch.HATCH_PISTON[1]);
-    hatchDeploySol1 = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON[1]);
+    hatchDeploySol = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON[1]);
     //hatchAcquired = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
-    currentState = HatchState.hatchIn;
   }
 
   public void hatchOut() {
     hatchSol.set(true);
-    RobotState.hatchState = HatchState.hatchOut;
-    // changeHatchState();
   }
 
   public void hatchIn() {
     hatchSol.set(false);
-    RobotState.hatchState = HatchState.hatchIn;
-    // changeHatchState();
   }
 
   public void hatchDeploy() {
-    hatchDeploySol1.set(true);
-    // currentState = HatchState.hatchDeploy;
-    // changeHatchState();
+    hatchDeploySol.set(true);
   }
 
   public void hatchDeployIn() {
-    hatchDeploySol1.set(false);
-    // currentState = HatchState.hatchOut;
-    // changeHatchState();
+    hatchDeploySol.set(false);
   }
 
-  public void changeHatchState() {
-    if(!hatchSol.get()) {
-      RobotState.hatchState = HatchState.hatchOut;
+  public void updateHatchPositionState() {
+    if(hatchSol.get()) {
+      RobotState.hatchPositionState = HatchPositionState.HATCH_OUT;
     } else {
-      RobotState.hatchState = HatchState.hatchIn;
+      RobotState.hatchPositionState = HatchPositionState.HATCH_IN;
     }
+  }
+
+  public void updateHatchDeployState() {
+    if(hatchDeploySol.get()) {
+      RobotState.hatchDeployState = HatchDeployState.DEPLOY;
+    } else {
+      RobotState.hatchDeployState = HatchDeployState.HOLD;
+    }
+  }
+
+  public void checkHatchStateValid() {
+    HatchPositionState posState = RobotState.hatchPositionState;
+    HatchDeployState deployState = RobotState.hatchDeployState;
+    if(posState == HatchPositionState.HATCH_IN) {
+      if(deployState == HatchDeployState.DEPLOY) {
+        SmartDashboard.putString("HATCH CHECK", "INVALID");
+      }
+    } else {
+      SmartDashboard.putString("HATCH CHECK", "valid");
+    }
+    updateHatchDeployState();
+    updateHatchPositionState();
   }
 
   public boolean getHatchAcquired() {
     return hatchAcquired.get();
   }
 
-  public void moveHatch(HatchState pos) {
+  public void moveHatch(HatchPositionState pos) {
     switch(pos) {
-      case hatchIn:
+      case HATCH_IN:
         hatchDeployIn();
         hatchIn();
-        // changeHatchState();
         break;
-      case hatchOut:
+      case HATCH_OUT:
         hatchDeployIn();
         hatchOut();
-        // changeHatchState();
-        break;
-      case hatchDeploy:
-        hatchDeploy();
         break;
     }
   }
 
-  public void setHatchState(HatchState pos) {
-    currentState = pos;
-  }
-
-  public HatchState getHatchState() {
-    return currentState;
+  public void checkState() {
+    if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
+      if(RobotState.hatchDeployState == HatchDeployState.DEPLOY) {
+        moveHatch(HatchPositionState.HATCH_IN);
+      }
+    }
+    updateHatchDeployState();
+    updateHatchPositionState();
   }
 
   @Override

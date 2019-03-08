@@ -14,7 +14,6 @@ public class CargoIntakeOutToMid extends CommandGroup {
    * Add your docs here.
    */
 
-   double intakePower = .75;
 
   public CargoIntakeOutToMid() {
     addSequential(new SetMidStatePistons(true));

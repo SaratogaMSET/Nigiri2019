@@ -23,8 +23,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   public static enum LiftPositions {
-    HATCH_LOW,
-    CARGO_LOW,
+    TRUE_BOTTOM,
+    LOW,
     CARGO_SHIP,
     CARGO_ROCKET_LEVEL_ONE,
     CARGO_ROCKET_LEVEL_TWO,
@@ -34,7 +34,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     HATCH_HIGH,
     CLIMB_HAB_TWO,
     CLIMB_HAB_THREE,
-    MOVING
+    MOVING,
+    MANUAL
   }
 
   public static class LiftEncoderConstants {
@@ -42,10 +43,13 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final int CLIMB_HAB_THREE = 13100;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
-    public static final int TOLERANCE = 100;
+    public static final int TOLERANCE = 75;
+    public static final int STATE_TOLERANCE = 150;
+    public static final int VELOCITY_THRESH = 100;
   }
 
   public static class LiftDistanceConstants {
+    public static final double TRUE_BOTTOM = -0.25;
     public static final double INTAKE = 0;
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
@@ -66,7 +70,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class PIDConstants {
     public static final double k_f = 0.2925714;
-    public static double k_p = 0.5;
+    public static double k_p = 0.7;
     public static double k_i = 0.0;
     public static double k_d = 0.0;
     public static final int MAX_ACCELERATION = 5000; //measured 40000-70000
@@ -78,8 +82,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   private TalonSRX motor3;
   private DigitalInput bottomHal;
   private DigitalInput topHal;
-  private LiftPositions currentPosition;
   private boolean isMoving;
+  private boolean lastBottomHal;
+
+  public static boolean isRunningLiftPID = false;
 
   public LiftSubsystem() {
     motor1 = new TalonSRX(RobotMap.Lift.LIFT_MOTOR_1_PORT);
@@ -115,9 +121,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor1.config_kF(0, PIDConstants.k_f);
 
     motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    currentPosition = LiftPositions.CARGO_LOW;
     
     isMoving = false;
+    lastBottomHal = false;
   }
 
   public void setManualLift(double power) {
@@ -173,10 +179,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public void moveLiftToPos(LiftPositions pos) {
     switch(pos) {
-      case CARGO_LOW:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
-        break;
-      case HATCH_LOW:
+      case TRUE_BOTTOM:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.TRUE_BOTTOM));
+      case LOW:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
         break;
       case CARGO_SHIP:
@@ -205,16 +210,14 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         break;
       case CLIMB_HAB_THREE:
         motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE);
-        break;    
+        break;   
+      case MOVING:
+        //nothing
+        break;
+      case MANUAL:
+        // nothing
+        break;
     }
-  }
-
-  public void setPosition(LiftPositions pos) {
-    currentPosition = pos;
-  }
-
-  public LiftPositions getLiftPosition() {
-    return currentPosition;
   }
 
   // public boolean getTopHal() {
@@ -223,6 +226,15 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public boolean getBottomHal() {
     return !bottomHal.get();
+  }
+
+  public boolean isZero() {
+    if(getBottomHal() && !lastBottomHal) {
+      lastBottomHal = getBottomHal();
+      return true;
+    }
+    lastBottomHal = getBottomHal();
+    return false;
   }
 
   public void setFollowers() {
@@ -235,19 +247,17 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor3.set(ControlMode.PercentOutput, 0);
   }
 
-  public void setIsMoving(boolean isMoving) {
-    this.isMoving = isMoving;
+  public boolean isMoving() {
+    if(Math.abs(motor1.getSelectedSensorVelocity(0)) > LiftEncoderConstants.VELOCITY_THRESH) {
+      SmartDashboard.putNumber("Lift Velocity", motor1.getSelectedSensorVelocity(0));
+      return true;
+    }
+    return false;
   }
-
-  public boolean getIsMoving() {
-    return isMoving;
-  }
-
+ 
   public int getLiftPositionEncoders(LiftPositions pos) {
     switch(pos) {
-      case CARGO_LOW:
-        return getTicksFromDistance(LiftDistanceConstants.INTAKE);
-      case HATCH_LOW:
+      case LOW:
         return getTicksFromDistance(LiftDistanceConstants.INTAKE);
       case CARGO_SHIP:
         return getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP);
@@ -269,6 +279,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         return LiftEncoderConstants.CLIMB_HAB_THREE;  
       case MOVING:
         return getRawEncoder();  
+      case MANUAL:
+        return getRawEncoder();
     }
     return 0;
   }
@@ -284,6 +296,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public boolean withinTolerance(LiftPositions target) {
     return (Math.abs(getLiftPositionEncoders(target) - getRawEncoder()) < LiftEncoderConstants.TOLERANCE) ? true: false;
+  }
+
+  public boolean withinStateTolerance(LiftPositions target) {
+    return (Math.abs(getLiftPositionEncoders(target) - getRawEncoder()) < LiftEncoderConstants.STATE_TOLERANCE) ? true: false;
   }
 
   public int getVel() {
@@ -316,6 +332,34 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     return motor1.getMotorOutputVoltage();
   }
 
+  public LiftPositions updateLiftPosition() {
+    if(withinTolerance(LiftPositions.LOW)) {
+      return LiftPositions.LOW;
+    } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_ONE)) {
+      return LiftPositions.CARGO_ROCKET_LEVEL_ONE;
+    } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_TWO)) {
+      return LiftPositions.CARGO_ROCKET_LEVEL_TWO;
+    } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_THREE)) {
+      return LiftPositions.CARGO_ROCKET_LEVEL_THREE;
+    } else if(withinStateTolerance(LiftPositions.CARGO_LOADING_STATION)) {
+      return LiftPositions.CARGO_LOADING_STATION;
+    } else if(withinStateTolerance(LiftPositions.CARGO_SHIP)) {
+      return LiftPositions.CARGO_SHIP;
+    } else if(withinStateTolerance(LiftPositions.HATCH_MID)) {
+      return LiftPositions.HATCH_MID;
+    } else if(withinStateTolerance(LiftPositions.HATCH_HIGH)) {
+      return LiftPositions.HATCH_HIGH;
+    } else if(isMoving()) {
+      return LiftPositions.MOVING;
+    }
+    return LiftPositions.MANUAL;
+  }
+
+  public void stallLift(LiftPositions pos) {
+    if(Math.abs(getRawEncoder() - getLiftPositionEncoders(pos)) > LiftEncoderConstants.TOLERANCE) {
+      moveLiftToPos(pos);
+    }
+  }
 
   @Override
   public void initDefaultCommand() {

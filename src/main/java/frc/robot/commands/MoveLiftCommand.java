@@ -11,7 +11,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
+import frc.robot.subsystems.LiftSubsystem;
+import frc.robot.subsystems.CargoDeploySubsystem.CargoDeployMotorState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeMotorState;
+import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
 import frc.robot.commands.intake.SetIntakeRollers;
@@ -50,11 +53,7 @@ public class MoveLiftCommand extends Command {
 
     if(current == target) {
       isFinished = true;
-    } else if (target == LiftPositions.CARGO_LOW && current == LiftPositions.HATCH_LOW) {
-      isFinished = true;
-    } else if (target == LiftPositions.HATCH_LOW && current == LiftPositions.CARGO_LOW) {
-      isFinished = true;
-    } else if(target == LiftPositions.CARGO_LOW || target == LiftPositions.HATCH_LOW) {
+    } else if(target == LiftPositions.LOW) {
       goingToBottom = true;
     } else {
       goingUp = Robot.lift.goingUp(target, current);
@@ -63,6 +62,7 @@ public class MoveLiftCommand extends Command {
     time = new Timer();
     time.reset();
     time.start();
+
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -70,18 +70,16 @@ public class MoveLiftCommand extends Command {
   protected void execute() {
     if(Robot.robotState.canRunLift() && !isFinished) {
       Robot.lift.moveLiftToPos(target);
-      Robot.lift.setIsMoving(true);
       SmartDashboard.putString("Target Position", target.toString());
       RobotState.liftPosition = LiftPositions.MOVING;
       if(goingUp) {
         if(Robot.robotState.runIntakesWhileLifting()) {
-          if(RobotState.intakeState == CargoIntakeState.NONE) {
-            new SetIntakeRollers(true, intakePower, 0, 0).start();
+          if(RobotState.intakeMotorState == CargoIntakeMotorState.NONE) {
+            new SetIntakeRollers(true, intakePower, 0, 0.2).start();
           }
-        } else if(!goingToBottom && RobotState.intakeState != CargoIntakeState.NONE) {
-          new SetIntakeRollers(true, 0, 0, 0).start();
+        } else if(!goingToBottom && RobotState.intakeMotorState != CargoIntakeMotorState.NONE) {
+          new SetIntakeRollers(true, 0, 0, 0.2).start();
         }
-        Robot.cargoDeploy.runIntake(0.2);
       }
     } else {
       isFinished = true;
@@ -109,11 +107,13 @@ public class MoveLiftCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.lift.setIsMoving(false);
-    if(onTarget) {
-      RobotState.liftPosition = target;
+    // if(!goingToBottom && !(RobotState.cargoIntakeState == CargoIntakePositionState.OUT)) {
+    //   new SetIntakeRollers(true, 0).start();
+    // }
+    if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
+      new SetIntakeRollers(true, 0).start();
     }
-    if(!goingToBottom && !(RobotState.intakeState == CargoIntakeState.OUT)) {
+    if(RobotState.cargoDeployState == CargoDeployMotorState.INTAKE && RobotState.cargoIntakeState != CargoIntakePositionState.OUT) {
       new SetIntakeRollers(true, 0).start();
     }
     SmartDashboard.putBoolean("onTarget", onTarget);
