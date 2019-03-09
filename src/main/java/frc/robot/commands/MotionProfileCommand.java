@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryFollower;
+import com.team254.lib.trajectory.Trajectory.Segment;
 import com.team319x649.trajectory.FishyPath;
 import com.team319x649.trajectory.FishyPathGenerator;
 
@@ -22,9 +23,6 @@ import frc.robot.Robot;
 import frc.robot.RobotMap.Drivetrain;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.util.FishyMath;
-import jaci.pathfinder.*;
-import jaci.pathfinder.Trajectory.Segment;
-import jaci.pathfinder.followers.EncoderFollower;
 
 
 public class MotionProfileCommand extends FishyCommand {
@@ -32,35 +30,59 @@ public class MotionProfileCommand extends FishyCommand {
   Notifier followerNotifier;
   TrajectoryFollower leftFollower, rightFollower;
 
-  double left_encoder_count, right_encoder_count;
   boolean isReversePath;
-
   boolean isPathFinished;
 
-  public MotionProfileCommand(FishyPath fishyPath, double left_encoder_count, double right_encoder_count) {
+  public static final double kP_gyro_doubletraction = -4.0;
+  public static final double kP_gyro_omnitraction = -0.5;
+
+  public MotionProfileCommand(FishyPath fishyPath) {
     this();
     path = fishyPath.getPath();
   }
 
   public MotionProfileCommand(String pathName) {
+    this(pathName, false);
+  }
+
+  public MotionProfileCommand(String pathName, boolean isReversePath) {
     this();
     path = FishyPathGenerator.importPath(pathName);
+    setPathDirection(isReversePath);
   }
 
   private MotionProfileCommand() {
     isPathFinished = false;
-    followerNotifier = new Notifier(this::followPath);
-    isReversePath = false;
   }
 
   public void setPathDirection(boolean isReverse) {
     this.isReversePath = isReverse;
+    if(isReverse) {
+      for(Segment s : path.getLeftTrajectory().getSegments()) {
+        s.vel *= -1;
+        s.pos *= -1;
+        s.jerk *= -1;
+        s.acc *= -1;
+      }
+      for(Segment s : path.getTrajectory().getSegments()) {
+        s.vel *= -1;
+        s.pos *= -1;
+        s.jerk *= -1;
+        s.acc *= -1;
+      }
+      for(Segment s : path.getRightTrajectory().getSegments()) {
+        s.vel *= -1;
+        s.pos *= -1;
+        s.jerk *= -1;
+        s.acc *= -1;
+      }
+    }
   }
 
   // The command MUST implement this method - the fields which you want to log
   protected String[] getLogFields() {
     // velocities for MP
-    return new String[] {"Right Target", "Left Target", "Left Actual", "Right Actual", "Left Power", "Right Power", "Heading Diff"};
+    return new String[] {"Left TPos", "Right TPos", "Left APos", "Right APos", "Right Target", "Left Target", "Left Actual", "Right Actual", "Left Setpoint", "Right Setpoint", "Heading Diff", "Target Heading", "Acutal Heading", "T %", "LX", "LY", "RX", "RY"};
   }
 
   // Called just before this Command runs the first time
@@ -70,6 +92,7 @@ public class MotionProfileCommand extends FishyCommand {
       leftFollower = new TrajectoryFollower(path.getLeftTrajectory());
       rightFollower = new TrajectoryFollower(path.getRightTrajectory());
       configurePath();
+      followerNotifier = new Notifier(this::followPath);
       followerNotifier.startPeriodic(0.02);
     }
     else {
@@ -94,12 +117,13 @@ public class MotionProfileCommand extends FishyCommand {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.drive.motors[0].set(ControlMode.Velocity, 0.0);
+    Robot.drive.motors[3].set(ControlMode.Velocity, 0.0);
     logger.drain();
     logger.flush();
     if(followerNotifier != null) {
       followerNotifier.stop();
     }
-    Robot.drive.rawDrive(0.0, 0.0);
   }
 
   // Called when another command which requires one or more of the same
@@ -111,8 +135,17 @@ public class MotionProfileCommand extends FishyCommand {
 
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
-    leftFollower.configure(10.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(10.0, 0.0, Robot.drive.getRightEncoderDistance());
+
+    if(this.isReversePath) {
+      leftFollower.configure(20.0, 0.0, Robot.drive.getRightEncoderDistance());
+      rightFollower.configure(20.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    }
+    else {
+      leftFollower.configure(20.0, 0.0, Robot.drive.getLeftEncoderDistance());
+      rightFollower.configure(20.0, 0.0, Robot.drive.getRightEncoderDistance());
+    }
+    
+    
 
     // if(reversePath) {
     //   leftFollower.configureEncoder(Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
@@ -164,23 +197,36 @@ public class MotionProfileCommand extends FishyCommand {
       Robot.drive.isPathRunning = false;
       followerNotifier.stop();
       followerNotifier = null;
+      // Robot.drive.motors[0].set(ControlMode.Velocity, 0.0);
+      // Robot.drive.motors[3].set(ControlMode.Velocity, 0.0);
+      Robot.drive.rawDrive(0.0, 0.0);
     } else {
       log("Right Target", rightFollower.getSegment().vel);
       log("Left Target", leftFollower.getSegment().vel);
 
+      log("Left TPos", leftFollower.getSegment().pos);
+      log("Right TPos", rightFollower.getSegment().pos);
+      log("LX", leftFollower.getSegment().x);
+      log("LY", leftFollower.getSegment().y);
+
+      log("RX", rightFollower.getSegment().x);
+      log("RY", rightFollower.getSegment().y);
+
       double leftSpeedRPM, rightSpeedRPM;
-      if(isReversePath) {
+
+      if(this.isReversePath) {
         leftSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getLeftEncoderDistance());
         rightSpeedRPM = leftFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());
       }
       else {
         leftSpeedRPM = leftFollower.calculateTargetRPM(Robot.drive.getLeftEncoderDistance());
-        rightSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());
-        
+        rightSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());  
       }
       
-      double heading = Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle());
-      double desiredHeading = Pathfinder.r2d(leftFollower.getHeading());
+             
+      
+      double heading = FishyMath.boundThetaNeg180to180(-Robot.gyro.getGyroAngle());
+      double desiredHeading = FishyMath.r2d(leftFollower.getHeading());
       // if(this.robotStartedBackwards) {
       //   if(isReversePath) {
 
@@ -198,23 +244,38 @@ public class MotionProfileCommand extends FishyCommand {
       //   }
       // }
 
-      double headingDiff = Pathfinder.boundHalfDegrees(desiredHeading - heading);
-      double turn = DrivetrainSubsystem.PathFollowingConstants.kp_gyro * headingDiff;
+      double headingDiff = FishyMath.boundThetaNeg180to180(desiredHeading - heading);
+      double gyroConstant;
+      if(leftFollower.getSegment().acc < 0) {
+        gyroConstant = kP_gyro_omnitraction;
+      }
+      else {
+        gyroConstant = kP_gyro_doubletraction;
+      }
+      double turn = gyroConstant * headingDiff;
       
-      log("Heading Diff", headingDiff);
-      log("Right Actual", (Robot.drive.motors[0].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
-      log("Left Actual", (Robot.drive.motors[3].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
+      log("Right Actual", Robot.drive.getRightEncoderVelocity());
+      log("Left Actual", Robot.drive.getLeftEncoderVelocity());
 
-
-
-      double left = leftSpeedRPM;
-      double right = rightSpeedRPM;
+      double left = leftSpeedRPM + turn;
+      double right = rightSpeedRPM - turn;
       
-      Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left));
-      Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right));
+      Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right));
+      Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left));
 
       log("Left Setpoint", left);
       log("Right Setpoint", right);
+      log("Heading Diff", headingDiff);
+      log("Target Heading", desiredHeading);
+      log("Actual Heading", heading);
+
+      log("T %", turn/left);
+
+
+      log("Left APos", Robot.drive.getLeftEncoderDistance());
+      log("Right APos", Robot.drive.getRightEncoderDistance());
+
+
 
       logger.write();
 

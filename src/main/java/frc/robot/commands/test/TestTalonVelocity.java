@@ -15,8 +15,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.commands.FishyCommand;
+import frc.robot.util.FishyMath;
 
-public class TestDTMaxVA extends FishyCommand {
+public class TestTalonVelocity extends FishyCommand {
   double timeout;
   Timer time;
 
@@ -26,10 +27,10 @@ public class TestDTMaxVA extends FishyCommand {
 
   @Override
   protected String[] getLogFields() {
-      return new String[] {"Right Vel", "Left Vel", "Right A", "Left A", "NavX Accel"};
+      return new String[] {"Right Vel", "Left Vel"};
   }
 
-  public TestDTMaxVA(double timeout) {
+  public TestTalonVelocity(double timeout) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.timeout = timeout;
@@ -41,7 +42,6 @@ public class TestDTMaxVA extends FishyCommand {
   protected void initialize() {
     time.start();
     Robot.drive.changeBrakeCoast(false);
-    Robot.drive.rawDrive(1.0, 1.0);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -49,14 +49,10 @@ public class TestDTMaxVA extends FishyCommand {
   protected void execute() {
     log("Right Vel", Robot.drive.getRightEncoderVelocity());
     log("Left Vel", Robot.drive.getLeftEncoderVelocity());
-    log("Right A", (Robot.drive.getRightEncoderVelocity() - prevRV)/(time.get() - prevTime));
-    log("Left A", (Robot.drive.getLeftEncoderVelocity() - prevLV)/(time.get() - prevTime));
 
-    prevTime = time.get();
-    prevLV = Robot.drive.getLeftEncoderVelocity();
-    prevRV = Robot.drive.getRightEncoderVelocity();
+    Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(4.0)));
+    Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(4.0)));
 
-    log("NavX Accel", Robot.gyro.gyro.getWorldLinearAccelY() * 32.17405); // ft/s^2
     logger.write();
 
   }

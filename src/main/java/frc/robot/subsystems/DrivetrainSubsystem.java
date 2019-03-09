@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.util.FishyMath;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -45,54 +46,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
   // motors[0] is the right master, motors [1,2] right followers
   // motors[3] is the left master, motors [4,5] left followers
-  public static class DriveStraightGyroConstants {
-    public static double kp = 0;
-    public static double ki = 0;
-    public static double kd = 0;
-    public static double cumError = 0;
-    public static double lastError = 0;
-  }
-
-  public static class DriveStraightConstants {
-    public static double kp = 0;
-    public static double ki = 0;
-    public static double kd = 0;
-    public static double cumError = 0;
-    public static double lastError = 0;
-  }
-
-  public static class PathFollowingConstants {
-    public static class Forward {
-      public static class Left { // tuned
-        public static final double kp = 1.8;
-        public static final double kd = 0.2;
-        public static final double kv = 0.11; //tuned
-        public static final double ka = 0.055;
-      }
-      public static class Right { // tuned
-        public static final double kp = 1.8;
-        public static final double kd = 0.2;
-        public static final double kv = 0.11; // tuned
-        public static final double ka = 0.055;
-      }
-    }
-    public static class Reverse {
-      public static class Left { // tuned
-        public static final double kp = 1.2;
-        public static final double kd = 0.1;
-        public static final double kv = 0.11; //tuned
-        public static final double ka = 0.055;
-      }
-      public static class Right { // tuned
-        public static final double kp = 1.6;
-        public static final double kd = 0.0;
-        public static final double kv = 0.11; // tuned
-        public static final double ka = 0.055;
-      }
-    }
-    public static final double kp_gyro = 0.15;
-  }
-
 
   // NEED TO RETUNE EVERY TIME ROBOT CHANGES
   // These are the values that go into path code PIDVA
@@ -111,52 +64,30 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
   public static final double WHEEL_DIAMETER = (4.06/12.0); // feet
   public static final int TICKS_PER_REV = 4096;
-
-  public double kP, kI, kD, kF;
-
+  public static final double WHEELBASE_FEET = 2.1804; // feet
 
   public DrivetrainSubsystem() {
     motors = new TalonSRX[6];
     for (int i = 0; i < motors.length; i++) {
       motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
-      motors[i].configNominalOutputForward(0.02, Robot.timeoutMs);
-      motors[i].configNominalOutputReverse(-0.02, Robot.timeoutMs);
-      motors[i].configPeakOutputForward(1, Robot.timeoutMs);
-      motors[i].configPeakOutputReverse(-1, Robot.timeoutMs);
+      motors[i].configNominalOutputForward(0.08, 200);
+      motors[i].configNominalOutputReverse(-0.08, 200);
+      motors[i].configPeakOutputForward(1, 200);
+      motors[i].configPeakOutputReverse(-1, 200);
     }
-    /*
-    rightEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[0], RobotMap.Drivetrain.DRIVE_RIGHT_ENCODER[1], false, EncodingType.k1X);
-    leftEncoder = new Encoder(RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[0], RobotMap.Drivetrain.DRIVE_LEFT_ENCODER[1], true, EncodingType.k1X);
-    
-    rightEncoder.setDistancePerPulse(WHEEL_DIAMETER * Math.PI / (double) TICKS_PER_REV);
-    leftEncoder.setDistancePerPulse(WHEEL_DIAMETER * Math.PI /  (double) TICKS_PER_REV);
-
-    leftEncoder.setSamplesToAverage(127);
-    rightEncoder.setSamplesToAverage(127);
-
-    leftEncoder.setMinRate((0.2/12.0));
-    rightEncoder.setMinRate((0.2/12.0));
-
-    */
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[0].config_kF(0, 0.24133352745410850646539813001682);
-    motors[0].config_kP(0, 0.8);
-    motors[0].config_kI(0, 0.0);
-    motors[0].config_kD(0, 0.0);
+    motors[0].config_kF(0, 0.22);
+    motors[0].config_kP(0, 0.7964006405985581);
+    motors[0].config_kI(0, 0.002);
+    motors[0].config_kD(0, 5.0);
 
 
     motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[3].config_kF(0, 0.24133352745410850646539813001682);
-    motors[3].config_kP(0, 0.8);
-    motors[3].config_kI(0, 0.0);
-    motors[3].config_kD(0, 0.0);
-
-
-    kP = 0.0;
-    kI = 0.0;
-    kD = 0.0;
-    kF = 0.0;
+    motors[3].config_kF(0, 0.22);
+    motors[3].config_kP(0, 0.7964006405985581);
+    motors[3].config_kI(0, 0.002);
+    motors[3].config_kD(0, 5.0);
 
     // follow right master
     motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
@@ -174,9 +105,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[2].setInverted(InvertType.FollowMaster);
     motors[4].setInverted(InvertType.FollowMaster);
     motors[5].setInverted(InvertType.FollowMaster);
-
-
-    motor = 0;
   }
 
   public void changeBrakeCoast(boolean isBrake) {
@@ -226,11 +154,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public double getRightEncoderVelocity() {
-    return (double) ((double) Robot.drive.motors[0].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER;
+    return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(motors[0].getSelectedSensorVelocity()));
   }
 
   public double getLeftEncoderVelocity() {
-    return (double) ((double) Robot.drive.motors[3].getSelectedSensorVelocity() * (10.0 / (double) DrivetrainSubsystem.TICKS_PER_REV)) * Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER;
+    return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(motors[3].getSelectedSensorVelocity()));
   }
 
   public double getRightEncoderDistance() {
@@ -288,37 +216,6 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     for (int i = 0; i < motors.length; i++) {
       motors[i].set(ControlMode.PercentOutput, 0);
     }
-  }
-
-  
-  
-  public double getGyroStraightPIDOutput(double error) {
-    double p = DriveStraightGyroConstants.kp * error;
-    DriveStraightGyroConstants.cumError += error;
-    double i = DriveStraightGyroConstants.ki * DriveStraightGyroConstants.cumError;
-    double dError = error - DriveStraightGyroConstants.lastError;
-    DriveStraightGyroConstants.lastError = error;
-    double d = DriveStraightGyroConstants.kd * dError;
-
-    return p + i + d;
-  }
-
-  public double getStraightPIDOutput(double error) {
-    double p = DriveStraightConstants.kp * error;
-    DriveStraightConstants.cumError += error;
-    double i = DriveStraightConstants.ki * DriveStraightConstants.cumError;
-    double dError = error - DriveStraightConstants.lastError;
-    DriveStraightConstants.lastError = error;
-    double d = DriveStraightConstants.kd * dError;
-
-    return p + i + d;
-  }
-
-  public void PIDReset() {
-    DriveStraightConstants.cumError = 0;
-    DriveStraightGyroConstants.cumError = 0;
-    DriveStraightConstants.lastError = 0;
-    DriveStraightGyroConstants.lastError = 0;
   }
 
   @Override

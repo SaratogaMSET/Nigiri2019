@@ -30,6 +30,7 @@ import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.commands.test.TestDTMaxVA;
+import frc.robot.commands.test.TestTalonVelocity;
 import frc.robot.commands.vision.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeState;
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
   public static LiftSubsystem lift;
   public static JackSubsystem jack;
   public static HatchSubsystem hatch;
+  public static AutoSelector autoSelector;
 
   // Vision
   public static VisionSubsystem vision;
@@ -90,6 +92,8 @@ public class Robot extends TimedRobot {
   public Timer intakeTime, time;
 
   public static boolean isClimb;
+
+  public Command autoCommand;
  
   /**
    * This function is run when the robot is first started up and should be
@@ -106,6 +110,7 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
+    autoSelector = new AutoSelector();
     // camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
@@ -130,6 +135,8 @@ public class Robot extends TimedRobot {
     jack.resetJackEncoder();
 
     led.solidRed();
+
+    autoCommand = new MotionProfileCommand("FarRocketLeft", true);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -143,6 +150,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putString("Auto", autoSelector.getAuto());
+    SmartDashboard.putString("Side", autoSelector.getSide() ? "Right" : "Left");
+    SmartDashboard.putString("Control", autoSelector.getControl() ? "Auto" : "Teleop Driving");
     // SmartDashboard.putNumber("bandwidth", camera.max);
     // System.out.println(camera.max);
     // double vel = (drive.leftEncoder.getRate() + drive.rightEncoder.getRate())/2.0f;
@@ -170,7 +180,11 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
     SmartDashboard.putNumber("LIFT ENCODER", lift.getRawEncoder());
     // SmartDashboard.putBoolean("CARGO IR SENSOR", cargoDeploy.hasCargo());
-    // SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
+    SmartDashboard.putBoolean("JACK UP HAL", jack.isJackAtTop());
+    SmartDashboard.putBoolean("JACK DOwn HAL", jack.isJackAtBottom());
+
+    SmartDashboard.putNumber("JACK POS", jack.getJackEncoder());
+
     smartdashboardTesting();
 
 
@@ -181,6 +195,9 @@ public class Robot extends TimedRobot {
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
       jack.setJackMotorMP(JackSubsystem.JackEncoderConstatns.UP_STATE);
+    }
+    if(jack.isJackAtTop()) {
+      jack.resetJackEncoder();
     }
 
     // Vision
@@ -231,7 +248,8 @@ public class Robot extends TimedRobot {
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
     // new HAB1LxROCKLF().start();
-    new MotionProfileCommand("DistanceScaling").start();
+    autoCommand.start();
+    // new TestTalonVelocity(100).start();
 
   }
   /**
@@ -266,6 +284,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    // testMotors();
     if(isGamepad) {
       teleopLoop();
     } else {
@@ -279,6 +298,7 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     // gyro.gyroPIDController.setSetpoint(90.0);
     // gyro.gyroPIDController.enable();
+    
   }
 
   /**

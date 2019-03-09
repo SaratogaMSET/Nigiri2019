@@ -82,7 +82,7 @@ public class FishyMath {
     
     public static double fps2rpm(double fps) {
         // fps * 60 will be feet / minute
-        // feet / minute * circumference is rpm 
+        // feet / minute / circumference is rpm 
         return fps * 60.0 / (DrivetrainSubsystem.WHEEL_DIAMETER * Math.PI);
     }
 
@@ -107,10 +107,10 @@ public class FishyMath {
     }
 
     public static double rpm2talonunits(double rpm) {
-        return rpm * DrivetrainSubsystem.TICKS_PER_REV / 600.0;
+        return rpm * ((double) DrivetrainSubsystem.TICKS_PER_REV) / 600.0;
     }
 
     public static double talaonunits2rpm(double talonunits) {
-        return talonunits * 600.0 / DrivetrainSubsystem.TICKS_PER_REV;
+        return talonunits * 600.0 / ((double)DrivetrainSubsystem.TICKS_PER_REV);
     }
 }
