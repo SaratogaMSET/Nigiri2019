@@ -70,6 +70,12 @@ public class RobotMap {
     public static final int ULTRASONIC_RIGHT = 1;
   }
 
+  public static class AutoSelector {
+    public static final int CONTROL = 12;
+    public static final int SIDE = 13;
+    public static final int ROTARY = 5;
+  }
+
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.
   // public static int leftMotor = 1;
