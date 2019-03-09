@@ -5,9 +5,14 @@ import static java.util.Arrays.asList;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team254.lib.trajectory.Path;
+import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence.Waypoint;
 import com.team319x649.trajectory.*;
+
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.util.FishyMath;
 
 public class FishyPathCreator extends AbstractFishyPathCreator {
 
@@ -20,13 +25,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private TrajectoryGenerator.Config config = new TrajectoryGenerator.Config();
     
     public static void main(String[] args) {
-        new FishyPathCreator().generatePaths();
+		// System.out.println(FishyMath.fps2rpm(12.0));
+		new FishyPathCreator().generatePaths();
 	}
 	
 	private FishyPathCreator() {
 		config.dt = 0.02;
-		config.max_acc = 1.0; // Maximum acceleration in FPS^2
-		config.max_vel = 11.0; // Maximum velocity in FPS
+		config.max_acc = 8.0; // Maximum acceleration in FPS^2
+		config.max_vel = 12.0; // Maximum velocity in FPS
 		config.max_jerk = 2.0;
 	}
 
@@ -45,16 +51,16 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 		 // Create a path with the name of "Example", this will generate a file named ExampleArc
-		 FishyPath exampleArc = new FishyPath(config, "Example", 2.23);
+		 FishyPath exampleArc = new FishyPath(config, "FarRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		 // Set the first point to the starating point, this be done with any of the addWaypoint methods
 		 // positive X is forward, positive Y is left, units are in feet and degrees
 		 exampleArc.addWaypoint(startingPoint);
 		 // Add the next point that 4.5 ft forward, and doesn't turn, it also has a max speed of 4 FPS, 
 		 // it will arrive at this location going 4 FPS
-		 exampleArc.addWaypointRelative(4.5, 0, 0, 4, 4);
+		 exampleArc.addWaypointRelative(4.5, 0, 0, 3, 3);
 		 // Add the next point to be at global coordinates
-		 exampleArc.addWaypoint(25, 24, 0, 0, 11);
-		 exampleArc.addWaypointRelative(-3.3, 0.675, -29.5, 0, 11);
+		 exampleArc.addWaypoint(25, 24, 0, 0, 11.5);
+		//  exampleArc.addWaypointRelative(-3.3, 0.675, -29.5, 0, 10.0);
 		 
 		 return asList(exampleArc); // return asList(path1, path2, path3, ...);
 	}
@@ -73,11 +79,11 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private List<FishyPath> getConfigArcs() {
 		FishyPath distanceScaling = new FishyPath(config, "DistanceScaling", 2.23);
 		distanceScaling.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		distanceScaling.addWaypointRelative(3, 0, 0, 0, 3);
+		distanceScaling.addWaypointRelative(5, 0, 0, 0, 10);
 
 		FishyPath turnScaling = new FishyPath(config, "TurnScaling", 2.23);
 		turnScaling.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		turnScaling.addWaypointRelative(3, 3, 89.99, 0, 3);
+		turnScaling.addWaypointRelative(10, -10, 89.99, 0, 8);
 
 
 		FishyPath speedTesting = new FishyPath(config, "SpeedTesting", 2.23);

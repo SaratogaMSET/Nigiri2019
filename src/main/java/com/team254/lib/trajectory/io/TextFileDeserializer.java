@@ -17,9 +17,9 @@ public class TextFileDeserializer {
     System.out.println("String has " + serialized.length() + " chars");
     System.out.println("Found " + tokenizer.countTokens() + " tokens");
     tokenizer.nextToken();
-    
-    Trajectory t = new Trajectory(tokenizer.countTokens()-1);
-    for (int i = 0; i < tokenizer.countTokens()-1; ++i) {
+    int len =  tokenizer.countTokens()-1;
+    Trajectory t = new Trajectory(len);
+    for (int i = 0; i < len; ++i) {
       Trajectory.Segment segment = new Trajectory.Segment();
       StringTokenizer line_tokenizer = new StringTokenizer(
               tokenizer.nextToken(), ", ");
@@ -32,7 +32,7 @@ public class TextFileDeserializer {
       segment.dt = Double.parseDouble(line_tokenizer.nextToken());
       segment.x = Double.parseDouble(line_tokenizer.nextToken());
       segment.y = Double.parseDouble(line_tokenizer.nextToken());
-      
+      System.out.println(segment.vel);
       t.setSegment(i, segment);
     }
     

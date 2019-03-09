@@ -31,6 +31,7 @@ import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.commands.test.TestDTMaxVA;
+import frc.robot.commands.test.TestTalonVelocity;
 import frc.robot.commands.vision.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
@@ -96,6 +97,8 @@ public class Robot extends TimedRobot {
   public Timer intakeTime, time;
 
   public static boolean isClimb;
+
+  public Command autoCommand;
  
   /**
    * This function is run when the robot is first started up and should be
@@ -112,6 +115,7 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
+    autoSelector = new AutoSelector();
     camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
@@ -136,6 +140,8 @@ public class Robot extends TimedRobot {
     jack.resetJackEncoder();
 
     led.solidRed();
+
+    autoCommand = new MotionProfileCommand("FarRocketLeft", true);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -173,6 +179,10 @@ public class Robot extends TimedRobot {
     if(!jack.isJackAtTop() && !isClimb){
       jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
     }
+    if(jack.isJackAtTop()) {
+      jack.resetJackEncoder();
+    }
+
     // Vision
     if(vision != null) {
       if(visionFixCommand != null && !visionFixCommand.isRunning()) {
@@ -214,7 +224,8 @@ public class Robot extends TimedRobot {
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
     // new HAB1LxROCKLF().start();
-    new MotionProfileCommand("DistanceScaling").start();
+    autoCommand.start();
+    // new TestTalonVelocity(100).start();
 
   }
   /**
@@ -294,6 +305,7 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     // gyro.gyroPIDController.setSetpoint(90.0);
     // gyro.gyroPIDController.enable();
+    
   }
 
   /**

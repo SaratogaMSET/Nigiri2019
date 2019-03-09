@@ -1,11 +1,13 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoSelector extends Subsystem {
 
