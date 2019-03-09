@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.util.RobotState;
+import frc.robot.util.Logging;
 
 public class SetIntakeRollers extends Command {
   boolean intake;
@@ -48,6 +49,8 @@ public class SetIntakeRollers extends Command {
     Robot.cargoIntake.runIntake(intake, topPower, sidePower);
     String string = String.format("%.2f %.2f %.2f", topPower, sidePower, carriagePower);
     SmartDashboard.putString("Run Intakes", string);
+    String log = String.format("SetIntakeRollers" + string);
+    Logging.print(log);
   }
 
   // Called repeatedly when this Command is scheduled to run

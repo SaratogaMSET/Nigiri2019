@@ -18,6 +18,7 @@ import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
 import frc.robot.commands.intake.SetIntakeRollers;
+import frc.robot.util.Logging;
 import frc.robot.util.RobotState;
 
 public class MoveLiftCommand extends Command {
@@ -62,6 +63,11 @@ public class MoveLiftCommand extends Command {
     time = new Timer();
     time.reset();
     time.start();
+
+    String string = String.format("MoveLiftCommand Start, Current: %.2f, Target: %s", Robot.lift.getDistance(), target.toString());
+    Logging.print(string);
+
+    // String
 
   }
 
@@ -118,6 +124,9 @@ public class MoveLiftCommand extends Command {
     }
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);
+
+    String string = String.format("%.4f MoveLiftCommand End, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
+    Logging.print(string);
 
   }
 

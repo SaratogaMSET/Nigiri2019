@@ -250,7 +250,7 @@ public class CargoIntakeSubsystem extends Subsystem {
     if (count >= 5) {
       switch(pos) {
         case OUT:
-          if(Robot.oi.gamePad.getLeftButton()) {
+          if(Robot.oi.gamePad.getLeftButton() && RobotState.liftPosition == LiftPositions.LOW) {
             new SetIntakeRollers(true, 1).start();
           } else {
             new SetIntakeRollers(true, 0).start();

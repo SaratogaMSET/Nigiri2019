@@ -94,7 +94,7 @@ public class Robot extends TimedRobot {
   public double max_accel = 0.0;
   public Timer accelTime = new Timer();
 
-  public Timer intakeTime, time;
+  public static Timer intakeTime, time;
 
   public static boolean isClimb;
 
@@ -138,6 +138,9 @@ public class Robot extends TimedRobot {
     drive.changeBrakeCoast(false);
     lift.resetEncoder();
     jack.resetJackEncoder();
+
+    time = new Timer();
+
 
     led.solidRed();
 
@@ -498,7 +501,6 @@ public class Robot extends TimedRobot {
       Robot.gyro.gyroPIDController.enable();
       drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
     }
-   
   }
 
 

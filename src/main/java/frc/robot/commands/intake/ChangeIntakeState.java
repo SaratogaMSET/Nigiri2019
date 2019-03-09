@@ -13,6 +13,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.util.RobotState;
+import frc.robot.util.Logging;
 import edu.wpi.first.wpilibj.Timer;
 
 public class ChangeIntakeState extends Command {
@@ -62,7 +63,10 @@ public class ChangeIntakeState extends Command {
     time.reset();
 
     CargoIntakePositionState currentState = RobotState.cargoIntakeState;
-    
+
+    String string = String.format("%.4f ChangeIntakeState, Current: %s, Target: %s", Robot.time.get(), currentState.toString(), targetState.toString());
+    Logging.print(string);
+
     if(targetState == currentState) {
       // it be done;
     } else if(targetState == CargoIntakePositionState.IN && Robot.robotState.canBringIntakeIn()) {

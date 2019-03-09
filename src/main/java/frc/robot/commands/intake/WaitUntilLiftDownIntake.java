@@ -14,6 +14,7 @@ import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.util.RobotState;
+import frc.robot.util.Logging;
 
 public class WaitUntilLiftDownIntake extends Command {
 
@@ -42,6 +43,9 @@ public class WaitUntilLiftDownIntake extends Command {
     timer = new Timer();
     timer.reset();
     timer.start();
+
+    String string = String.format("WaitUntilLiftDownIntake Start");
+    Logging.print(string);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -61,7 +65,13 @@ public class WaitUntilLiftDownIntake extends Command {
     if(RobotState.liftPosition == LiftPositions.LOW) {
       new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       new SetIntakeRollers(intake, topPower, sidePower, carriagePower).start();
+      String string = String.format("WaitUntilLiftDownIntake Finished");
+      Logging.print(string);
+    } else {
+      String string = String.format("WaitUntilLiftDownIntake Failed");
+      Logging.print(string);
     }
+
   }
 
   // Called when another command which requires one or more of the same
