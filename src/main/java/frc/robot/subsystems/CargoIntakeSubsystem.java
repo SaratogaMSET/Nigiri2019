@@ -211,12 +211,16 @@ public class CargoIntakeSubsystem extends Subsystem {
         invalidStateCount++;
       } else if(motorState == CargoIntakeMotorState.NONE) {
         invalidStateCount++;
+      } else {
+        invalidStateCount = 0;
       }
     } else if(posState == CargoIntakePositionState.MID) {
       if(motorState == CargoIntakeMotorState.INTAKE) {
         invalidStateCount++;
       } else if(motorState == CargoIntakeMotorState.EXTAKE) {
         invalidStateCount++;
+      } else {
+        invalidStateCount = 0;
       }
     } else if(posState == CargoIntakePositionState.IN) {
       if(motorState == CargoIntakeMotorState.INTAKE) {
@@ -225,10 +229,10 @@ public class CargoIntakeSubsystem extends Subsystem {
         invalidStateCount++;
       } else if(motorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
         invalidStateCount++;
+      } else {
+        invalidStateCount = 0;
       }
-    } else {
-      invalidStateCount = 0;
-    }
+    } 
     SmartDashboard.putNumber("Invalid State", invalidStateCount);
     fixState(posState, motorState, invalidStateCount);
     updateIntakeRollerState();
