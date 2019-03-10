@@ -34,7 +34,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     HATCH_HIGH,
     CLIMB_HAB_TWO,
     CLIMB_HAB_THREE,
-    MOVING,
     MANUAL,
     PREP_CLIMB_1,
     PREP_CLIMB_2
@@ -215,9 +214,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case CLIMB_HAB_THREE:
         motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE);
         break;   
-      case MOVING:
-        //nothing
-        break;
       case MANUAL:
         // nothing
         break;
@@ -287,8 +283,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         return LiftEncoderConstants.CLIMB_HAB_TWO;
       case CLIMB_HAB_THREE:
         return LiftEncoderConstants.CLIMB_HAB_THREE;  
-      case MOVING:
-        return getRawEncoder();  
       case MANUAL:
         return getRawEncoder();
     }
@@ -325,13 +319,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public boolean goingUp(LiftPositions target, LiftPositions current) {
-    int tick;
-    if (current == LiftPositions.MOVING) {
-      tick = getRawEncoder();
-    } else {
-      tick = getLiftPositionEncoders(current);
-    }
-    return (getLiftPositionEncoders(target) - tick > 0) ? true : false;
+    return (getLiftPositionEncoders(target) - getRawEncoder() > 0) ? true : false;
   }
 
   public double getCurrentMainMotor() {
@@ -359,8 +347,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       return LiftPositions.HATCH_MID;
     } else if(withinStateTolerance(LiftPositions.HATCH_HIGH)) {
       return LiftPositions.HATCH_HIGH;
-    } else if(isMoving()) {
-      return LiftPositions.MOVING;
     }
     return LiftPositions.MANUAL;
   }

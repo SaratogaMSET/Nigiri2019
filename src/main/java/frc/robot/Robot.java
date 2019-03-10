@@ -15,14 +15,10 @@ import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
 import frc.robot.*;
-import frc.robot.RobotMap.Drivetrain;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
 import frc.robot.commands.intake.ChangeIntakeState;
-import frc.robot.commands.intake.RunCargoIntake;
-import frc.robot.commands.intake.SetIntakePistons;
 import frc.robot.commands.intake.SetIntakeRollers;
-import frc.robot.commands.intake.SetMidStatePistons;
 import frc.robot.commands.intake.WaitUntilLiftDownIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
 import frc.robot.commands.semiauto.climb.DeployClimbForks;
@@ -39,7 +35,6 @@ import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
 import frc.robot.util.RobotState;
@@ -47,9 +42,6 @@ import jaci.pathfinder.Pathfinder;
 // import sun.util.logging.PlatformLogger.Level;
 import frc.robot.commands.semiauto.climb.MoveJackCommand;
 
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -374,7 +366,6 @@ public class Robot extends TimedRobot {
     // Stop drivetrain motion
     drive.rawDrive(0, 0);
     // hatch.changeHatchState();
-    new ChangeIntakeState(CargoIntakePositionState.MID).start();
     // Stop lift motion
 
     // Stop jack motion - note: robot safety is priority. Is it safe for the robot's jack to stop running?
@@ -393,7 +384,7 @@ public class Robot extends TimedRobot {
     if(!isClimb && !isDefenseMode){
       if(oi.gamePad.getLeftButtonPressed()) { //****************RUN INTAKES*********** */
         if(RobotState.liftPosition != LiftPositions.LOW
-          && RobotState.liftPosition != LiftPositions.MOVING)  {
+          && !lift.isMoving())  {
           new SetIntakeRollers(true, 0, 0, 1).start(); // only carriage
         } else {
           new ChangeIntakeState(CargoIntakePositionState.OUT).start();
@@ -471,7 +462,7 @@ public class Robot extends TimedRobot {
         isLevel3 = true;
         new PrepareClimb3().start();
       }
-    } else if(isClimb){
+    } else if(isClimb){ // ****************************************** CLIMBING ************/
       if(oi.gamePad.getPOVDown()) {
         // push down jack
         if(!isJackRunning){
@@ -486,19 +477,7 @@ public class Robot extends TimedRobot {
         new MoveJackCommand(0,3);
         isClimb = false;
       }
-    }
-
-    //****************************DEFENSE*********************************************** */
-    if((oi.gamePad.getLeftJoystickButton() && oi.gamePad.getRightJoystickButtonPressed())) {
-      isDefenseMode = !isDefenseMode;
-      if(isDefenseMode) {
-        new DefenseModeCommand().start();
-      } else if(!isDefenseMode) {
-        new ChangeIntakeState(CargoIntakePositionState.MID).start();
-      }
-    }
-
-    if(isDefenseMode) {
+    } else if(isDefenseMode) { //****************************************DEFENSE****************** */
       if(oi.gamePad.getLeftButtonPressed()) {
         new SetIntakeRollers(true, 0, 0, 1).start();
       } else if(oi.gamePad.getLeftButtonReleased()) {
@@ -511,6 +490,18 @@ public class Robot extends TimedRobot {
         new SetIntakeRollers(false, 0, 0, 0).start();
       }
     }
+
+    //****************************CHANGE TO DEFENSE****************************************** */
+    if((oi.gamePad.getLeftJoystickButton() && oi.gamePad.getRightJoystickButtonPressed())) {
+      isDefenseMode = !isDefenseMode;
+      if(isDefenseMode) {
+        new DefenseModeCommand().start();
+      } else if(!isDefenseMode) {
+        new ChangeIntakeState(CargoIntakePositionState.MID).start();
+      }
+    }
+
+    
 
     // ****************** MANUAL MODE *************************************************
     if(oi.gamePad.getStartButton()) { 

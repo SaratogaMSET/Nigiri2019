@@ -28,6 +28,7 @@ public class MoveLiftCommand extends Command {
   boolean onTarget;
   boolean goingUp;
   boolean goingToBottom;
+  boolean isTargetCargoState;
 
   Timer time;
 
@@ -49,6 +50,7 @@ public class MoveLiftCommand extends Command {
     isFinished = false;
     onTarget = false;
     goingToBottom = false;
+    isTargetCargoState = RobotState.isLiftCargoState(target);
 
     if(current == target) {
       isFinished = true;
@@ -57,7 +59,7 @@ public class MoveLiftCommand extends Command {
     } else {
       goingUp = Robot.lift.goingUp(target, current);
     }
-    intakePower = Robot.robotState.setIntakesForLifting(target, current);
+
     time = new Timer();
     time.reset();
     time.start();
@@ -67,6 +69,8 @@ public class MoveLiftCommand extends Command {
       Logging.print(string);
     }
 
+    
+
     // String
 
   }
@@ -74,15 +78,20 @@ public class MoveLiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.robotState.canRunLift() && !isFinished) {
+    if(RobotState.canRunLift() && !isFinished) {
       Robot.lift.moveLiftToPos(target);
       SmartDashboard.putString("Target Position", target.toString());
 
 
-      if(goingUp) {
-        intakePower = Robot.robotState.setIntakesForLifting(target, current);
-        if(RobotState.intakeMotorState == CargoIntakeMotorState.NONE && intakePower != 0) {
-          new SetIntakeRollers(true, intakePower, 0, 0.2).start();
+      if(isTargetCargoState) {
+        if(goingUp && RobotState.runIntakesWhileLifting()) {
+          if(RobotState.intakeMotorState != CargoIntakeMotorState.TOP_BAR_ONLY) {
+            new SetIntakeRollers(true, 0.6, 0, 0.2).start();
+          }
+        } else {
+          if(RobotState.intakeMotorState != CargoIntakeMotorState.NONE) {
+            new SetIntakeRollers(true, 0, 0, 0.2).start();
+          }
         }
       }
     } else {
@@ -117,7 +126,7 @@ public class MoveLiftCommand extends Command {
     if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
       new SetIntakeRollers(true, 0).start();
     }
-    if(RobotState.cargoIntakeState != CargoIntakePositionState.OUT) {
+    if(RobotState.liftPosition != LiftPositions.LOW) {
       new SetIntakeRollers(true, 0).start();
     }
     SmartDashboard.putBoolean("onTarget", onTarget);

@@ -14,6 +14,7 @@ import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
 import frc.robot.util.RobotState;
+import frc.robot.util.Logging;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -248,11 +249,15 @@ public class CargoIntakeSubsystem extends Subsystem {
 
   private void fixState(CargoIntakePositionState pos, CargoIntakeMotorState motor, int count) {
     if (count >= 10) {
+      if(Robot.isLogging) {
+        String string = String.format("%.4f, FixState For CargoIntake", Robot.time.get());
+        Logging.print(string);
+      }
       switch(pos) {
         case OUT:
-          if(Robot.oi.gamePad.getLeftButton() && RobotState.liftPosition == LiftPositions.LOW) {
+          if((Robot.oi.gamePad.getLeftButton() && RobotState.liftPosition == LiftPositions.LOW)) {
             new SetIntakeRollers(true, 1).start();
-          } else {
+          } else if(Robot.lift.isMoving()) {
             new SetIntakeRollers(true, 0).start();
             new ChangeIntakeState(CargoIntakePositionState.MID).start();
           }

@@ -7,9 +7,7 @@
 
 package frc.robot.util;
 
-import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.robot.Robot;
-import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem.CargoDeployMotorState;
 import frc.robot.subsystems.CargoDeploySubsystem.CargoGamePiece;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeMotorState;
@@ -44,32 +42,25 @@ public class RobotState {
         cargoGamePiece = CargoGamePiece.NO_CARGO;
     }
 
-    public boolean canRunLift() {
+    public static boolean canRunLift() {
         if (cargoIntakeState == CargoIntakePositionState.MID || cargoIntakeState == CargoIntakePositionState.OUT) {
             return true;
         }
         return false;
     }
 
-    public boolean canBringIntakeIn() {
+    public static boolean canBringIntakeIn() {
         if(liftPosition == LiftPositions.LOW) {
             return true;
         }
         return false;
     }
 
-    public double setIntakesForLifting(LiftPositions target, LiftPositions current) {
-        if(Robot.lift.goingUp(target, current) && Robot.lift.getDistance() < LiftSubsystem.LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE) {    
-            return 0.6;
-        } 
-        return 0;
-    }
-
-    public boolean runIntakesWhileLifting() {
+    public static boolean runIntakesWhileLifting() {
         return (Robot.lift.getRawEncoder() < Robot.lift.getLiftPositionEncoders(LiftPositions.CARGO_ROCKET_LEVEL_ONE))? true : false;
     }
 
-    public boolean isLiftCargoState(LiftPositions current) {
+    public static boolean isLiftCargoState(LiftPositions current) {
         if(current != LiftPositions.LOW || current != liftPosition.HATCH_MID || current != LiftPositions.HATCH_HIGH) {
             return true;
         }
