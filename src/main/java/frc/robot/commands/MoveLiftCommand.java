@@ -9,9 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.LiftSubsystem;
 import frc.robot.subsystems.CargoDeploySubsystem.CargoDeployMotorState;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeMotorState;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
@@ -64,8 +62,10 @@ public class MoveLiftCommand extends Command {
     time.reset();
     time.start();
 
-    String string = String.format("MoveLiftCommand Start, Current: %.2f, Target: %s", Robot.lift.getDistance(), target.toString());
-    Logging.print(string);
+    if(Robot.isLogging) {
+      String string = String.format("%.4f, MoveLiftCommand Start, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
+      Logging.print(string);
+    }
 
     // String
 
@@ -77,14 +77,12 @@ public class MoveLiftCommand extends Command {
     if(Robot.robotState.canRunLift() && !isFinished) {
       Robot.lift.moveLiftToPos(target);
       SmartDashboard.putString("Target Position", target.toString());
-      RobotState.liftPosition = LiftPositions.MOVING;
+
+
       if(goingUp) {
-        if(Robot.robotState.runIntakesWhileLifting()) {
-          if(RobotState.intakeMotorState == CargoIntakeMotorState.NONE) {
-            new SetIntakeRollers(true, intakePower, 0, 0.2).start();
-          }
-        } else if(!goingToBottom && RobotState.intakeMotorState != CargoIntakeMotorState.NONE) {
-          new SetIntakeRollers(true, 0, 0, 0.2).start();
+        intakePower = Robot.robotState.setIntakesForLifting(target, current);
+        if(RobotState.intakeMotorState == CargoIntakeMotorState.NONE && intakePower != 0) {
+          new SetIntakeRollers(true, intakePower, 0, 0.2).start();
         }
       }
     } else {
@@ -119,14 +117,16 @@ public class MoveLiftCommand extends Command {
     if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
       new SetIntakeRollers(true, 0).start();
     }
-    if(RobotState.cargoDeployState == CargoDeployMotorState.INTAKE && RobotState.cargoIntakeState != CargoIntakePositionState.OUT) {
+    if(RobotState.cargoIntakeState != CargoIntakePositionState.OUT) {
       new SetIntakeRollers(true, 0).start();
     }
     SmartDashboard.putBoolean("onTarget", onTarget);
     SmartDashboard.putBoolean("isFinished", true);
 
-    String string = String.format("%.4f MoveLiftCommand End, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
-    Logging.print(string);
+    if(Robot.isLogging) {
+      String string = String.format("%.4f, MoveLiftCommand End, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
+      Logging.print(string);
+    }
 
   }
 

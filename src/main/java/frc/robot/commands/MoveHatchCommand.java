@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.util.RobotState;
+import frc.robot.util.Logging;
 
 public class MoveHatchCommand extends Command {
 
@@ -26,6 +27,11 @@ public class MoveHatchCommand extends Command {
   @Override
   protected void initialize() {
     Robot.hatch.moveHatch(hatchPosition);
+
+    if(Robot.isLogging) {
+      String string = String.format("%.4f, MoveHatchCommand," + hatchPosition.toString(), Robot.time.get());
+      Logging.print(string);
+    }
   }
 
   // Called repeatedly when this Command is scheduled to run

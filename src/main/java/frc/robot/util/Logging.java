@@ -59,7 +59,11 @@ public class Logging {
 		}
 
 		public static void closeWriter() {
-			commandWriter.close();
+			try {
+				commandWriter.close();
+			} catch(NullPointerException e) {
+				
+			}
 		}
 		
 		public static void createLogFile() {

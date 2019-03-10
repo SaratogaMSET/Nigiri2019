@@ -247,7 +247,7 @@ public class CargoIntakeSubsystem extends Subsystem {
   }
 
   private void fixState(CargoIntakePositionState pos, CargoIntakeMotorState motor, int count) {
-    if (count >= 5) {
+    if (count >= 10) {
       switch(pos) {
         case OUT:
           if(Robot.oi.gamePad.getLeftButton() && RobotState.liftPosition == LiftPositions.LOW) {

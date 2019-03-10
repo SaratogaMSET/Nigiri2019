@@ -64,8 +64,10 @@ public class ChangeIntakeState extends Command {
 
     CargoIntakePositionState currentState = RobotState.cargoIntakeState;
 
-    String string = String.format("%.4f ChangeIntakeState, Current: %s, Target: %s", Robot.time.get(), currentState.toString(), targetState.toString());
-    Logging.print(string);
+    if(Robot.isLogging) {
+      String string = String.format("%.4f, ChangeIntakeState, Current: %s, Target: %s", Robot.time.get(), currentState.toString(), targetState.toString());
+      Logging.print(string);
+    }
 
     if(targetState == currentState) {
       // it be done;

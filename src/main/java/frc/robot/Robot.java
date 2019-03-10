@@ -39,6 +39,7 @@ import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.FishyMath;
+import frc.robot.util.Logging;
 import frc.robot.util.RobotState;
 import jaci.pathfinder.Pathfinder;
 
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
   public static boolean isDefenseMode = false;
   public static boolean autoDriverControl = false;
   public static boolean isManualMode = false;
+  public static boolean isLogging = true;
 
 
   // Subsystems
@@ -115,13 +117,12 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
-    autoSelector = new AutoSelector();
+    // autoSelector = new AutoSelector();
     camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
     hatch = new HatchSubsystem();
     compressor = new Compressor(4);
-    autoSelector = new AutoSelector();
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);
     isClimb = false; 
@@ -174,9 +175,9 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
 
-    SmartDashboard.putString("Auto", autoSelector.getAuto());
-    SmartDashboard.putString("Side", autoSelector.getSide());
-    SmartDashboard.putString("Control", autoSelector.getControl());
+    // SmartDashboard.putString("Auto", autoSelector.getAuto());
+    // SmartDashboard.putString("Side", autoSelector.getSide());
+    // SmartDashboard.putString("Control", autoSelector.getControl());
 
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
@@ -266,6 +267,11 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     init(false);
+    time.reset();
+    time.start();
+    if(isLogging) {
+      Logging.createLogFile();
+    }
   }
 
   //Init method for both auto and teleop
@@ -356,6 +362,9 @@ public class Robot extends TimedRobot {
     // Stop lift motion
 
     // Stop jack motion - note: robot safety is priority. Is it safe for the robot's jack to stop running?
+    if(isLogging) {
+      Logging.closeWriter();
+    }
   }
 
   @Override
@@ -415,7 +424,7 @@ public class Robot extends TimedRobot {
       } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 2).start();
-      } else if(RobotState.liftPosition != LiftPositions.MOVING) {
+      } else if(!lift.isMoving()) {
         lift.stallLift(RobotState.liftPosition);
       } 
   

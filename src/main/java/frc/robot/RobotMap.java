@@ -74,7 +74,7 @@ public class RobotMap {
     public static final int CONTROL = 12; //Actual port
     public static final int SIDE = 13; //Actual port
     public static final int ROTARY = 0; //A0
-  }
+}
 
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.

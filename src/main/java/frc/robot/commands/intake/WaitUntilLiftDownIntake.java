@@ -9,6 +9,7 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
 import frc.robot.commands.MoveHatchCommand;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
@@ -44,8 +45,10 @@ public class WaitUntilLiftDownIntake extends Command {
     timer.reset();
     timer.start();
 
-    String string = String.format("WaitUntilLiftDownIntake Start");
-    Logging.print(string);
+    if(Robot.isLogging) {
+      String string = String.format("%f, WaitUntilLiftDownIntake Start", Robot.time.get());
+      Logging.print(string);
+    }
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -65,11 +68,16 @@ public class WaitUntilLiftDownIntake extends Command {
     if(RobotState.liftPosition == LiftPositions.LOW) {
       new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       new SetIntakeRollers(intake, topPower, sidePower, carriagePower).start();
-      String string = String.format("WaitUntilLiftDownIntake Finished");
-      Logging.print(string);
+
+      if(Robot.isLogging) {
+        String string = String.format("%f, WaitUntilLiftDownIntake Finished", Robot.time.get());
+        Logging.print(string);
+      }
     } else {
-      String string = String.format("WaitUntilLiftDownIntake Failed");
-      Logging.print(string);
+      if(Robot.isLogging) {
+        String string = String.format("%f, WaitUntilLiftDownIntake Failed", Robot.time.get());
+        Logging.print(string);
+      }
     }
 
   }

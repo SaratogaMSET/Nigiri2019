@@ -10,6 +10,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.util.Logging;
 
 public class RunCargoDeployCommand extends Command {
   public RunCargoDeployCommand() {
@@ -21,6 +22,10 @@ public class RunCargoDeployCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    if(Robot.isLogging) {
+      String string = String.format("%.4f, RunCargoDeployCommand", Robot.time.get());
+      Logging.print(string);
+    }
   }
 
   // Called repeatedly when this Command is scheduled to run
