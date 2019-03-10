@@ -159,12 +159,12 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     //***********************************UPDATE STATES***************************** */
-    cargoIntake.updateIntakeState();
-    cargoIntake.updateIntakeRollerState();
-    cargoDeploy.updateCargoGamePieceState();
-    cargoDeploy.updateCargoDeployState();
-    hatch.updateHatchPositionState();
-    hatch.updateHatchDeployState();
+    RobotState.cargoIntakeState = cargoIntake.updateIntakeState();
+    RobotState.intakeMotorState = cargoIntake.updateIntakeRollerState();
+    RobotState.cargoGamePiece = cargoDeploy.updateCargoGamePieceState();
+    RobotState.cargoDeployState = cargoDeploy.updateCargoDeployState();
+    RobotState.hatchPositionState = hatch.updateHatchPositionState();
+    RobotState.hatchDeployState = hatch.updateHatchDeployState();
     RobotState.liftPosition = lift.updateLiftPosition();
     smartdashboardTesting();
 
@@ -208,9 +208,6 @@ public class Robot extends TimedRobot {
       led.solidRed();
     }
 
-    if(lift.getBottomHal()){
-      lift.resetEncoder();
-    }
   }
 
    /* LabVIEW Dashboard, remove all of the chooser code and uncomment the
@@ -505,7 +502,6 @@ public class Robot extends TimedRobot {
 
     // ****************** MANUAL MODE *************************************************
     if(oi.gamePad.getStartButton()) { 
-      RobotState.liftPosition = LiftPositions.MANUAL;
       double pow = oi.gamePad.getLeftJoystickY()/2;
       if(lift.getBottomHal() && pow < 0){
         pow = 0;
