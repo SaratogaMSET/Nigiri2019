@@ -35,7 +35,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     CLIMB_HAB_TWO,
     CLIMB_HAB_THREE,
     MOVING,
-    MANUAL
+    MANUAL,
+    PREP_CLIMB_1,
+    PREP_CLIMB_2
   }
 
   public static class LiftEncoderConstants {
@@ -58,6 +60,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_LOADING_STATION = 32.5;
     public static final double HATCH_MID = 27.88;
     public static final double HATCH_HIGH = 54.4;
+    public static final double PREP_CLIMB_1 = 31.20;
+    public static final double PREP_CLIMB_2 = 28.23;
   }
 
   public static class LiftPidConstants {
@@ -217,6 +221,12 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case MANUAL:
         // nothing
         break;
+      case PREP_CLIMB_1:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.PREP_CLIMB_1));
+        break;
+      case PREP_CLIMB_2:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.PREP_CLIMB_2));
+        break;
     }
   }
 
@@ -360,6 +370,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       moveLiftToPos(pos);
     }
   }
+
 
   @Override
   public void initDefaultCommand() {

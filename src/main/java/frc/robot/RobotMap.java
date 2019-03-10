@@ -47,7 +47,7 @@ public class RobotMap {
     public static final int JACK_DRIVE_MOTOR = 14;
     public static final int DOWN_HAL = 4;
     public static final int UP_HAL = 6;
-    public static final int[] FORK_DEPLOY = {0,0};
+    public static final int FORK_DEPLOY = 7;
   }
 
   public static class CargoIntake {

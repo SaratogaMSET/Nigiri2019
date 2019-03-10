@@ -72,7 +72,7 @@ public class JackSubsystem extends Subsystem {
     jackMotor.setSensorPhase(true);
     jackMotor.setNeutralMode(NeutralMode.Brake);
     jackMotor.selectProfileSlot(0, 0);
-    forkDeploy = new Solenoid(RobotMap.Jacks.FORK_DEPLOY[0],RobotMap.Jacks.FORK_DEPLOY[1]);
+    forkDeploy = new Solenoid(RobotMap.Jacks.FORK_DEPLOY);
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);
     botHal = new DigitalInput(RobotMap.Jacks.DOWN_HAL);
     topHal = new DigitalInput(RobotMap.Jacks.UP_HAL);
@@ -81,8 +81,8 @@ public class JackSubsystem extends Subsystem {
   public void setJackDriveMotor(double pow){
     jackDriveMotor.set(ControlMode.PercentOutput, pow);
   }
-  public void releaseForks(){
-    forkDeploy.set(true);
+  public void releaseForks(boolean isOut){
+    forkDeploy.set(isOut);
   }
   public void setJackMotor(double pow){
     jackMotor.set(ControlMode.PercentOutput, pow);

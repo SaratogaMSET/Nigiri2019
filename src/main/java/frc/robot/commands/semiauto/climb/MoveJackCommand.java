@@ -9,40 +9,40 @@ package frc.robot.commands.semiauto.climb;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.util.RobotState;
-import frc.robot.subsystems.LiftSubsystem.LiftPositions;
+import frc.robot.subsystems.JackSubsystem;
 import edu.wpi.first.wpilibj.Timer;
 
-public class DeployClimbForks extends Command {
-  boolean isOut;
+public class MoveJackCommand extends Command {
+  double position;
   double time;
   Timer timer;
-  public DeployClimbForks(boolean isOut, double time) {
+  public MoveJackCommand(double pos,double timeout) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    this.isOut = isOut;
+    position = pos;
+    time = timeout;
     timer = new Timer();
-    this.time = time;
-
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    Robot.jack.releaseForks(isOut);
-    timer.start();
+   Robot.jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
+   timer.start();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
     if(timer.get() > time){
+      return true;
+    }
+    if(Math.abs(Robot.jack.getJackEncoder() - position) < 50 ){
       return true;
     }
     return false;

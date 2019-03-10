@@ -27,6 +27,8 @@ import frc.robot.commands.intake.WaitUntilLiftDownIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
 import frc.robot.commands.semiauto.climb.DeployClimbForks;
 import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
+import frc.robot.commands.semiauto.climb.PrepareClimb2;
+import frc.robot.commands.semiauto.climb.PrepareClimb3;
 import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
@@ -42,6 +44,9 @@ import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
 import frc.robot.util.RobotState;
 import jaci.pathfinder.Pathfinder;
+// import sun.util.logging.PlatformLogger.Level;
+import frc.robot.commands.semiauto.climb.MoveJackCommand;
+
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -99,6 +104,8 @@ public class Robot extends TimedRobot {
   public static Timer intakeTime, time;
 
   public static boolean isClimb;
+  public static boolean isLevel3;
+  public static boolean isJackRunning;
 
   public Command autoCommand;
  
@@ -125,7 +132,7 @@ public class Robot extends TimedRobot {
     compressor = new Compressor(4);
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);
-    isClimb = false; 
+   
     try {
       vision = new VisionSubsystem();
       SmartDashboard.putString("VISION INIT", "1");
@@ -208,6 +215,10 @@ public class Robot extends TimedRobot {
     } else {
       led.solidRed();
     }
+
+    if(lift.getBottomHal()){
+      lift.resetEncoder();
+    }
   }
 
    /* LabVIEW Dashboard, remove all of the chooser code and uncomment the
@@ -228,8 +239,10 @@ public class Robot extends TimedRobot {
     // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
     // new TestDTMaxVA(10.0).start();
     // new HAB1LxROCKLF().start();
-    autoCommand.start();
+    // autoCommand.start();
     // new TestTalonVelocity(100).start();
+    new PrepareClimb2().start();
+
 
   }
   /**
@@ -272,6 +285,9 @@ public class Robot extends TimedRobot {
     if(isLogging) {
       Logging.createLogFile();
     }
+    isClimb = false; 
+    isLevel3 = false;
+    isJackRunning = false;
   }
 
   //Init method for both auto and teleop
@@ -430,7 +446,7 @@ public class Robot extends TimedRobot {
   
 
   
-      // *************************** DEPLOY **********************************************/
+      // *************************** DEPLOY ********************************************/
       if(oi.gamePad.getBackButtonPressed()) { //*********GUNNER DEPLOY********** */
         new DeployCommand(RobotState.liftPosition, 1, 2).start();
       } else if(oi.gamePad.getBackButtonReleased()) {
@@ -447,19 +463,28 @@ public class Robot extends TimedRobot {
       if(oi.gamePad.getPOVLeft()) {
         // start climb sequence level 2
         isClimb = true;
-        new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO, 2).start();
-        new DeployClimbForks().start();
+        isLevel3 = false;
+        new PrepareClimb2().start();
       } else if(oi.gamePad.getPOVRight()) {
         // start climb sequence level 3
         isClimb = true;
-        new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 2).start();
-        new DeployClimbForks().start();
+        isLevel3 = true;
+        new PrepareClimb3().start();
       }
     } else if(isClimb){
       if(oi.gamePad.getPOVDown()) {
         // push down jack
+        if(!isJackRunning){
+          isJackRunning = true;
+          if(isLevel3){
+            new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3,true,4).start();
+          }else{
+            new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_2,true,3).start();
+          } 
+        }
       } else if(oi.gamePad.getPOVUp()) {
-        // push up jack
+        new MoveJackCommand(0,3);
+        isClimb = false;
       }
     }
 
@@ -502,14 +527,22 @@ public class Robot extends TimedRobot {
     }
   
     //******************************* DRIVE ****************************************/
-    if(oi.visionFixButton.get()) {
-      visionFixCommand.start();
-    } else {
-      Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
-      SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
-      Robot.gyro.gyroPIDController.enable();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+    if(isClimb){
+      drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
+      jack.setJackDriveMotor(oi.driver.getDriverVertical());
+    }else{
+      if(oi.visionFixButton.get()) {
+        visionFixCommand.start();
+      } else {
+        visionFixCommand.cancel();
+        Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 30.0));
+        SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
+        SmartDashboard.putNumber("Gyro Value", Robot.gyro.getGyroAngle());
+        Robot.gyro.gyroPIDController.enable();
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+      }
     }
+    
   }
 
 
