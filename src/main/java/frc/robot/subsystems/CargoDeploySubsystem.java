@@ -74,22 +74,22 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
     return !cargoIR.get();
   }
 
-  public void updateCargoGamePieceState() {
+  public CargoGamePiece updateCargoGamePieceState() {
     if(hasCargo()) {
-      RobotState.cargoGamePiece = CargoGamePiece.HAVE_CARGO;
+      return CargoGamePiece.HAVE_CARGO;
     } else {
-      RobotState.cargoGamePiece = CargoGamePiece.NO_CARGO;
+      return CargoGamePiece.NO_CARGO;
     }
   }
 
-  public void updateCargoDeployState() {
+  public CargoDeployMotorState updateCargoDeployState() {
     double percentOutput = intakeWheel.getMotorOutputPercent();
     if(percentOutput < 0) {
-      RobotState.cargoDeployState = CargoDeployMotorState.INTAKE;
+      return CargoDeployMotorState.INTAKE;
     } else if(percentOutput > 0) {
-      RobotState.cargoDeployState = CargoDeployMotorState.EXTAKE;
+      return CargoDeployMotorState.EXTAKE;
     } else {
-      RobotState.cargoDeployState = CargoDeployMotorState.NONE;
+      return CargoDeployMotorState.NONE;
     }
   }
 

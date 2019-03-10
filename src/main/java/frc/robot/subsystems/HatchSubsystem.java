@@ -61,19 +61,19 @@ public class HatchSubsystem extends Subsystem {
     hatchDeploySol.set(false);
   }
 
-  public void updateHatchPositionState() {
+  public HatchPositionState updateHatchPositionState() {
     if(hatchSol.get()) {
-      RobotState.hatchPositionState = HatchPositionState.HATCH_OUT;
+      return HatchPositionState.HATCH_OUT;
     } else {
-      RobotState.hatchPositionState = HatchPositionState.HATCH_IN;
+      return HatchPositionState.HATCH_IN;
     }
   }
 
-  public void updateHatchDeployState() {
+  public HatchDeployState updateHatchDeployState() {
     if(hatchDeploySol.get()) {
-      RobotState.hatchDeployState = HatchDeployState.DEPLOY;
+      return HatchDeployState.DEPLOY;
     } else {
-      RobotState.hatchDeployState = HatchDeployState.HOLD;
+      return HatchDeployState.HOLD;
     }
   }
 

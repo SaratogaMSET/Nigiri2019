@@ -511,11 +511,13 @@ public class Robot extends TimedRobot {
         pow = 0;
       }
       lift.setManualLift(pow);
+
+      if(lift.isZero()) {
+        lift.resetEncoder();
+      }
     }
 
-    if(lift.isZero()) {
-      lift.resetEncoder();
-    }
+    
   
     //******************************* DRIVE ****************************************/
     if(isClimb){

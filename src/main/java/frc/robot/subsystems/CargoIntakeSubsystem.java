@@ -158,37 +158,37 @@ public class CargoIntakeSubsystem extends Subsystem {
     return !inHal.get();
   }
 
-  public void updateIntakeState() {
+  public CargoIntakePositionState updateIntakeState() {
     if(intakeSol.get()) {
       if(getOutHal()) {
-        RobotState.cargoIntakeState = CargoIntakePositionState.OUT;
+        return CargoIntakePositionState.OUT;
       } else {
-        RobotState.cargoIntakeState = CargoIntakePositionState.MOVING;
+        return CargoIntakePositionState.MOVING;
       }
     } else if(!intakeSol.get() && !intakeMidSol.get()) {
       if(getInHal()) {
-        RobotState.cargoIntakeState = CargoIntakePositionState.IN;
+        return CargoIntakePositionState.IN;
       } else {
-        RobotState.cargoIntakeState = CargoIntakePositionState.MOVING;
+        return CargoIntakePositionState.MOVING;
       }
     } else {
-      RobotState.cargoIntakeState = CargoIntakePositionState.MID;
+      return CargoIntakePositionState.MID;
     }
   }
 
-  public void updateIntakeRollerState() {
+  public CargoIntakeMotorState updateIntakeRollerState() {
     double leftPower = leftIntake.getMotorOutputPercent();
     double rightPower = rightIntake.getMotorOutputPercent();
     double topPower = frontIntake.getMotorOutputPercent();
 
     if(topPower > 0 && rightPower == 0 && leftPower == 0) {
-      RobotState.intakeMotorState = CargoIntakeMotorState.TOP_BAR_ONLY;
+      return CargoIntakeMotorState.TOP_BAR_ONLY;
     } else if(topPower > 0 && rightPower > 0 && leftPower > 0) {
-      RobotState.intakeMotorState = CargoIntakeMotorState.INTAKE;
+      return CargoIntakeMotorState.INTAKE;
     } else if(topPower == 0 && rightPower == 0 && leftPower == 0) {
-      RobotState.intakeMotorState = CargoIntakeMotorState.NONE;
+      return CargoIntakeMotorState.NONE;
     } else {
-      RobotState.intakeMotorState = CargoIntakeMotorState.EXTAKE;
+      return CargoIntakeMotorState.EXTAKE;
     }
   }
 
@@ -200,18 +200,6 @@ public class CargoIntakeSubsystem extends Subsystem {
     SmartDashboard.putNumber("Left Intake Current", leftIntake.getOutputCurrent());
     SmartDashboard.putNumber("Right Intake Current", rightIntake.getOutputCurrent());
     SmartDashboard.putNumber("Front Intake Current", frontIntake.getOutputCurrent());
-  }
-
-  public void setIntakeRollerState(boolean intake, double topPower, double sidePower, double carriagePower) {
-    if(topPower == 0 && sidePower == 0 && carriagePower == 0) {
-      RobotState.intakeMotorState = CargoIntakeMotorState.NONE;
-    } else if(topPower != 0 && sidePower == 0 && carriagePower == 0) {
-      RobotState.intakeMotorState = CargoIntakeMotorState.TOP_BAR_ONLY;
-    } else if(intake) {
-      RobotState.intakeMotorState = CargoIntakeMotorState.INTAKE;
-    } else {
-      RobotState.intakeMotorState = CargoIntakeMotorState.EXTAKE;
-    }
   }
 
   public void checkIntakeState() {
