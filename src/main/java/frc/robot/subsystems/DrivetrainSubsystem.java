@@ -330,4 +330,9 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     // drive.add("Left Encoder", leftEncoder).withWidget(BuiltInWidgets.kTextView);
     // drive.add("Right Encoder", rightEncoder).withWidget(BuiltInWidgets.kTextView);
   }
+
+  @Override
+  public void stopAll() {
+    rawDrive(0.0, 0.0);
+  }
 }

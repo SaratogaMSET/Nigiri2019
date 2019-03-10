@@ -71,9 +71,9 @@ public class RobotMap {
   }
 
   public static class AutoSelector {
-    public static final int CONTROL = 12;
-    public static final int SIDE = 13;
-    public static final int ROTARY = 5;
+    public static final int CONTROL = 12; //Actual port
+    public static final int SIDE = 13; //Actual port
+    public static final int ROTARY = 0; //A0
   }
 
   // For example to map the left and right motors, you could define the

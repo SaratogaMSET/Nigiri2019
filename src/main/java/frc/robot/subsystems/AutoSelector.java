@@ -29,12 +29,12 @@ public class AutoSelector extends Subsystem {
     }
 
     public String getSide() {
-        return side.get() ? "Right" : "Left"; // T-Right, F-Left
+        return side.get() ? "Left" : "Right"; // T-Left, F-Right
     }
 
     public String getAuto() {
         int auto = (int) rotary.get();
-        if(auto == 6) auto--;
+        if(auto == 10) auto--;
         chosenAuto = auto;
         return autos[auto];
     }
@@ -46,8 +46,8 @@ public class AutoSelector extends Subsystem {
     @Override
     public void essentialShuffleboard() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drive");
-        tab.add("Side", side.get() ? "Right" : "Left");
-        tab.add("Sandstorm Control", control.get() ? "Auto" : "Teleop");
+        tab.add("Side", getSide());
+        tab.add("Sandstorm Control", getControl());
         tab.add("Auto", autos[chosenAuto]);
     }
     @Override

@@ -376,4 +376,11 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public void essentialShuffleboard() {
     
   }
+
+  @Override
+  public void stopAll() {
+    motor1.set(ControlMode.PercentOutput, 0);
+    motor2.set(ControlMode.PercentOutput, 0);
+    motor3.set(ControlMode.PercentOutput, 0);
+  }
 }

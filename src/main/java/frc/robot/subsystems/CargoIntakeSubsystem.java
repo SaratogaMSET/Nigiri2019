@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.commands.intake.ChangeIntakeState;
@@ -272,5 +271,22 @@ public class CargoIntakeSubsystem extends Subsystem {
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
+  }
+
+  @Override
+  public void essentialShuffleboard() {
+    
+  }
+
+  @Override
+  public void diagnosticShuffleboard() {
+    
+  }
+
+  @Override
+  public void stopAll() {
+    leftIntake.set(ControlMode.PercentOutput, 0);
+    rightIntake.set(ControlMode.PercentOutput, 0);
+    frontIntake.set(ControlMode.PercentOutput, 0);
   }
 }

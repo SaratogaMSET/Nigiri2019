@@ -70,6 +70,9 @@ public class Robot extends TimedRobot {
   public static JackSubsystem jack;
   public static HatchSubsystem hatch;
   public static AutoSelector autoSelector;
+  private static Subsystem[] subsystems = {
+    cargoDeploy, drive, led, camera, gyro, cargoIntake, lift, jack, hatch, autoSelector
+  };
 
   // Vision
   public static VisionSubsystem vision;
@@ -209,14 +212,19 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    // Auto-Teleop Shifting (For now just use the button 7 on the vertical joystick)
-    if(oi.driverVertical.getRawButton(1)) {
+    // Auto-Teleop Shifting (Using Trigger)
+    if(oi.driver.getDriverButton1()) {
       autoDriverControl = !autoDriverControl;
       init(autoDriverControl);
     }
     if(autoDriverControl) {
       teleopLoop();
     } else {
+      if(oi.driver.getDriverButton2() || oi.driver.getDriverButton3()) {
+        // Kill switch
+        Scheduler.getInstance().removeAll();
+        stopAll();
+      }
       // Put all the auto code here–the stuff you normally run in auto
       // lift.pidLift(100);
       // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,
@@ -224,6 +232,10 @@ public class Robot extends TimedRobot {
       // lift.motionMagicLift(LiftSubsystem.LiftEncoderConstants.INTAKE);
       SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
     }
+  }
+
+  public void stopAll() {
+    for(Subsystem s : subsystems) {s.stopAll();}
   }
 
   @Override

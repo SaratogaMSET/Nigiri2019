@@ -119,4 +119,9 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
     cargoDeploy.add("Intake Running", running);
     cargoDeploy.add("Pistons Angled", angled);
   }
+
+  @Override
+  public void stopAll() {
+    intakeWheel.set(ControlMode.PercentOutput, 0);
+  }
 }
