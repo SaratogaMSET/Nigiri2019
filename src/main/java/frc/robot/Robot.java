@@ -55,7 +55,8 @@ public class Robot extends TimedRobot {
   public static RobotState robotState;
 
   public static boolean isDefenseMode = false;
-  public static boolean autoDriverControl = false;
+  public static boolean autoControl = true;
+  public static boolean newAuto = false;
   public static boolean isManualMode = false;
   public static boolean isLogging = true;
 
@@ -116,7 +117,7 @@ public class Robot extends TimedRobot {
     cargoIntake = new CargoIntakeSubsystem();
     led = new LedSubsystem();
     jack = new JackSubsystem();
-    // autoSelector = new AutoSelector();
+    autoSelector = new AutoSelector();
     camera = new CameraSubsystem();
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
@@ -174,9 +175,9 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
 
-    // SmartDashboard.putString("Auto", autoSelector.getAuto());
-    // SmartDashboard.putString("Side", autoSelector.getSide());
-    // SmartDashboard.putString("Control", autoSelector.getControl());
+    SmartDashboard.putString("Auto", autoSelector.getAuto());
+    SmartDashboard.putString("Side", autoSelector.getSide());
+    SmartDashboard.putString("Control", autoSelector.getControl());
 
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
@@ -219,20 +220,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    drive.resetEncoders();
-    gyro.resetGyro();
-    // new HAB1LxCLFxLOADLxCL1().start();
-    // (new MotionProfileCommand("FarRocketLeft1", true)).start();
-    // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
-    // new TestJackDriveMotors().start();
-    // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
-    // new TestDTMaxVA(10.0).start();
-    // new HAB1LxROCKLF().start();
-    // autoCommand.start();
-    // new TestTalonVelocity(100).start();
-    new PrepareClimb2().start();
-
-
+    autoControl = autoSelector.getControl() == "Auto";
+    init(autoControl);
+    // Stop putting all your code here and put it in the init() method–don't override this shit
   }
   /**
    * This function is called periodically during autonomous.
@@ -240,25 +230,33 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    // Auto-Teleop Shifting (Using Trigger)
-    if(oi.driver.getDriverButton1()) {
-      autoDriverControl = !autoDriverControl;
-      init(autoDriverControl);
-    }
-    if(autoDriverControl) {
-      teleopLoop();
-    } else {
-      if(oi.driver.getDriverButton2() || oi.driver.getDriverButton3()) {
-        // Kill switch
+
+    if(autoControl) {
+      if(oi.driver.getDriverButton1()) {
+        // Auto Kill Switch and Start Teleop
+        led.blink();
         Scheduler.getInstance().removeAll();
         stopAll();
+        autoControl = false;
+        init(autoControl);
+        teleopLoop();
+      } else if(newAuto) {
+        // Second Auto Command
+        led.solidGreen();
+      } else {
+        // First auto
+        led.solidBlue();
       }
-      // Put all the auto code here–the stuff you normally run in auto
-      // lift.pidLift(100);
-      // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,
-      // true, 10.0).start();
-      // lift.motionMagicLift(LiftSubsystem.LiftEncoderConstants.INTAKE);
-      SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
+    } else {
+      if(oi.driver.getDriverButton2()) {
+        led.blink();
+        autoControl = true;
+        newAuto = true;
+        init(autoControl);
+      } else {
+        led.solidRed();
+        teleopLoop();
+      }
     }
   }
 
@@ -286,11 +284,18 @@ public class Robot extends TimedRobot {
       gyro.resetGyro();
       // new HAB1LxCLFxLOADLxCL1().start();
       // (new MotionProfileCommand("FarRocketLeft1", true)).start();
-      // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2, true, 30.0).start();
+      // new
+      // JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2,
+      // true, 30.0).start();
       // new TestJackDriveMotors().start();
-      // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3, true, 30.0).start();
+      // new
+      // JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3,
+      // true, 30.0).start();
       // new TestDTMaxVA(10.0).start();
-      new HAB1LxROCKLF().start();
+      // new HAB1LxROCKLF().start();
+      // autoCommand.start();
+      // new TestTalonVelocity(100).start();
+      new PrepareClimb2().start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       gyro.resetGyro();
