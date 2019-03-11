@@ -43,16 +43,17 @@ public class RobotState {
     }
 
     public static boolean canRunLift() {
-        if (cargoIntakeState == CargoIntakePositionState.MID || cargoIntakeState == CargoIntakePositionState.OUT) {
+        if (cargoIntakeState == CargoIntakePositionState.MID || cargoIntakeState == CargoIntakePositionState.OUT || 
+        (cargoIntakeState == CargoIntakePositionState.MOVING && Robot.cargoIntake.getIntakeSolState())) {
             return true;
         }
         return false;
     }
 
     public static boolean canBringIntakeIn() {
-        if(liftPosition == LiftPositions.LOW) {
+        if(liftPosition == LiftPositions.LOW || liftPosition == LiftPositions.CARGO_LOADING_STATION || liftPosition == LiftPositions.CARGO_SHIP) {
             return true;
-        }
+        } 
         return false;
     }
 
@@ -61,7 +62,9 @@ public class RobotState {
     }
 
     public static boolean isLiftCargoState(LiftPositions current) {
-        if(current != LiftPositions.LOW || current != liftPosition.HATCH_MID || current != LiftPositions.HATCH_HIGH) {
+        if(current != LiftPositions.HATCH_MID && current != LiftPositions.HATCH_HIGH) {
+            return true;
+        } else if(current == LiftPositions.LOW && hatchPositionState == HatchPositionState.HATCH_IN) {
             return true;
         }
         return false;

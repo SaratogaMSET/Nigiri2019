@@ -66,19 +66,14 @@ public class DeployCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return isFinished;
+    return true;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
     timer.stop();
-    if (RobotState.hatchPositionState == HatchPositionState.HATCH_OUT) {
-      new DeployHatchCommand().start();
-    }
-    else {
-      new DeployCargoCommand(0).start();
-    }
+    
   }
 
   // Called when another command which requires one or more of the same

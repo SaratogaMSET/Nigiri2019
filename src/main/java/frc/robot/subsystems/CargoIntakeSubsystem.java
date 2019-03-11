@@ -234,7 +234,7 @@ public class CargoIntakeSubsystem extends Subsystem {
       }
     } 
     SmartDashboard.putNumber("Invalid State", invalidStateCount);
-    fixState(posState, motorState, invalidStateCount);
+    // fixState(posState, motorState, invalidStateCount);
     updateIntakeRollerState();
     updateIntakeState();
   }

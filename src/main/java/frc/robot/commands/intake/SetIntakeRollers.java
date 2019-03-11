@@ -48,7 +48,7 @@ public class SetIntakeRollers extends Command {
     }
     Robot.cargoIntake.runIntake(intake, topPower, sidePower);
     String string = String.format("%.2f %.2f %.2f", topPower, sidePower, carriagePower);
-    SmartDashboard.putString("Run Intakes", string);
+    // SmartDashboard.putString("Run Intakes", string);
 
     if(Robot.isLogging) {
       String log = String.format("%f, SetIntakeRollers," + string, Robot.time.get());

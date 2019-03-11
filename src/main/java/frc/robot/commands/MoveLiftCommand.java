@@ -15,6 +15,7 @@ import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakeMotorState;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
+import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.util.Logging;
 import frc.robot.util.RobotState;
@@ -95,6 +96,9 @@ public class MoveLiftCommand extends Command {
         }
       }
     } else {
+      if(!RobotState.canRunLift()) {
+        Robot.lift.setManualLift(0);
+      }
       isFinished = true;
     }
 
@@ -129,8 +133,12 @@ public class MoveLiftCommand extends Command {
     if(RobotState.liftPosition != LiftPositions.LOW) {
       new SetIntakeRollers(true, 0).start();
     }
-    SmartDashboard.putBoolean("onTarget", onTarget);
-    SmartDashboard.putBoolean("isFinished", true);
+    
+    if(onTarget) {
+      if(target == LiftPositions.CARGO_LOADING_STATION || target == LiftPositions.CARGO_SHIP) {
+        // new ChangeIntakeState(CargoIntakePositionState.IN).start();
+      }
+    }
 
     if(Robot.isLogging) {
       String string = String.format("%.4f, MoveLiftCommand End, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
