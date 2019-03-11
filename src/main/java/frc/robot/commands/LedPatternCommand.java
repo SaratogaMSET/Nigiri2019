@@ -32,13 +32,13 @@ public class LedPatternCommand extends Command {
 
     switch(pattern){
       case 1:
-        Robot.led.blink();
+        Robot.led.blink(0);
         break;
       case 2:
-        Robot.led.solidRed();
+        Robot.led.solidRed(0);
         break;
       case 3:
-        Robot.led.chase();
+        Robot.led.chase(0);
         break;
     }
   }
@@ -61,7 +61,7 @@ public class LedPatternCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.led.off();
+    // Robot.led.off();
   }
 
   // Called when another command which requires one or more of the same

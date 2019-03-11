@@ -151,7 +151,6 @@ public class Robot extends TimedRobot {
     lastTime = time.get();
     loopCount = 1;
 
-    led.solidRed();
 
     autoCommand = new MotionProfileCommand("FarRocketLeft", true);
   }
@@ -213,17 +212,17 @@ public class Robot extends TimedRobot {
       Double angle = vision.getAngleDisplacement();
       if(angle != null) {
         if(Math.abs(angle) < 3.0) {
-          led.solidGreen();
+          led.solidGreen(0);
           // SmartDashboard.putBoolean("VSTATUS", true);
         } else {
-          led.solidBlue();
+          led.solidBlue(0);
           // SmartDashboard.putBoolean("VSTATUS", false);
         }
       } else {
-        led.solidRed();
+        led.solidRed(0);
       }
     } else {
-      led.solidRed();
+      led.solidRed(0);
       SmartDashboard.putBoolean("Is Vision", false);
     }
 

@@ -66,6 +66,30 @@ public class LedSubsystem extends Subsystem implements ILogger {
     led.set(.99);
   }
 
+  public void solidRed(int seconds){
+    led.set(0.61);
+    if(seconds > 0) {
+      Timer.delay(seconds);
+      led.set(0.99);
+    }
+  }
+
+  public void solidBlue(int seconds){
+    led.set(0.87);
+    if(seconds > 0) {
+      Timer.delay(seconds);
+      led.set(0.99);
+    }
+  }
+
+  public void solidGreen(int seconds){
+    led.set(0.77);
+    if(seconds > 0) {
+      Timer.delay(seconds);
+      led.set(0.99);
+    }
+  }
+
   @Override
   public void diagnosticShuffleboard() {
     
