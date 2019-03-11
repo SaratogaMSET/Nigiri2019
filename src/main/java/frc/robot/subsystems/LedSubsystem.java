@@ -17,39 +17,52 @@ public class LedSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  Spark led;
-
-  public LedSubsystem(){
-    led = new Spark(0);
-  }
+  private static Spark led = new Spark(0);
 
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
   }
-
-  public void blink(){
-    led.set(.11); //green
-  }
-
-  public void solidRed(){
-    led.set(.59); //solid color red
-  }
-
-  public void solidBlue(){
-    led.set(.87); //solid color blue
-  } 
   
-  public void solidGreen() {
-    led.set(0.77);
+  public static class ledcodes{
+    double led1 = 0.57 ;
+    double led2 = 0.59;
+    double led3 = 0.61;
+    double led4 = 0.63 ;
+    double led5 = 0.65 ;
+    double led6 = 0.67;
+    double led7 = 0.69;
+    double led8 = 0.71;
+    double led9 = 0.73;
+    double led10 = 0.75;
+    double led11 = 0.77 ;
+    double led12 = 0.79 ;
+    double led13 = 0.81;
+    double led14 = 0.83;
+    double led15 = 0.85 ;
+    double led16 = 0.87;
+    double led17 = 0.89;
+    double led18 = 0.91;
+    double led19 = 0.93;
+    double led20 = 0.95;
   }
 
-  public void chase(){
+  public void blink(int seconds){
+    led.set(.11); //green
+    Timer.delay(seconds);
+    led.set(.99);
+  }
+
+  public void solid(int seconds){
+    led.set(.59); //solid color lime
+    Timer.delay(seconds);
+    led.set(.99);
+  }
+
+  public void chase(int seconds){
     led.set(.31); //lightchase red
-  }
-
-  public void off(){
+    Timer.delay(seconds);
     led.set(.99);
   }
 
