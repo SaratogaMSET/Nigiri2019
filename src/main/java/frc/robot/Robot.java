@@ -557,11 +557,9 @@ public class Robot extends TimedRobot {
         visionFixCommand.start();
       } else {
         visionFixCommand.cancel();
-        Robot.gyro.gyroPIDController.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 50.0));
-        // SmartDashboard.putNumber("GYRO SETPOINT", Robot.gyro.gyroPIDController.getSetpoint());
-        // SmartDashboard.putNumber("Gyro Value", Robot.gyro.getGyroAngle());
-        Robot.gyro.gyroPIDController.enable();
-        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        Robot.gyro.driverGyroPID.enable();
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }
     }
     

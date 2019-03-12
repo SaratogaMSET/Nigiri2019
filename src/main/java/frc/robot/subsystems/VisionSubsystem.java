@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.cscore.VideoSource.ConnectionStrategy;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +27,6 @@ public class VisionSubsystem extends Subsystem {
 
     // Sensors
     public SerialPort jevoisSerial;
-    public UsbCamera jevoisCamera;
 
     // State
     private String jevoisData;
@@ -44,7 +43,7 @@ public class VisionSubsystem extends Subsystem {
         // The vision module on Jevois runs at YUV 640x480 @ 30fps.
         // TODO: comment this out. Streaming from the Jevois camera is not needed for production/comp-level purposes, only for debugging.
         // TODO: Create a NONE output module for vision on the jevois.
-        jevoisCamera = CameraServer.getInstance().startAutomaticCapture("Jevois", 0);
+        UsbCamera jevoisCamera = CameraServer.getInstance().startAutomaticCapture(0);
         jevoisCamera.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
         jevoisCamera.setConnectVerbose(1);
         jevoisCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
