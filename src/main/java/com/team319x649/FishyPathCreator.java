@@ -63,30 +63,39 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		
 		FishyPath frontCargo = new FishyPath(config, "HABM-CF", DrivetrainSubsystem.WHEELBASE_FEET);
 		frontCargo.addWaypoint(5.5, 14.5, 0, 0, 0);
-		frontCargo.addWaypointRelative(10.5, 0, 0, 0, 11.5);
+		frontCargo.addWaypointRelative(4, 0, 0, 3, 3);
+    	frontCargo.addWaypoint(16.25, 14.5, 0, 0, 6);
 
 		FishyPath nearCargoShip = new FishyPath(config, "HAB1L-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
 		nearCargoShip.addWaypoint(startingPoint);
 		nearCargoShip.addWaypointRelative(4, 0, 0, 3, 3);
-		nearCargoShip.addWaypointRelative(6, 3, 25, 10, 11.5);
+		nearCargoShip.addWaypointRelative(6, 3, 25, 11.5, 11.5);
 		nearCargoShip.addWaypoint(21.7, 18, 89.99, 0, 11.5);
 
 		FishyPath frontToLoadingStation1 = new FishyPath(config, "CLF-LSL-1", DrivetrainSubsystem.WHEELBASE_FEET);
 		frontToLoadingStation1.addWaypoint(16, 14.5, 0, 0, 0);
-		frontToLoadingStation1.addWaypointRelative(-3, 3, 89.99, 1, 3);
+		frontToLoadingStation1.addWaypointRelative(-3, 3, 89.99, 2, 3);
 		frontToLoadingStation1.addWaypoint(16, 20.5, 179.98, 0, 3);
 
 		FishyPath frontToLoadingStation2 = new FishyPath(config, "CLF-LSL-2", DrivetrainSubsystem.WHEELBASE_FEET);
 		frontToLoadingStation2.addWaypoint(16, 20.5, 0, 0, 0);
 		frontToLoadingStation2.addWaypoint(1.5, 24.75, 0, 0, 11.5);
-		
+
+		FishyPath nearRocketLeftToLoading1 = new FishyPath(config, "RLL-LSL-1", DrivetrainSubsystem.WHEELBASE_FEET);
+		nearRocketLeftToLoading1.addWaypoint(15.5, 24.25, 30, 0, 0);
+		nearRocketLeftToLoading1.addWaypoint(10, 18, 89.99, 0, 11.5);
+
+		FishyPath nearRocketLeftToLoading2 = new FishyPath(config, "RLL-LSL-2", DrivetrainSubsystem.WHEELBASE_FEET);
+		nearRocketLeftToLoading2.addWaypoint(10, 18, 89.99, 0, 0);
+		nearRocketLeftToLoading2.addWaypoint(1.5, 24.75, 0, 0, 11.5);
+
 		FishyPath loadingToNearRocketLeft1 = new FishyPath(config, "LSL-RLL-1", DrivetrainSubsystem.WHEELBASE_FEET);
 		loadingToNearRocketLeft1.addWaypoint(1.5, 24.75, 0, 0, 0);
 		loadingToNearRocketLeft1.addWaypoint(10, 18, 89.99, 0, 11.5);
 
 		FishyPath loadingToNearRocketLeft2 = new FishyPath(config, "LSL-RLL-2", DrivetrainSubsystem.WHEELBASE_FEET);
 		loadingToNearRocketLeft2.addWaypoint(10, 18, 89.99, 0, 0);
-		loadingToNearRocketLeft2.addWaypoint(14.5, 23.75, 30, 0, 11.5);
+		loadingToNearRocketLeft2.addWaypoint(15.5, 24.25, 30, 0, 11.5);
 
 		FishyPath loadingToMidCargoShip1 = new FishyPath(config, "LSL-CL2-1", DrivetrainSubsystem.WHEELBASE_FEET);
 		loadingToMidCargoShip1.addWaypoint(1.5, 24.75, 0, 0, 0);
@@ -97,7 +106,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		loadingToMidCargoShip2.addWaypoint(25, 24, 30, 0, 0);
 		loadingToMidCargoShip2.addWaypoint(23.5, 18, 89.99, 0, 11.5);
 
-		 return asList(exampleArc, frontCargo, nearCargoShip, frontToLoadingStation1, frontToLoadingStation2, loadingToNearRocketLeft1, loadingToNearRocketLeft2, loadingToMidCargoShip1, loadingToMidCargoShip2); // return asList(path1, path2, path3, ...);
+		 return asList(exampleArc, frontCargo, nearCargoShip, frontToLoadingStation1, frontToLoadingStation2, nearRocketLeftToLoading1, nearRocketLeftToLoading2, loadingToNearRocketLeft1, loadingToNearRocketLeft2, loadingToMidCargoShip1, loadingToMidCargoShip2); // return asList(path1, path2, path3, ...);
 	}
 	
 	
