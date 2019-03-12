@@ -9,6 +9,13 @@
       "name": "CodeLens (Launch) - FishyPathCreator",
       "request": "launch",
       "mainClass": "com.team319x649.FishyPathCreator",
+      "projectName": "nigiri2019"
+    },
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - FishyPathCreator",
+      "request": "launch",
+      "mainClass": "com.team319x649.FishyPathCreator",
       "projectName": "Nigiri2019"
     },
     {

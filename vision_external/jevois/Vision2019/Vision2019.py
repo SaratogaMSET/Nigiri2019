@@ -25,9 +25,9 @@ ANGLE_MULTIPLIER = math.cos(math.radians(14.5))
 TARGET_WIDTH_FT = (2.0/12.0)*ANGLE_MULTIPLIER
 FOV = 18.0
 
-CAMERA_OFFSET_IN = 6.3125
+CAMERA_OFFSET_IN = 7.5
 
-class Vision2019:
+class VisionSquare2019:
     # ###################################################################################################
     ## Constructor
     def __init__(self):
@@ -108,7 +108,7 @@ class Vision2019:
         # display threshold
         #resultBGR = cv2.bitwise_and(imgbgr, imgbgr, mask = imgth)
         #display = cv2.cvtColor(resultBGR, cv2.COLOR_BGR2RGB)
-        jevois.convertCvGRAYtoRawImage(imgth, outimg, 100)
+        #jevois.convertCvGRAYtoRawImage(imgth, outimg, 100)
 
         # Identify the "good" objects:
         for c in contours:
@@ -212,11 +212,11 @@ class Vision2019:
 
         if len(contour_matches) == 0:
             jevois.LERROR("NO CONTOUR DETECTED")
-            return None, None, None
+            return None, None, None, None
 
         if len(contour_costs) == 1:
             # TODO
-            return None, None, None
+            return None, None, None, None
 
         contour_costs.sort(key=self.cms)
         contour_costs = contour_costs[:5]
@@ -235,7 +235,7 @@ class Vision2019:
         try:
             found = found[0]
         except:
-            return None, None, None
+            return None, None, None, None
 
                 #jevois.LINFO("{}{}".format(found[0][3], found[1][3]))
         centers = np.array([center for (_, center, _, _, _) in found]) # two lowest cost contours
