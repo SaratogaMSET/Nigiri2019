@@ -21,6 +21,7 @@ import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.WaitUntilLiftDownIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
+import frc.robot.commands.semiauto.climb.ClimbTwoJack;
 import frc.robot.commands.semiauto.climb.DeployClimbForks;
 import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
 import frc.robot.commands.semiauto.climb.PrepareClimb2;
@@ -34,6 +35,7 @@ import frc.robot.commands.vision.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
+import frc.robot.subsystems.LiftSubsystem.LiftEncoderConstants;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
@@ -188,20 +190,21 @@ public class Robot extends TimedRobot {
     //*********************************CHECK STATE VALIDITY*********************** */
     // cargoIntake.checkIntakeState();
     // hatch.checkHatchStateValid();
-
+    SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
     SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
+    SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     SmartDashboard.putString("Auto", autoSelector.getAuto());
     SmartDashboard.putString("Side", autoSelector.getSide());
     SmartDashboard.putString("Control", autoSelector.getControl());
 
     // Safety Checks
-    // if(!jack.isJackAtTop() && !isClimb){
-    //   jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
-    // }
-    // if(jack.isJackAtTop()) {
-    //   jack.resetJackEncoder();
-    // }
+    if(!jack.isJackAtTop() && !isClimb){
+      jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
+    }
+    if(jack.isJackAtTop()) {
+      jack.resetJackEncoder();
+    }
 
     // Vision
     if(vision != null) {
@@ -351,6 +354,7 @@ public class Robot extends TimedRobot {
   }
 
   /**
+   * 
    * This function is called periodically during test mode.
    */
   @Override
@@ -493,9 +497,10 @@ public class Robot extends TimedRobot {
         if(!isJackRunning){
           isJackRunning = true;
           if(isLevel3){
-            new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3,true,4).start();
+            new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3, LiftEncoderConstants.CLIMB_HAB_THREE, true, 100).start();
           }else{
-            new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_2,true,3).start();
+            // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_2,true,3).start();
+            new ClimbTwoJack().start();
           } 
         }
       } else if(oi.gamePad.getPOVUp()) {
@@ -544,7 +549,7 @@ public class Robot extends TimedRobot {
     
   
     //******************************* DRIVE ****************************************/
-    if(isClimb){
+    if(isJackRunning){
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{

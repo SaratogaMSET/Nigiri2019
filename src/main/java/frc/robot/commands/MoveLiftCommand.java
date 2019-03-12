@@ -47,6 +47,7 @@ public class MoveLiftCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    SmartDashboard.putString("LIFT COMMAND ENDED", "FALSE");
     current = RobotState.liftPosition;
     isFinished = false;
     onTarget = false;
@@ -144,7 +145,7 @@ public class MoveLiftCommand extends Command {
       String string = String.format("%.4f, MoveLiftCommand End, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
       Logging.print(string);
     }
-
+    SmartDashboard.putString("LIFT COMMAND ENDED", "TRUE");
   }
 
   // Called when another command which requires one or more of the same

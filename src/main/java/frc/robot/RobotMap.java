@@ -62,7 +62,7 @@ public class RobotMap {
   public static class Hatch {
     public static final int[] HATCH_PISTON = { 4, 2 };
     public static final int[] HATCH_DEPLOY_PISTON = { 4, 3 };
-    public static final int HATCH_SWITCH = 11;
+    public static final int HATCH_SWITCH = 0;
   }
 
   public static class Ultrasonic {

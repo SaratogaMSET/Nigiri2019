@@ -36,12 +36,16 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     CLIMB_HAB_THREE,
     MANUAL,
     PREP_CLIMB_1,
-    PREP_CLIMB_2
+    PREP_CLIMB_2,
+    CLIMB_HAB_TWO_TOL,
+    CLIMB_HAB_THREE_TOL
   }
 
   public static class LiftEncoderConstants {
-    public static final int CLIMB_HAB_TWO = 3200;
-    public static final int CLIMB_HAB_THREE = 13100;
+    public static final int CLIMB_HAB_TWO = 3300;
+    public static final int CLIMB_HAB_TWO_TOL = 5000;
+    public static final int CLIMB_HAB_THREE = 13250;
+    public static final int CLIMB_HAB_THREE_TOL = 15000;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
     public static final int TOLERANCE = 75;
@@ -59,14 +63,14 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_LOADING_STATION = 32.5;
     public static final double HATCH_MID = 27.88;
     public static final double HATCH_HIGH = 54.4;
-    public static final double PREP_CLIMB_1 = 31.20;
+    public static final double PREP_CLIMB_1 = 31.7;
     public static final double PREP_CLIMB_2 = 28.23;
   }
 
   public static class LiftPidConstants {
     // Use feedBACK only for the downwards lift pushing for the climb.
-    public static final double CLIMB_kF = 0.0;
-    public static final double CLIMB_kP = 0.06;
+    public static final double CLIMB_kF = 0.2925714;
+    public static final double CLIMB_kP = 1.6;
     public static final double CLIMB_kI = 0.0;
     public static final double CLIMB_kD = 0.0;
   }
@@ -116,6 +120,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor2.set(ControlMode.Follower, motor1.getDeviceID());
     motor3.set(ControlMode.Follower, motor1.getDeviceID());
 
+    motor1.selectProfileSlot(0, 0);
     motor1.configMotionAcceleration(PIDConstants.MAX_ACCELERATION, Robot.timeoutMs);
     motor1.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
     motor1.config_kP(0, PIDConstants.k_p);
@@ -223,6 +228,12 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case PREP_CLIMB_2:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.PREP_CLIMB_2));
         break;
+      case CLIMB_HAB_TWO_TOL:
+        motionMagicLift(LiftEncoderConstants.CLIMB_HAB_TWO_TOL);
+        break;
+      case CLIMB_HAB_THREE_TOL:
+        motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE_TOL);
+        break;
     }
   }
 
@@ -283,6 +294,14 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         return LiftEncoderConstants.CLIMB_HAB_TWO;
       case CLIMB_HAB_THREE:
         return LiftEncoderConstants.CLIMB_HAB_THREE;  
+      case PREP_CLIMB_1:
+        return getTicksFromDistance(LiftDistanceConstants.PREP_CLIMB_1);
+      case PREP_CLIMB_2:
+        return getTicksFromDistance(LiftDistanceConstants.PREP_CLIMB_2);
+      case CLIMB_HAB_TWO_TOL:
+        return LiftEncoderConstants.CLIMB_HAB_TWO_TOL;
+      case CLIMB_HAB_THREE_TOL:
+        return LiftEncoderConstants.CLIMB_HAB_THREE_TOL;
       case MANUAL:
         return getRawEncoder();
     }

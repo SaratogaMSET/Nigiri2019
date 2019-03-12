@@ -17,19 +17,24 @@ import frc.robot.subsystems.LiftSubsystem;
 
 public class JackMotionProfileAndLiftCommand extends Command {
   int jackHeight;
+  int liftHeightEncoder;
   boolean isDown;
   double timeout;
   Timer time;
   int moveLiftVal;
-  Joystick jackJoystick;
 
-  public JackMotionProfileAndLiftCommand(int jackHeight, boolean isDown, double timeout) {
+  int initialLiftVal;
+
+  // public static int JACK_AND_LIFT_OFFSET = 
+
+  public JackMotionProfileAndLiftCommand(int jackHeight, int liftHeightEncoder, boolean isDown, double timeout) {
     // requires(Robot.jack);
     this.jackHeight = jackHeight;
     this.isDown = isDown;
     this.timeout = timeout;
+    this.liftHeightEncoder = liftHeightEncoder;
     time = new Timer();
-    jackJoystick = new Joystick(4);
+    initialLiftVal = Robot.lift.getRawEncoder();
   }
 
   // Called just before this Command runs the first time
@@ -37,18 +42,23 @@ public class JackMotionProfileAndLiftCommand extends Command {
   protected void initialize() {
     SmartDashboard.putBoolean("Started", true);
     time.start();
+    Robot.lift.setLiftMPHang();
     Robot.jack.setJackMPVals(isDown);
     Robot.jack.setJackMotorMP(jackHeight);
+    initialLiftVal = Robot.lift.getRawEncoder();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    moveLiftVal = (int)(LiftSubsystem.LiftEncoderConstants.CLIMB_HAB_THREE - Robot.jack.getJackEncoder() * LiftSubsystem.LiftEncoderConstants.LIFT_TICKS_PER_JACK_TICK);
+    moveLiftVal = (int)(liftHeightEncoder - (Robot.jack.getJackEncoder()) * LiftSubsystem.LiftEncoderConstants.LIFT_TICKS_PER_JACK_TICK);
     SmartDashboard.putNumber("LIFT SETPOINT", moveLiftVal);
-    Robot.lift.motionMagicLift(moveLiftVal);
-    Robot.drive.driveFwdRotate(0.1 * Robot.oi.driver.getDriverVertical(), 0.0);
-    Robot.jack.setJackDriveMotor(Robot.oi.driver.getDriverVertical());
+    if(moveLiftVal < (initialLiftVal - 300)) {
+      Robot.lift.pidLift(Math.max(-20, moveLiftVal));
+    }
+    else {
+      Robot.lift.setManualLift(0.0);
+    }
     if(Robot.jack.isJackAtBottom()) {
       Robot.jack.setJackMotor(0.0);
     }

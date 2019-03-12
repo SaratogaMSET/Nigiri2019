@@ -42,7 +42,8 @@ public class HatchSubsystem extends Subsystem {
   public HatchSubsystem() {
     hatchSol = new Solenoid(RobotMap.Hatch.HATCH_PISTON[0], RobotMap.Hatch.HATCH_PISTON[1]);
     hatchDeploySol = new Solenoid(RobotMap.Hatch.HATCH_DEPLOY_PISTON[0], RobotMap.Hatch.HATCH_DEPLOY_PISTON[1]);
-    //hatchAcquired = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
+    hatchAcquired = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
+    // hatchLimitSwitch = new DigitalInput(RobotMap.Hatch.HATCH_SWITCH);
   }
 
   public void hatchOut() {
