@@ -244,7 +244,7 @@ public class Robot extends TimedRobot {
         // Second Auto Command
         led.solidGreen();
       } else {
-        // First auto
+        // Put all reg auto periodic shit here
         led.solidBlue();
       }
     } else {
@@ -267,14 +267,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     init(false);
-    time.reset();
-    time.start();
-    if(isLogging) {
-      Logging.createLogFile();
-    }
-    isClimb = false; 
-    isLevel3 = false;
-    isJackRunning = false;
   }
 
   //Init method for both auto and teleop
@@ -295,16 +287,22 @@ public class Robot extends TimedRobot {
       // new HAB1LxROCKLF().start();
       // autoCommand.start();
       // new TestTalonVelocity(100).start();
-      new PrepareClimb2().start();
+      // new PrepareClimb2().start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       gyro.resetGyro();
       drive.changeBrakeCoast(false);
       visionFixCommand = new VisionFixCommand();
-
       compressor.setClosedLoopControl(true);
       compressor.start();
-
+      time.reset();
+      time.start();
+      if (isLogging) {
+        Logging.createLogFile();
+      }
+      isClimb = false;
+      isLevel3 = false;
+      isJackRunning = false;
       // new WaitUntilEncoderCommand(2, new LedPatternCommand(3, 5), 30).start();
     }
   }
