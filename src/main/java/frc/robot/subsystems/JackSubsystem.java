@@ -44,17 +44,17 @@ public class JackSubsystem extends Subsystem {
   }
 
   public static class LiftConstants{
-    public static final double UP_kF = 0;
+    public static final double UP_kF = 0.3;
     public static final double DOWN_kF = 0.22755555555;
-    public static final double UP_kP = 0;
+    public static final double UP_kP = 0.4;
     public static final double DOWN_kP = 4;
     public static final double UP_kI = 0;
     public static final double DOWN_kI = 0;
     public static final double UP_kD = 0;
     public static final double DOWN_kD = 0;
-    public static final int UP_VEL = 0;
+    public static final int UP_VEL = 3000;
     public static final int DOWN_VEL = 1800;//1800
-    public static final int UP_ACCEL = 0;//150
+    public static final int UP_ACCEL = 9000;//150
     public static final int DOWN_ACCEL = 300;
 
   }

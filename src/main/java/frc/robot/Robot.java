@@ -21,6 +21,7 @@ import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.WaitUntilLiftDownIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
+import frc.robot.commands.semiauto.climb.ClimbThreeJack;
 import frc.robot.commands.semiauto.climb.ClimbTwoJack;
 import frc.robot.commands.semiauto.climb.DeployClimbForks;
 import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
   public static boolean isClimb;
   public static boolean isLevel3;
   public static boolean isJackRunning;
+  public static boolean doneClimb;
 
   public Command autoCommand;
  
@@ -153,7 +155,7 @@ public class Robot extends TimedRobot {
     time.start();
     lastTime = time.get();
     loopCount = 1;
-
+    doneClimb = false;
 
     autoCommand = new MotionProfileCommand("FarRocketLeft", true);
   }
@@ -330,6 +332,7 @@ public class Robot extends TimedRobot {
       isClimb = false;
       isLevel3 = false;
       isJackRunning = false;
+      jack.setJackMPVals(true);
       // new WaitUntilEncoderCommand(2, new LedPatternCommand(3, 5), 30).start();
     }
   }
@@ -482,7 +485,6 @@ public class Robot extends TimedRobot {
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
-      } else if(oi.driver.driverDeployPressed()) { //*******DRIVER DEPLOY******* */
         new DeployCommand(RobotState.liftPosition, 1, 2).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
@@ -502,18 +504,24 @@ public class Robot extends TimedRobot {
         new PrepareClimb3().start();
       }
     } else if(isClimb){ // ****************************************** CLIMBING ************/
+      compressor.stop();
       if(oi.gamePad.getPOVDown()) {
         // push down jack
         if(!isJackRunning){
           isJackRunning = true;
           if(isLevel3){
-            new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3, LiftEncoderConstants.CLIMB_HAB_THREE, true, 100).start();
+            new ClimbThreeJack().start();
+            // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3, LiftEncoderConstants.CLIMB_HAB_THREE, true, 100).start();
           }else{
             // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_2,true,3).start();
             new ClimbTwoJack().start();
           } 
         }
       } else if(oi.gamePad.getPOVUp()) {
+        doneClimb = true;
+        new ChangeIntakeState(CargoIntakePositionState.OUT).start();
+        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+        jack.setJackMPVals(false);
         new MoveJackCommand(0,3);
         isClimb = false;
       }

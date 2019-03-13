@@ -18,7 +18,7 @@ public class PrepareClimb2 extends CommandGroup {
   public PrepareClimb2() {
 
     addSequential(new MoveLiftCommand(LiftPositions.PREP_CLIMB_1,2));
-    addSequential(new DeployClimbForks(true,1));
+    addSequential(new DeployClimbForks(true,0.1));
     addSequential(new MoveLiftCommand(LiftPositions.PREP_CLIMB_2,2));
     addSequential(new DeployClimbForks(false,0.1));
     addSequential(new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO_TOL,2));

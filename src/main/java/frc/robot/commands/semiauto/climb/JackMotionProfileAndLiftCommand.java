@@ -24,6 +24,7 @@ public class JackMotionProfileAndLiftCommand extends Command {
   int moveLiftVal;
 
   int initialLiftVal;
+  int maxLiftVal;
 
   // public static int JACK_AND_LIFT_OFFSET = 
 
@@ -34,7 +35,6 @@ public class JackMotionProfileAndLiftCommand extends Command {
     this.timeout = timeout;
     this.liftHeightEncoder = liftHeightEncoder;
     time = new Timer();
-    initialLiftVal = Robot.lift.getRawEncoder();
   }
 
   // Called just before this Command runs the first time
@@ -46,6 +46,7 @@ public class JackMotionProfileAndLiftCommand extends Command {
     Robot.jack.setJackMPVals(isDown);
     Robot.jack.setJackMotorMP(jackHeight);
     initialLiftVal = Robot.lift.getRawEncoder();
+    maxLiftVal = 0;
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -53,11 +54,18 @@ public class JackMotionProfileAndLiftCommand extends Command {
   protected void execute() {
     moveLiftVal = (int)(liftHeightEncoder - (Robot.jack.getJackEncoder()) * LiftSubsystem.LiftEncoderConstants.LIFT_TICKS_PER_JACK_TICK);
     SmartDashboard.putNumber("LIFT SETPOINT", moveLiftVal);
-    if(moveLiftVal < (initialLiftVal - 300)) {
-      Robot.lift.pidLift(Math.max(-20, moveLiftVal));
-    }
-    else {
-      Robot.lift.setManualLift(0.0);
+   
+    // Robot.lift.pidLift(Math.max(-20, moveLiftVal));
+    if(Math.abs(moveLiftVal) < Math.abs(initialLiftVal)){
+      if(moveLiftVal > maxLiftVal){
+        maxLiftVal = moveLiftVal;
+        SmartDashboard.putNumber("max lift val", maxLiftVal);
+      }
+      // Robot.lift.pidLift(moveLiftVal);
+      if(moveLiftVal < 0){
+        moveLiftVal = 0;
+      }
+      Robot.lift.motionMagicLift(moveLiftVal);
     }
     if(Robot.jack.isJackAtBottom()) {
       Robot.jack.setJackMotor(0.0);
@@ -67,7 +75,8 @@ public class JackMotionProfileAndLiftCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if(time.get()>timeout || Robot.jack.isJackAtBottom() || (Math.abs(Robot.jack.getJackEncoder() - jackHeight)) < JackSubsystem.JackEncoderConstants.ABS_TOL){
+    if(time.get()>timeout || Robot.doneClimb){
+      SmartDashboard.putBoolean("is Done CLIMBING ", true);
       return true;
     }
     return false;

@@ -44,7 +44,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public static class LiftEncoderConstants {
     public static final int CLIMB_HAB_TWO = 3300;
     public static final int CLIMB_HAB_TWO_TOL = 5000;
-    public static final int CLIMB_HAB_THREE = 13250;
+    public static final int CLIMB_HAB_THREE = 13750;
     public static final int CLIMB_HAB_THREE_TOL = 15000;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
@@ -69,8 +69,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class LiftPidConstants {
     // Use feedBACK only for the downwards lift pushing for the climb.
-    public static final double CLIMB_kF = 0.2925714;
-    public static final double CLIMB_kP = 1.6;
+    public static final double CLIMB_kF = 0.59;
+    public static final double CLIMB_kP = 1.4; //1.6
     public static final double CLIMB_kI = 0.0;
     public static final double CLIMB_kD = 0.0;
   }
@@ -160,10 +160,12 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public void setLiftMPHang(){
-    motor1.config_kF(0, LiftPidConstants.CLIMB_kF, Robot.timeoutMs);
-    motor1.config_kP(0, LiftPidConstants.CLIMB_kP, Robot.timeoutMs);
-    motor1.config_kI(0, LiftPidConstants.CLIMB_kI, Robot.timeoutMs);
-    motor1.config_kD(0, LiftPidConstants.CLIMB_kD, Robot.timeoutMs);
+    motor1.configMotionAcceleration(PIDConstants.MAX_ACCELERATION, Robot.timeoutMs);
+    motor1.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
+    motor1.config_kP(0, LiftPidConstants.CLIMB_kP);
+    motor1.config_kI(0, PIDConstants.k_i);
+    motor1.config_kD(0, PIDConstants.k_d);
+    motor1.config_kF(0, PIDConstants.k_f);
     // motor1.configMotionCruiseVelocity(LiftPidConstants.HANG_VEL, Robot.timeoutMs);
     // motor1.configMotionAcceleration(LiftPidConstants.HANG_ACCEL, Robot.timeoutMs);
 
@@ -219,9 +221,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case CLIMB_HAB_THREE:
         motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE);
         break;   
-      case MANUAL:
-        // nothing
-        break;
       case PREP_CLIMB_1:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.PREP_CLIMB_1));
         break;
@@ -234,6 +233,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case CLIMB_HAB_THREE_TOL:
         motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE_TOL);
         break;
+      case MANUAL:
+        // nothing
+        break;
+      
     }
   }
 

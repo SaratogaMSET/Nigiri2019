@@ -19,7 +19,7 @@ public class ClimbThreeJack extends CommandGroup {
    */
   public ClimbThreeJack() {
     // addSequential(new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 2));
-    addSequential(new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3, LiftEncoderConstants.CLIMB_HAB_THREE, true, 8));
+    addSequential(new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3, LiftEncoderConstants.CLIMB_HAB_THREE, true, 1000));
 
   }
 }
