@@ -192,7 +192,7 @@ public class Robot extends TimedRobot {
     //*********************************CHECK STATE VALIDITY*********************** */
     // cargoIntake.checkIntakeState();
     // hatch.checkHatchStateValid();
-    SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
+    // SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
     SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
     SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
@@ -203,10 +203,11 @@ public class Robot extends TimedRobot {
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
       jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
+      if(jack.isJackAtTop()) {
+        jack.resetJackEncoder();
+      }
     }
-    if(jack.isJackAtTop()) {
-      jack.resetJackEncoder();
-    }
+    
 
     // Vision
     if(vision != null) {
@@ -496,11 +497,13 @@ public class Robot extends TimedRobot {
         // start climb sequence level 2
         isClimb = true;
         isLevel3 = false;
+        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         new PrepareClimb2().start();
       } else if(oi.gamePad.getPOVRight()) {
         // start climb sequence level 3
         isClimb = true;
         isLevel3 = true;
+        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         new PrepareClimb3().start();
       }
     } else if(isClimb){ // ****************************************** CLIMBING ************/
@@ -519,8 +522,7 @@ public class Robot extends TimedRobot {
         }
       } else if(oi.gamePad.getPOVUp()) {
         doneClimb = true;
-        new ChangeIntakeState(CargoIntakePositionState.OUT).start();
-        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+        // new ChangeIntakeState(CargoIntakePositionState.OUT).start();
         jack.setJackMPVals(false);
         new MoveJackCommand(0,3);
         isClimb = false;
