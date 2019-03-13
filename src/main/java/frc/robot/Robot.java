@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 import frc.robot.*;
 import frc.robot.auto.*;
 import frc.robot.commands.*;
+import frc.robot.commands.intake.CargoIntakeMidToIn;
 import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.WaitUntilLiftDownIntake;
@@ -322,7 +323,9 @@ public class Robot extends TimedRobot {
       Robot.drive.rawDrive(0.0, 0.0);
       gyro.resetGyro();
       drive.changeBrakeCoast(false);
+      
       visionFixCommand = new VisionFixCommand();
+      
       compressor.setClosedLoopControl(true);
       compressor.start();
       time.reset();
@@ -434,46 +437,38 @@ public class Robot extends TimedRobot {
       //****************************** LIFTING *************************************************/
       if(oi.gamePad.getButtonAPressed()) { // ****************** LIFT TO LOW**************/
         if(oi.gamePad.getLeftTrigger()) {
-          compressor.start();
-          new MoveLiftCommand(LiftPositions.LOW, 2).start();
+          new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         } else {
-          compressor.start();
-          new MoveLiftCommand(LiftPositions.LOW, 2).start();
+          new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         }
       } else if(oi.gamePad.getButtonXPressed()) { 
         if(oi.gamePad.getLeftTrigger()) { //*********************LIFT TO LOW ROCKET****** */
-          compressor.start();
-          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 2).start();
+          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         } else { //***********************************************LIFT TO MID HATCH****** */
-          compressor.stop();
-          new MoveLiftCommand(LiftPositions.HATCH_MID, 2).start();
+          new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         }
       } else if(oi.gamePad.getButtonYPressed()) { 
         if(oi.gamePad.getLeftTrigger()) { //**********************LIFT TO CARGO MID****** */
-          compressor.stop();
-          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 2).start();
+          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         } else { //***********************************************LIFT TO HIGH HATCH***** */
-          compressor.stop();
-          new MoveLiftCommand(LiftPositions.HATCH_HIGH, 2).start();
+          new MoveLiftCommand(LiftPositions.HATCH_HIGH, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         }
       } else if(oi.gamePad.getButtonBPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO HIGH ROCKET
-        compressor.stop();
-        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 2).start();
+        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 1.2).start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       } else if(oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
-        compressor.start();
-        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 2).start();
+        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 1.2).start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
         compressor.start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-        new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 2).start();
+        new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
       } else if(!lift.isMoving()) {
         lift.stallLift(RobotState.liftPosition);
       } 
@@ -491,6 +486,11 @@ public class Robot extends TimedRobot {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
       }
+
+      //********TAKE OUT LATER*********TAKE OUT LATER****** TAKE OUT LATER************* */
+      // if(oi.gamePad.getLeftJoystickButtonPressed()) {
+      //   new CargoIntakeMidToIn().start();
+      // }
   
       // ****************************** JACK ***********************************************/
       if(oi.gamePad.getPOVLeft()) {
@@ -542,7 +542,7 @@ public class Robot extends TimedRobot {
     }
 
     //****************************CHANGE TO DEFENSE****************************************** */
-    if((oi.gamePad.getLeftJoystickButton() && oi.gamePad.getRightJoystickButtonPressed())) {
+    if((oi.gamePad.getRightJoystickButtonPressed())) {
       isDefenseMode = !isDefenseMode;
       if(isDefenseMode) {
         new DefenseModeCommand().start();
@@ -594,11 +594,12 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
 
     //***************************************************** LIFT */
-    // SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
+    SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
     SmartDashboard.putNumber("Lift Distance", lift.getDistance());
-    // SmartDashboard.putNumber("Lift Velocity", lift.getVel());
+    SmartDashboard.putNumber("Lift Velocity", lift.getVel());
     SmartDashboard.putBoolean("Bottom Hal", lift.getBottomHal());
-    // SmartDashboard.putNumber("Lift Motor Current", lift.getCurrentMainMotor());
+    SmartDashboard.putBoolean("isMoving", lift.isMoving());
+    SmartDashboard.putNumber("Lift Motor Current", lift.getCurrentMainMotor());
     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());
 
     //***************************************************** INTAKE */
@@ -606,7 +607,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
     // SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
     // SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
-    // cargoIntake.smartdashboard();
+    cargoIntake.smartdashboard();
 
     //***************************************************** JACK */
     // SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());

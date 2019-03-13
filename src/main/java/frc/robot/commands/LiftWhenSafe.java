@@ -7,44 +7,24 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.intake.ChangeIntakeState;
-import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
-import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
+import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.util.RobotState;
-import frc.robot.util.Logging;
 
-public class MoveHatchCommand extends Command {
-
-  HatchPositionState hatchPosition;
-  Timer timer;
-  double waitTime;
-
-  public MoveHatchCommand(HatchPositionState hatchPosition) {
+public class LiftWhenSafe extends Command {
+  LiftPositions target;
+  public LiftWhenSafe(LiftPositions target) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    this.hatchPosition = hatchPosition;
-    timer = new Timer();
+    this.target = target;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    if((RobotState.cargoIntakeState != CargoIntakePositionState.MID) && hatchPosition == HatchPositionState.HATCH_OUT) {
-      new ChangeIntakeState(CargoIntakePositionState.MID).start();
-      waitTime = 0.6;
-    } else { 
-      waitTime = 0;
-    }
-
-
-    if(Robot.isLogging) {
-      String string = String.format("%.4f, MoveHatchCommand," + hatchPosition.toString(), Robot.time.get());
-      Logging.print(string);
-    }
-    timer.start();
+    new ChangeIntakeState(CargoIntakePositionState.MID).start();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -55,13 +35,15 @@ public class MoveHatchCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return timer.get() >= waitTime;
+    return RobotState.cargoIntakeState == CargoIntakePositionState.MID;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.hatch.moveHatch(hatchPosition);
+    if(RobotState.cargoIntakeState == CargoIntakePositionState.MID) {
+      new MoveLiftCommand(target, 1.2).start();
+    }
   }
 
   // Called when another command which requires one or more of the same

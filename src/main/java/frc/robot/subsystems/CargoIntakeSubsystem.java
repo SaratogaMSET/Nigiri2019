@@ -85,6 +85,10 @@ public class CargoIntakeSubsystem extends Subsystem {
     frontIntake.configPeakOutputForward(1, Robot.timeoutMs);
     frontIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
 
+    // leftIntake.configPeakCurrentLimit(20, Robot.timeoutMs);
+    // rightIntake.configPeakCurrentLimit(20, Robot.timeoutMs);
+    // frontIntake.configPeakCurrentLimit(20, Robot.timeoutMs);
+
     isOut = false;
   }
 
@@ -159,6 +163,9 @@ public class CargoIntakeSubsystem extends Subsystem {
   }
 
   public CargoIntakePositionState updateIntakeState() {
+    if(getInHal()) {
+      return CargoIntakePositionState.IN;
+    }
     if(intakeSol.get()) {
       if(getOutHal()) {
         return CargoIntakePositionState.OUT;

@@ -34,7 +34,6 @@ public class ChangeIntakeState extends Command {
   @Override
   protected void initialize() {
     time.start();
-    CargoIntakePositionState currentState = RobotState.cargoIntakeState;
     HatchPositionState currentHatchState = RobotState.hatchPositionState;
 
     if(currentHatchState == targetHatchState){
@@ -71,7 +70,7 @@ public class ChangeIntakeState extends Command {
 
     if(targetState == currentState) {
       // it be done;
-    } else if(targetState == CargoIntakePositionState.IN && Robot.robotState.canBringIntakeIn()) {
+    } else if(targetState == CargoIntakePositionState.IN && RobotState.canBringIntakeIn()) {
       if(currentState == CargoIntakePositionState.OUT) {
         new CargoIntakeOutToIn().start();
       } else if(currentState == CargoIntakePositionState.MID) {
@@ -80,7 +79,13 @@ public class ChangeIntakeState extends Command {
         new CargoIntakeMidToIn().start();
       }
     } else if(targetState == CargoIntakePositionState.OUT) {
-      new CargoIntakeOut().start();
+      if(currentState == CargoIntakePositionState.IN) {
+        new CargoIntakeInToOut().start();
+      } else if(currentState == CargoIntakePositionState.MID) {
+        new CargoIntakeMidToOut().start();
+      } else if(currentState == CargoIntakePositionState.MOVING) {
+        new CargoIntakeInToOut().start();
+      }
     } else if(targetState == CargoIntakePositionState.MID) {
       if(currentState == CargoIntakePositionState.IN) {
         new CargoIntakeInToMid().start();

@@ -57,7 +57,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     gyroPIDController.setContinuous(true);
     gyroPIDController.disable();
 
-    driverGyroPID = new PIDController(0.04, 0.0, 0.0, gyro, new PIDOutput(){
+    driverGyroPID = new PIDController(0.04, 0.0, 0.018, gyro, new PIDOutput(){
     
       @Override
       public void pidWrite(double output) {

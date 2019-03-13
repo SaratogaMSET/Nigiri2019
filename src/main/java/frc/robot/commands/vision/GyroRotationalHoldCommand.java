@@ -40,8 +40,8 @@ public class GyroRotationalHoldCommand extends FishyCommand {
   @Override
   protected void initialize() {
     targetAngle = Robot.gyro.getGyroAngle();
-    Robot.gyro.gyroPIDController.setSetpoint(targetAngle);
-    Robot.gyro.gyroPIDController.enable();
+    Robot.gyro.driverGyroPID.setSetpoint(targetAngle);
+    Robot.gyro.driverGyroPID.enable();
   }
 
   // Called repeatedly when this Command is scheduled to run

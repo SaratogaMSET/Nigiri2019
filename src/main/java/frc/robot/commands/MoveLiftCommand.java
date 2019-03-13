@@ -62,6 +62,11 @@ public class MoveLiftCommand extends Command {
       goingUp = Robot.lift.goingUp(target, current);
     }
 
+    if(!RobotState.canRunLift()) {
+      isFinished = true;
+      // new LiftWhenSafe(target).start();
+    }
+
     time = new Timer();
     time.reset();
     time.start();
@@ -99,6 +104,7 @@ public class MoveLiftCommand extends Command {
     } else {
       if(!RobotState.canRunLift()) {
         Robot.lift.setManualLift(0);
+        new LiftWhenSafe(target).start();
       }
       isFinished = true;
     }
@@ -118,8 +124,7 @@ public class MoveLiftCommand extends Command {
     } else if (time.get() > timeout) {
       return true;
     }
-    
-    return isFinished;
+    return isFinished; 
   }
 
   // Called once after isFinished returns true

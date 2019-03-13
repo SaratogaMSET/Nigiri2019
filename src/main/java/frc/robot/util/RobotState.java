@@ -44,7 +44,7 @@ public class RobotState {
 
     public static boolean canRunLift() {
         if (cargoIntakeState == CargoIntakePositionState.MID || cargoIntakeState == CargoIntakePositionState.OUT || 
-        (cargoIntakeState == CargoIntakePositionState.MOVING && Robot.cargoIntake.getIntakeSolState())) {
+        (cargoIntakeState == CargoIntakePositionState.MOVING && Robot.cargoIntake.getMidStateSolState())) {
             return true;
         }
         return false;

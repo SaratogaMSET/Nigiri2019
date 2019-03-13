@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -49,8 +50,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
     public static final int TOLERANCE = 75;
-    public static final int STATE_TOLERANCE = 300;
-    public static final int VELOCITY_THRESH = 100;
+    public static final int STATE_TOLERANCE = 200;
+    public static final int VELOCITY_THRESH = 0;
   }
 
   public static class LiftDistanceConstants {
@@ -77,11 +78,11 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class PIDConstants {
     public static final double k_f = 0.2925714;
-    public static double k_p = 0.7;
+    public static double k_p = 1.5;
     public static double k_i = 0.0;
-    public static double k_d = 0.0;
-    public static final int MAX_ACCELERATION = 5000; //measured 40000-70000
-    public static final int MAX_VELOCITY = 3500; // measured 4500
+    public static double k_d = 0.005;
+    public static final int MAX_ACCELERATION = 4000; //measured 40000-70000
+    public static final int MAX_VELOCITY = 4500; // measured 4500
   }
 
   private TalonSRX motor1;
@@ -127,6 +128,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor1.config_kI(0, PIDConstants.k_i);
     motor1.config_kD(0, PIDConstants.k_d);
     motor1.config_kF(0, PIDConstants.k_f);
+
+    motor1.setNeutralMode(NeutralMode.Brake);
+    motor2.setNeutralMode(NeutralMode.Brake);
+    motor3.setNeutralMode(NeutralMode.Brake);
 
     motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     
@@ -191,6 +196,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     switch(pos) {
       case TRUE_BOTTOM:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.TRUE_BOTTOM));
+        break;
       case LOW:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
         break;
@@ -328,6 +334,10 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     return (Math.abs(getLiftPositionEncoders(target) - getRawEncoder()) < LiftEncoderConstants.STATE_TOLERANCE) ? true: false;
   }
 
+  public boolean withinStateToleranceBottom() {
+    return (Math.abs(getLiftPositionEncoders(LiftPositions.LOW) - getRawEncoder()) < 400) ? true: false;
+  }
+
   public int getVel() {
     return motor1.getSelectedSensorVelocity(0);
   }
@@ -353,7 +363,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public LiftPositions updateLiftPosition() {
-    if(withinTolerance(LiftPositions.LOW)) {
+    if(withinStateTolerance(LiftPositions.LOW)) {
       return LiftPositions.LOW;
     } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_ONE)) {
       return LiftPositions.CARGO_ROCKET_LEVEL_ONE;

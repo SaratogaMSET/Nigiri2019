@@ -39,7 +39,7 @@ public class RobotMap {
 
   public static class CargoDeploy {
     public static final int DEPLOY_INTAKE_MOTOR = 12;
-    public static final int IR_SENSOR = 10;
+    public static final int IR_SENSOR = 1;
     public static final int INTAKE_SOL = 5;
   }
   public static class Jacks {
