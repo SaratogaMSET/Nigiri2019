@@ -33,8 +33,7 @@ public class MoveHatchCommand extends Command {
   @Override
   protected void initialize() {
     if((RobotState.cargoIntakeState != CargoIntakePositionState.MID) && hatchPosition == HatchPositionState.HATCH_OUT) {
-      new ChangeIntakeState(CargoIntakePositionState.MID).start();
-      waitTime = 0.6;
+      waitTime = 1;
     } else { 
       waitTime = 0;
     }
@@ -61,7 +60,9 @@ public class MoveHatchCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.hatch.moveHatch(hatchPosition);
+    if(RobotState.cargoIntakeState == CargoIntakePositionState.MID) {
+      Robot.hatch.moveHatch(hatchPosition);
+    }
   }
 
   // Called when another command which requires one or more of the same

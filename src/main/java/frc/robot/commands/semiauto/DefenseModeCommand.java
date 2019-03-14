@@ -26,8 +26,8 @@ public class DefenseModeCommand extends CommandGroup {
       String string = String.format("%.4f, DefenseModeCommand", Robot.time.get());
       Logging.print(string);
     }
-    addSequential(new MoveLiftCommand(LiftPositions.LOW, 2));
-    addParallel(new ChangeIntakeState(CargoIntakePositionState.IN));
     addSequential(new MoveHatchCommand(HatchPositionState.HATCH_IN));
+    addSequential(new MoveLiftCommand(LiftPositions.LOW, 2));
+    addSequential(new ChangeIntakeState(CargoIntakePositionState.IN));
   }
 }

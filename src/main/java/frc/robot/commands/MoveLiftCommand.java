@@ -62,10 +62,7 @@ public class MoveLiftCommand extends Command {
       goingUp = Robot.lift.goingUp(target, current);
     }
 
-    if(!RobotState.canRunLift()) {
-      isFinished = true;
-      // new LiftWhenSafe(target).start();
-    }
+    
 
     time = new Timer();
     time.reset();
@@ -104,7 +101,7 @@ public class MoveLiftCommand extends Command {
     } else {
       if(!RobotState.canRunLift()) {
         Robot.lift.setManualLift(0);
-        new LiftWhenSafe(target).start();
+        new LiftWhenSafe(target, 2).start();
       }
       isFinished = true;
     }
@@ -140,9 +137,14 @@ public class MoveLiftCommand extends Command {
       new SetIntakeRollers(true, 0).start();
     }
     
+    if(!RobotState.canRunLift()) {
+      isFinished = true;
+      new LiftWhenSafe(target, 2).start();
+    }
+
     if(onTarget) {
       if(target == LiftPositions.CARGO_LOADING_STATION || target == LiftPositions.CARGO_SHIP) {
-        // new ChangeIntakeState(CargoIntakePositionState.IN).start();
+        new ChangeIntakeState(CargoIntakePositionState.IN).start();
       }
     }
 

@@ -8,6 +8,8 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.Robot;
+import frc.robot.util.Logging;
 
 public class CargoIntakeOutToMid extends CommandGroup {
   /**
@@ -16,6 +18,10 @@ public class CargoIntakeOutToMid extends CommandGroup {
 
 
   public CargoIntakeOutToMid() {
+    if(Robot.isLogging) {
+      String string = String.format("%.4f, CargoIntakeOutToMid", Robot.time.get());
+      Logging.print(string);
+    }
     addSequential(new SetMidStatePistons(true));
     addSequential(new SetIntakePistons(false));
   }

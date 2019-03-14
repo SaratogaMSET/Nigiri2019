@@ -488,6 +488,8 @@ public class Robot extends TimedRobot {
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
+      } if(oi.driver.driverDeployReleased()) {
+        new DeployCommand(RobotState.liftPosition, 1, 2).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
