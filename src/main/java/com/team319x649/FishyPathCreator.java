@@ -114,7 +114,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 		FishyPath cargoShipLeft1ToLoading2 = new FishyPath(config, "CL1-LSL-2", DrivetrainSubsystem.WHEELBASE_FEET);
 		cargoShipLeft1ToLoading2.addWaypoint(25, 24, 0, 0, 0);
-		cargoShipLeft1ToLoading2.addWaypointRelative(-3.73, -3.93, -15, 10, 11.5);
+		cargoShipLeft1ToLoading2.addWaypointRelative(-8.5, -4.25, -15, 10, 11.5);
 		cargoShipLeft1ToLoading2.addWaypoint(4.5, 24.75, 0, 0, 11.5);
 
 		FishyPath straightPath = new FishyPath(config, "straight", DrivetrainSubsystem.WHEELBASE_FEET);
