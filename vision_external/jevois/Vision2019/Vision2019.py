@@ -27,7 +27,7 @@ FOV = 18.0
 
 CAMERA_OFFSET_IN = 7.5
 
-class VisionSquare2019:
+class Nigiri2019Vision:
     # ###################################################################################################
     ## Constructor
     def __init__(self):
@@ -37,7 +37,7 @@ class VisionSquare2019:
         #      105=light blue, 120=blue, 135=purple, 150=pink
         # S: 0 for unsaturated (whitish discolored object) to 255 for fully saturated (solid color)
         # L: 0 for dark to 255 for maximally bright
-        self.HLSmin = np.array([ 65, 100, 0], dtype=np.uint8)
+        self.HLSmin = np.array([ 65, 100, 200], dtype=np.uint8)
         self.HLSmax = np.array([ 105, 255, 255], dtype=np.uint8)
         # Other processing parameters:
         self.epsilon = 0.02              # Shape smoothing factor (higher for smoother)
@@ -212,11 +212,11 @@ class VisionSquare2019:
 
         if len(contour_matches) == 0:
             jevois.LERROR("NO CONTOUR DETECTED")
-            return None, None, None, None
+            return None, None, None
 
         if len(contour_costs) == 1:
             # TODO
-            return None, None, None, None
+            return None, None, None
 
         contour_costs.sort(key=self.cms)
         contour_costs = contour_costs[:5]
@@ -235,7 +235,7 @@ class VisionSquare2019:
         try:
             found = found[0]
         except:
-            return None, None, None, None
+            return None, None, None
 
                 #jevois.LINFO("{}{}".format(found[0][3], found[1][3]))
         centers = np.array([center for (_, center, _, _, _) in found]) # two lowest cost contours
@@ -266,9 +266,9 @@ class VisionSquare2019:
 
 
         success, rotation_vector, translation_vector = cv2.solvePnP(model_points, fullContour, self.camMatrix, self.distCoeffs)
-        self.logMessage("TV {}".format(translation_vector[2]))
+        self.logMessage("RV {}".format(rotation_vector))
 
-        return centers, center, math.sqrt(translation_vector[2][0] * translation_vector[2][0] + translation_vector[1][0] * translation_vector[1][0] + translation_vector[0][0] * translation_vector[0][0]), success
+        return centers, center, math.sqrt(translation_vector[2][0] * translation_vector[2][0] + translation_vector[1][0] * translation_vector[1][0] + translation_vector[0][0] * translation_vector[0][0]) + 6.0, success
     # ###################################################################################################
     ## Caclulate angle displacement
     def calculateAngle(self, w, h, center):
@@ -290,7 +290,7 @@ class VisionSquare2019:
         #correctedAngle = math.degrees(math.asin(math.cos(math.radians(raw_angle)) * distance/d))-90.0
             #if abs(math.sin(math.radians(raw_angle)))*distance > camera_offset_inches:
             #correctedAngle = -correctedAngle
-        theta1 = math.degrees(math.atan((-5.0 - distance * math.cos(math.radians(raw_angle)))/(6.3125 - distance * math.sin(math.radians(raw_angle)))))
+        theta1 = math.degrees(math.atan((-5.5 - distance * math.cos(math.radians(raw_angle)))/(7.2+CAMERA_OFFSET_IN - distance * math.sin(math.radians(raw_angle)))))
         correctedAngle = math.copysign(1, theta1) * (90 - math.copysign(1, theta1) * theta1)
         return correctedAngle
 
@@ -356,10 +356,11 @@ class VisionSquare2019:
             angle = self.calculateAngle(w, h, center)
             # Draw detections on image
             self.drawDetections(outimg, centers, center)
-        if angle != None and dist != None and success and dist > 48.0 and dist < 3600.0:
+        if angle != None and dist != None and success and dist > 40.0 and dist < 3600.0:
             #jevois.sendSerial("RAW_ANGLE {}".format(angle))
             jevois.sendSerial("DISTANCE {}".format(dist))
             jevois.sendSerial("ANGLE {}".format(self.calculateCorrectedAngle(angle, dist, CAMERA_OFFSET_IN)))
+            jevois.sendSerial("RF {}".format(angle))
 
         # Write frames/s info from our timer into the edge map (NOTE: does not account for output conversion time):
         fps = self.timer.stop()
