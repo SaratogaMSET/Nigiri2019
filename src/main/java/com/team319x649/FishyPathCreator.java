@@ -53,7 +53,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		 FishyPath exampleArc = new FishyPath(config, "FarRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		 // Set the first point to the starating point, this be done with any of the addWaypoint methods
 		 // positive X is forward, positive Y is left, units ae in feet and degrees
-		 exampleArc.addWaypoint(startingPoint);
+		 exampleArc.addWaypoint(HAB1L);
 		 // Add the next point that 4.5 ft forward, and doesn't turn, it also has a max speed of 4 FPS,
 		 // it will arrive at this location going 4 FPS
 		 exampleArc.addWaypointRelative(4.5, 0, 0, 3, 3);
@@ -69,7 +69,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 
 		FishyPath nearCargoShip = new FishyPath(config, "HAB1L-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
-		nearCargoShip.addWaypoint(startingPoint);
+		nearCargoShip.addWaypoint(HAB1L);
 		nearCargoShip.addWaypointRelative(4, 0, 0, 3, 3);
 		nearCargoShip.addWaypointRelative(6, 3, 25, 11.5, 11.5);
 		nearCargoShip.addWaypoint(21.7, 18, 89.99, 0, 11.5);
@@ -160,7 +160,6 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 		return asList(distanceScaling, turnScaling, speedTesting);
 	}
-}
 
 
 	/***********************    TEAM PATHS    *********************************************/
