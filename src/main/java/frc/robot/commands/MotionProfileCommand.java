@@ -30,53 +30,22 @@ public class MotionProfileCommand extends FishyCommand {
   Notifier followerNotifier;
   TrajectoryFollower leftFollower, rightFollower;
 
-  boolean isReversePath;
   boolean isPathFinished;
+  boolean robotStartedBackwards;
 
-  public static final double kP_gyro_doubletraction = -4.0;
-  public static final double kP_gyro_omnitraction = -0.5;
+  double previous_heading = 0.0;
 
-  public MotionProfileCommand(FishyPath fishyPath) {
-    this();
-    path = fishyPath.getPath();
-  }
+  public static final double kP_gyro_doubletraction = -0.0;
+  public static final double kP_gyro_omnitraction = -0.0;
 
-  public MotionProfileCommand(String pathName) {
-    this(pathName, false);
-  }
-
-  public MotionProfileCommand(String pathName, boolean isReversePath) {
+  public MotionProfileCommand(String pathName, boolean robotStartedBackwards) {
     this();
     path = FishyPathGenerator.importPath(pathName);
-    setPathDirection(isReversePath);
+    this.robotStartedBackwards = robotStartedBackwards;
   }
 
   private MotionProfileCommand() {
     isPathFinished = false;
-  }
-
-  public void setPathDirection(boolean isReverse) {
-    this.isReversePath = isReverse;
-    if(isReverse) {
-      for(Segment s : path.getLeftTrajectory().getSegments()) {
-        s.vel *= -1;
-        s.pos *= -1;
-        s.jerk *= -1;
-        s.acc *= -1;
-      }
-      for(Segment s : path.getTrajectory().getSegments()) {
-        s.vel *= -1;
-        s.pos *= -1;
-        s.jerk *= -1;
-        s.acc *= -1;
-      }
-      for(Segment s : path.getRightTrajectory().getSegments()) {
-        s.vel *= -1;
-        s.pos *= -1;
-        s.jerk *= -1;
-        s.acc *= -1;
-      }
-    }
   }
 
   // The command MUST implement this method - the fields which you want to log
@@ -136,60 +105,10 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    if(this.isReversePath) {
-      leftFollower.configure(20.0, 0.0, Robot.drive.getRightEncoderDistance());
-      rightFollower.configure(20.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    }
-    else {
-      leftFollower.configure(20.0, 0.0, Robot.drive.getLeftEncoderDistance());
-      rightFollower.configure(20.0, 0.0, Robot.drive.getRightEncoderDistance());
-    }
-    
-    
+    leftFollower.configure(35.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(35.0, 0.0, Robot.drive.getRightEncoderDistance());
 
-    // if(reversePath) {
-    //   leftFollower.configureEncoder(Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
-    //   rightFollower.configureEncoder(Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
-
-    // }
-    // else {
-    //   leftFollower.configureEncoder(Robot.drive.getRawLeftEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
-    //   rightFollower.configureEncoder(Robot.drive.getRawRightEncoder(), DrivetrainSubsystem.TICKS_PER_REV, DrivetrainSubsystem.WHEEL_DIAMETER);
-    // }
-    
-    // if(reversePath) {
-    //   leftFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.kp, 
-    //                             0.0, 
-    //                             DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.kd,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.kv,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Reverse.Left.ka);
-
-    //   rightFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.kp, 
-    //                             0.0, 
-    //                             DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.kd,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.kv,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Reverse.Right.ka);
-
-    // }
-    // else {
-    //   leftFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Forward.Left.kp, 
-    //                             0.0, 
-    //                             DrivetrainSubsystem.PathFollowingConstants.Forward.Left.kd,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Forward.Left.kv,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Forward.Left.ka);
-
-    //   rightFollower.configurePIDVA(DrivetrainSubsystem.PathFollowingConstants.Forward.Right.kp, 
-    //                             0.0, 
-    //                             DrivetrainSubsystem.PathFollowingConstants.Forward.Right.kd,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Forward.Right.kv,
-    //                             DrivetrainSubsystem.PathFollowingConstants.Forward.Right.ka);
-
-    // }
-    
-    // this.isReversePath = reversePath;
-
-    // followerNotifier = new Notifier(this::followPath);
-    // followerNotifier.startPeriodic(leftTraj.get(0).dt);
+    previous_heading = leftFollower.getHeading();
   }
 
   private void followPath(){
@@ -214,35 +133,14 @@ public class MotionProfileCommand extends FishyCommand {
 
       double leftSpeedRPM, rightSpeedRPM;
 
-      if(this.isReversePath) {
-        leftSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getLeftEncoderDistance());
-        rightSpeedRPM = leftFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());
-      }
-      else {
-        leftSpeedRPM = leftFollower.calculateTargetRPM(Robot.drive.getLeftEncoderDistance());
-        rightSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());  
-      }
-      
-             
-      
-      double heading = FishyMath.boundThetaNeg180to180(-Robot.gyro.getGyroAngle());
-      double desiredHeading = FishyMath.r2d(leftFollower.getHeading());
-      // if(this.robotStartedBackwards) {
-      //   if(isReversePath) {
+      leftSpeedRPM = leftFollower.calculateTargetRPM(Robot.drive.getLeftEncoderDistance());
+      rightSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());
 
-      //   }
-      //   else {
-      //     desiredHeading = Pathfinder.boundHalfDegrees(desiredHeading + 180.0);
-      //   }
-      // }
-      // else {
-      //   if(isReversePath) {
-      //     desiredHeading = Pathfinder.boundHalfDegrees(desiredHeading + 180.0);
-      //   }
-      //   else {
-
-      //   }
-      // }
+      double heading = -FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle());
+      double desiredHeading = FishyMath.boundThetaNeg180to180(FishyMath.r2d(leftFollower.getHeading()));
+      if(Math.abs(leftFollower.getHeading() - previous_heading) > 1.0) {
+        desiredHeading = FishyMath.boundThetaNeg180to180(FishyMath.r2d(leftFollower.getHeading())+180.0);
+      }
 
       double headingDiff = FishyMath.boundThetaNeg180to180(desiredHeading - heading);
       double gyroConstant;
@@ -253,13 +151,13 @@ public class MotionProfileCommand extends FishyCommand {
         gyroConstant = kP_gyro_doubletraction;
       }
       double turn = gyroConstant * headingDiff;
-      
+
       log("Right Actual", Robot.drive.getRightEncoderVelocity());
       log("Left Actual", Robot.drive.getLeftEncoderVelocity());
 
       double left = leftSpeedRPM + turn;
       double right = rightSpeedRPM - turn;
-      
+
       Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right));
       Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left));
 

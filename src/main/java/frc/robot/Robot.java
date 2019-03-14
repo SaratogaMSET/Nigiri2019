@@ -39,6 +39,7 @@ import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftEncoderConstants;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
+import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
 import frc.robot.util.RobotState;
@@ -110,7 +111,7 @@ public class Robot extends TimedRobot {
   public static boolean doneClimb;
 
   public Command autoCommand;
- 
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -134,7 +135,7 @@ public class Robot extends TimedRobot {
     compressor = new Compressor(4);
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);
-   
+
     try {
       vision = new VisionSubsystem();
       SmartDashboard.putString("VISION INIT", "1");
@@ -168,7 +169,7 @@ public class Robot extends TimedRobot {
    *
    * <p>This runs after the mode specififc periodic functions, but before
    * LiveWindow and SmartDashboard integrated updating. </p>
-   * 
+   *
    * 649: Because of ^ that fact, we can use this method to run our safety checks and override any dangerous behavior our mode-specific loops actuate.
    */
   @Override
@@ -177,7 +178,7 @@ public class Robot extends TimedRobot {
       loopTime = 0;
       loopCount = 1;
     }
-    loopTime += (time.get() - lastTime); 
+    loopTime += (time.get() - lastTime);
     SmartDashboard.putNumber("LoopTime", loopTime/loopCount);
     lastTime = time.get();
     loopCount += 1;
@@ -209,7 +210,6 @@ public class Robot extends TimedRobot {
         jack.resetJackEncoder();
       }
     }
-    
 
     // Vision
     if(vision != null) {
@@ -325,14 +325,14 @@ public class Robot extends TimedRobot {
       // autoCommand.start();
       // new TestTalonVelocity(100).start();
       // new PrepareClimb2().start();
-      
+
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       gyro.resetGyro();
       drive.changeBrakeCoast(false);
-      
+
       visionFixCommand = new VisionFixCommand();
-      
+
       compressor.setClosedLoopControl(true);
       compressor.start();
       time.reset();
@@ -354,7 +354,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    
+
     teleopLoop();
   }
 
@@ -364,11 +364,11 @@ public class Robot extends TimedRobot {
     drive.resetEncoders();
     // gyro.gyroPIDController.setSetpoint(90.0);
     // gyro.gyroPIDController.enable();
-    
+
   }
 
   /**
-   * 
+   *
    * This function is called periodically during test mode.
    */
   @Override
@@ -381,7 +381,7 @@ public class Robot extends TimedRobot {
 
   }
 
-  
+
   // public void sendShuffleboard(SubsystemEnum[] subs) {
     // THIS IS THROWING AN ERROR. COMMENTING OUT. - Dhruv
     /*
@@ -399,7 +399,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
   // }
 
-  
+
 
   @Override
   public void disabledInit() {
@@ -419,7 +419,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    
+
   }
 
   public void teleopLoop() {
@@ -438,8 +438,8 @@ public class Robot extends TimedRobot {
         new ChangeIntakeState(CargoIntakePositionState.MID).start();
         new SetIntakeRollers(false, 0, 0, 0).start();
         compressor.start();
-      } 
-  
+      }
+
       // Added stopping compressor to high heights(hatch mid and above)
       //****************************** LIFTING *************************************************/
       if(oi.gamePad.getButtonAPressed()) { // ****************** LIFT TO LOW**************/
@@ -450,7 +450,7 @@ public class Robot extends TimedRobot {
           new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         }
-      } else if(oi.gamePad.getButtonXPressed()) { 
+      } else if(oi.gamePad.getButtonXPressed()) {
         if(oi.gamePad.getLeftTrigger()) { //*********************LIFT TO LOW ROCKET****** */
           new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
@@ -458,7 +458,7 @@ public class Robot extends TimedRobot {
           new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         }
-      } else if(oi.gamePad.getButtonYPressed()) { 
+      } else if(oi.gamePad.getButtonYPressed()) {
         if(oi.gamePad.getLeftTrigger()) { //**********************LIFT TO CARGO MID****** */
           new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
@@ -478,10 +478,10 @@ public class Robot extends TimedRobot {
         new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
       } else if(!lift.isMoving()) {
         lift.stallLift(RobotState.liftPosition);
-      } 
-  
+      }
 
-  
+
+
       // *************************** DEPLOY ********************************************/
       if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
         new DeployCommand(RobotState.liftPosition, 1, 2).start();
@@ -499,7 +499,7 @@ public class Robot extends TimedRobot {
       // if(oi.gamePad.getLeftJoystickButtonPressed()) {
       //   new CargoIntakeMidToIn().start();
       // }
-  
+
       // ****************************** JACK ***********************************************/
       if(oi.gamePad.getPOVLeft()) {
         // start climb sequence level 2
@@ -526,7 +526,7 @@ public class Robot extends TimedRobot {
           }else{
             // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_2,true,3).start();
             new ClimbTwoJack().start();
-          } 
+          }
         }
       } else if(oi.gamePad.getPOVUp()) {
         doneClimb = true;
@@ -560,10 +560,10 @@ public class Robot extends TimedRobot {
       }
     }
 
-    
+
 
     // ****************** MANUAL MODE *************************************************
-    if(oi.gamePad.getStartButton()) { 
+    if(oi.gamePad.getStartButton()) {
       double pow = oi.gamePad.getLeftJoystickY()/2;
       if(lift.getBottomHal() && pow < 0){
         pow = 0;
@@ -575,8 +575,8 @@ public class Robot extends TimedRobot {
       }
     }
 
-    
-  
+
+
     //******************************* DRIVE ****************************************/
     if(isJackRunning){
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
@@ -584,7 +584,7 @@ public class Robot extends TimedRobot {
     }else{
       if(oi.gyroHoldButton.get()) {
         visionFixCommand.cancel();
-        if(!g.isRunning()) 
+        if(!g.isRunning())
         {
           g.setTargetAngle(Pathfinder.boundHalfDegrees(gyro.getGyroAngle() + 15.0));
           g.start();
@@ -605,7 +605,7 @@ public class Robot extends TimedRobot {
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }
     }
-    
+
   }
 
 

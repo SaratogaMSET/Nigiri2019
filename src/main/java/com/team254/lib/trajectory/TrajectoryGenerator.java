@@ -1,5 +1,7 @@
 package com.team254.lib.trajectory;
 
+import com.team254.lib.trajectory.Trajectory.Segment;
+
 /**
  * Factory class for creating Trajectories.
  *
@@ -17,10 +19,13 @@ public class TrajectoryGenerator {
 	}
 
 	public static Trajectory generate(Config config, double start_vel, double start_pos,
-			double goal_pos, double goal_vel, double maxVelocity) {
+			double goal_pos, double goal_vel, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+
+		start_vel = Math.abs(start_vel);
+
 		Trajectory traj;
 //		double adjusted_max_vel = maxVelocity;
-		double distanceAtMaxVelocity = ((goal_vel * goal_vel) - (start_vel * start_vel)) / 
+		double distanceAtMaxVelocity = ((goal_vel * goal_vel) - (start_vel * start_vel)) /
 				(2 * config.max_acc * config.max_acc)  + (goal_pos - start_pos) / 2;
 //		double maxPossibleVelocity = config.max_acc / 2 * Math.sqrt(distanceAtMaxVelocity + (start_vel * start_vel) / (config.max_acc * config.max_acc));
 		double maxPossibleVelocity = start_vel + Math.sqrt(2 * config.max_acc * distanceAtMaxVelocity);
@@ -38,21 +43,29 @@ public class TrajectoryGenerator {
 
 		int time = (int) ((t_rampup + t_rampdown + t_cruise) / config.dt);
 		double impulse = (t_rampup + t_cruise) / config.dt;
-		traj = generateValues(config.dt, start_vel, start_pos, adjusted_max_vel, config.max_acc, impulse, time, goal_pos);
+		traj = generateValues(config.dt, start_vel, start_pos, adjusted_max_vel, config.max_acc, impulse, time, goal_pos, goal_vel, isReverse, isFacingReverse);
 
 		return traj;
 	}
 
 	private static Trajectory generateValues(double dt, double start_vel, double start_pos,
-			double max_vel, double max_accel, double total_impulse, int time, double goalPosition) {
+			double max_vel, double max_accel, double total_impulse, int time, double goalPosition, double goalVel, boolean isReverse, boolean isFacingReverse) {
 		if (time <= 0) {
 			return null;
 		}
 
-		Trajectory traj = new Trajectory(time);
+		Trajectory traj;
+		if(goalVel == 0.0) {
+			traj = new Trajectory(time + 5);
+		}
+		else {
+			traj = new Trajectory(time);
+		}
 		double currentPosition = start_pos;
-		double currentVelocity = start_vel;
+		double currentVelocity = start_vel * ((isReverse) ? -1.0 : 1.0);
 		double currentAcceleration = 0;
+
+		double seg_acceleration = 0.0;
 		for (int i = 0; i < time; i++) {
 			Trajectory.Segment current = new Trajectory.Segment();
 			current.pos = currentPosition;
@@ -62,21 +75,58 @@ public class TrajectoryGenerator {
 
 			traj.setSegment(i, current);
 
+
+
+
 			if (i >= total_impulse) {
-				currentVelocity -= max_accel * dt;
-				currentAcceleration = -max_accel;
+				if(isReverse) {
+					seg_acceleration = max_accel;
+				}
+				else {
+					seg_acceleration = -max_accel;
+				}
+				currentVelocity += seg_acceleration * dt;
+				currentAcceleration = seg_acceleration;
 			} else {
-				currentVelocity += max_accel * dt;
-				currentAcceleration = max_accel;
+				if(isReverse) {
+					seg_acceleration = -max_accel;
+				}
+				else {
+					seg_acceleration = max_accel;
+				}
+				currentVelocity += seg_acceleration * dt;
+				currentAcceleration = seg_acceleration;
 			}
 
 			if (currentVelocity >= max_vel) {
 				currentVelocity = max_vel;
 				currentAcceleration = 0;
 			}
-			currentPosition += currentVelocity * dt;
+
+			if (currentVelocity <= -max_vel) {
+				currentVelocity = -max_vel;
+				currentAcceleration = 0;
+			}
+
+			double empirical_velocity = currentVelocity;
+			if(isReverse) {
+				empirical_velocity *= -1;
+			}
+
+			currentPosition += empirical_velocity * dt;
 		}
-//		System.out.println("Missing distance: " + (goalPosition - currentPosition));
+		if(goalVel == 0.0) {
+			for(int i = 0; i < 5; i++) {
+				Trajectory.Segment current = new Trajectory.Segment();
+				current.pos = currentPosition;
+				current.vel = 0.0;
+				current.acc = 0.0;
+				current.dt = dt;
+
+				traj.setSegment(time + i, current);
+			}
+		}
+		System.out.println("Missing distance: " + (goalPosition - currentPosition));
 		return traj;
 	}
 }

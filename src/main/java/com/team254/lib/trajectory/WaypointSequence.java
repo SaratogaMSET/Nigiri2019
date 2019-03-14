@@ -14,11 +14,17 @@ public class WaypointSequence {
 	public static class Waypoint {
 
 		public Waypoint(double x, double y, double theta, double endVelocity, double maxVelocity) {
+			this(x, y, theta, endVelocity, maxVelocity, false, false);
+		}
+
+		public Waypoint(double x, double y, double theta, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
 			this.x = x;
 			this.y = y;
 			this.theta = theta;
 			this.endVelocity = endVelocity;
 			this.maxVelocity = maxVelocity;
+			this.isReverse = isReverse;
+			this.isFacingReverse = isFacingReverse;
 		}
 
 		public Waypoint(Waypoint tocopy) {
@@ -27,14 +33,22 @@ public class WaypointSequence {
 			this.theta = tocopy.theta;
 			this.endVelocity = tocopy.endVelocity;
 			this.maxVelocity = tocopy.maxVelocity;
+			this.isReverse = tocopy.isReverse;
+			this.isFacingReverse = tocopy.isFacingReverse;
 		}
 
 		public Waypoint(Waypoint tocopy, double endVelocity, double maxVelocity) {
+			this(tocopy, endVelocity, maxVelocity, false, false);
+		}
+
+		public Waypoint(Waypoint tocopy, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
 			this.x = tocopy.x;
 			this.y = tocopy.y;
 			this.theta = tocopy.theta;
 			this.endVelocity = endVelocity;
 			this.maxVelocity = maxVelocity;
+			this.isReverse = isReverse;
+			this.isFacingReverse = isFacingReverse;
 		}
 
 		public Waypoint(double x, double y, double theta) {
@@ -43,6 +57,8 @@ public class WaypointSequence {
 			this.theta = theta;
 			this.endVelocity = 0;
 			this.maxVelocity = 0;
+			this.isReverse = false;
+			this.isFacingReverse = false;
 		}
 
 		public double x;
@@ -50,6 +66,8 @@ public class WaypointSequence {
 		public double theta;
 		public double endVelocity;
 		public double maxVelocity;
+		public boolean isReverse;
+		public boolean isFacingReverse;
 	}
 
 	Waypoint[] waypoints_;
@@ -78,26 +96,4 @@ public class WaypointSequence {
 		}
 	}
 
-	public WaypointSequence invertY() {
-		WaypointSequence inverted = new WaypointSequence(waypoints_.length);
-		inverted.num_waypoints_ = num_waypoints_;
-		for (int i = 0; i < num_waypoints_; ++i) {
-			inverted.waypoints_[i] = waypoints_[i];
-			inverted.waypoints_[i].y *= -1;
-			inverted.waypoints_[i].theta = ChezyMath
-					.boundAngle0to2PiRadians(2 * Math.PI - inverted.waypoints_[i].theta);
-		}
-
-		return inverted;
-	}
-
-	public WaypointSequence reversed() {
-		WaypointSequence inverted = new WaypointSequence(waypoints_.length);
-		for (int i = waypoints_.length; i > 0; i--) {
-			if (waypoints_[i - 1] != null) {
-				inverted.addWaypoint(waypoints_[i - 1]);
-			}
-		}
-		return inverted;
-	}
 }

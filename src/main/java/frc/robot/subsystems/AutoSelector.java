@@ -43,7 +43,7 @@ public class AutoSelector extends Subsystem {
 
     @Override
     protected void initDefaultCommand() {
-        
+
     }
     @Override
     public void essentialShuffleboard() {

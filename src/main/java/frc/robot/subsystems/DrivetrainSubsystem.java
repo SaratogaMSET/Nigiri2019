@@ -91,7 +91,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
     // follow right master
     motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
-    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());  
+    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());
 
     // follow left master
     motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
@@ -100,7 +100,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     // invert right side DT motors
     motors[0].setInverted(true);
     motors[3].setInverted(false);
-    
+
     motors[1].setInverted(InvertType.FollowMaster);
     motors[2].setInverted(InvertType.FollowMaster);
     motors[4].setInverted(InvertType.FollowMaster);
@@ -135,7 +135,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[0].set(ControlMode.PercentOutput, right);
     motors[3].set(ControlMode.PercentOutput, left);
   }
-  
+
   public int getRawLeftEncoder() {
     return motors[3].getSelectedSensorPosition();
   }
@@ -145,10 +145,10 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 		double max = Math.max(1, Math.max(Math.abs(left), Math.abs(right)));
 		left /= max;
 		right /= max;
-		
+
 		rawDrive(left, right);
   }
-  
+
   public int getRawRightEncoder() {
     return motors[0].getSelectedSensorPosition();
   }
@@ -186,7 +186,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
         motor = 0;
       }
     }
-    
+
     if (motor < 6) {
       SmartDashboard.putNumber("Motor", motors[motor].getDeviceID());
       testMotor(fwd);
@@ -204,7 +204,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void testAllMotors(double fwd) {
-    motors[0].set(ControlMode.PercentOutput, fwd);    
+    motors[0].set(ControlMode.PercentOutput, fwd);
     motors[1].set(ControlMode.PercentOutput, fwd);
     motors[2].set(ControlMode.PercentOutput, fwd);
     motors[3].set(ControlMode.PercentOutput, fwd);

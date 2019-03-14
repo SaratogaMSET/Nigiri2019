@@ -11,8 +11,8 @@ import com.team254.lib.trajectory.Trajectory.Segment;
  */
 public class PathGenerator {
 	/**
-	 * Generate a path for autonomous driving. 
-	 * 
+	 * Generate a path for autonomous driving.
+	 *
 	 * @param waypoints The waypoints to drive to (FOR THE "GO LEFT" CASE!!!!)
 	 * @param config Trajectory config.
 	 * @param wheelbase_width Wheelbase separation; units must be consistent with
@@ -20,18 +20,18 @@ public class PathGenerator {
 	 * @param name The name of the new path.  THIS MUST BE A VALID JAVA CLASS NAME
 	 * @return The path.
 	 */
-	public static Path makePath(WaypointSequence waypoints, 
-			TrajectoryGenerator.Config config, double wheelbase_width, 
+	public static Path makePath(WaypointSequence waypoints,
+			TrajectoryGenerator.Config config, double wheelbase_width,
 			String name) {
 		return new Path(name, makeLeftAndRightTrajectories(generateFromPath(waypoints, config), wheelbase_width));
 	}
-  
+
 	static Trajectory.Pair generateLeftAndRightFromSeq(WaypointSequence path,
 			TrajectoryGenerator.Config config, double wheelbase_width) {
 	  return makeLeftAndRightTrajectories(generateFromPath(path, config),
 			  wheelbase_width);
 	}
-  
+
 	static Trajectory generateFromPath(WaypointSequence path, TrajectoryGenerator.Config config) {
 		if (path.getNumWaypoints() < 2) {
 			return null;
@@ -53,12 +53,14 @@ public class PathGenerator {
 
 		// Generate a smooth trajectory over the total distance.
 		Trajectory traj = TrajectoryGenerator.generate(
-				config, 
+				config,
 				0.0,
-				0.0, 
-				spline_lengths[0], 
-				path.getWaypoint(1).endVelocity, 
-				path.getWaypoint(1).maxVelocity);
+				0.0,
+				spline_lengths[0],
+				path.getWaypoint(1).endVelocity,
+				path.getWaypoint(1).maxVelocity,
+				path.getWaypoint(1).isReverse,
+				path.getWaypoint(1).isFacingReverse);
 		double distance = spline_lengths[0];
 		for (int i = 2; i < path.num_waypoints_; ++i) {
 			distance += spline_lengths[i - 1];
@@ -66,10 +68,13 @@ public class PathGenerator {
 					TrajectoryGenerator.generate(
 							config,
 							traj.getSegment(traj.getNumSegments() - 1).vel,
-							traj.getSegment(traj.getNumSegments() - 1).pos, 
-							distance, 
-							path.getWaypoint(i).endVelocity, 
-							path.getWaypoint(i).maxVelocity));
+							traj.getSegment(traj.getNumSegments() - 1).pos,
+							distance,
+							path.getWaypoint(i).endVelocity,
+							path.getWaypoint(i).maxVelocity,
+							path.getWaypoint(i).isReverse,
+							path.getWaypoint(i).isFacingReverse));
+							// System.out.println(traj);
 		}
 
 		// Assign headings based on the splines.
@@ -103,7 +108,7 @@ public class PathGenerator {
 			}
 		}
 
-		// Fix headings so they are continuously additive 
+		// Fix headings so they are continuously additive
 		double lastUncorrectedHeading = traj.getSegment(0).heading;
 		double lastCorrectedHeading = traj.getSegment(0).heading;
 		for (int i = 1; i < traj.getNumSegments(); ++i) {
@@ -111,7 +116,7 @@ public class PathGenerator {
 			double uncorrectedHeading = currentSegment.heading;
 
 			double headingDelta = 0;
-			
+
 			if (lastUncorrectedHeading < 0 && uncorrectedHeading > 0  && lastUncorrectedHeading < -Math.PI / 2) {
 				headingDelta = -(2 * Math.PI - Math.abs(lastUncorrectedHeading) - Math.abs(uncorrectedHeading));
 			} else if (lastUncorrectedHeading > 0 && uncorrectedHeading < 0 && lastUncorrectedHeading > Math.PI / 2) {
@@ -126,8 +131,8 @@ public class PathGenerator {
 			lastCorrectedHeading = correctedHeading;
 		}
 		return traj;
-	}	
-  
+	}
+
 	/**
 	 * Generate left and right wheel trajectories from a reference.
 	 *
@@ -143,18 +148,18 @@ public class PathGenerator {
 	  output[1] = input.copy();
 	  Trajectory left = output[0];
 	  Trajectory right = output[1];
-  
+
 	  for (int i = 0; i < input.getNumSegments(); ++i) {
 		Trajectory.Segment current = input.getSegment(i);
 		double cos_angle = Math.cos(current.heading);
 		double sin_angle = Math.sin(current.heading);
-  
+
 		Trajectory.Segment s_left = left.getSegment(i);
 		s_left.x = current.x - wheelbase_width / 2 * sin_angle;
 		s_left.y = current.y + wheelbase_width / 2 * cos_angle;
 		if (i > 0) {
 		  // Get distance between current and last segment
-		  double dist = Math.sqrt((s_left.x - left.getSegment(i - 1).x)
+		  double dist = Math.signum(current.vel) * Math.sqrt((s_left.x - left.getSegment(i - 1).x)
 				  * (s_left.x - left.getSegment(i - 1).x)
 				  + (s_left.y - left.getSegment(i - 1).y)
 				  * (s_left.y - left.getSegment(i - 1).y));
@@ -163,13 +168,13 @@ public class PathGenerator {
 		  s_left.acc = (s_left.vel - left.getSegment(i - 1).vel) / s_left.dt;
 		  s_left.jerk = (s_left.acc - left.getSegment(i - 1).acc) / s_left.dt;
 		}
-  
+
 		Trajectory.Segment s_right = right.getSegment(i);
 		s_right.x = current.x + wheelbase_width / 2 * sin_angle;
 		s_right.y = current.y - wheelbase_width / 2 * cos_angle;
 		if (i > 0) {
 		  // Get distance between current and last segment
-		  double dist = Math.sqrt((s_right.x - right.getSegment(i - 1).x)
+		  double dist = Math.signum(current.vel) * Math.sqrt((s_right.x - right.getSegment(i - 1).x)
 				  * (s_right.x - right.getSegment(i - 1).x)
 				  + (s_right.y - right.getSegment(i - 1).y)
 				  * (s_right.y - right.getSegment(i - 1).y));
@@ -179,7 +184,22 @@ public class PathGenerator {
 		  s_right.jerk = (s_right.acc - right.getSegment(i - 1).acc) / s_right.dt;
 		}
 	  }
-  
+
+	  for (int i = 0; i < input.getNumSegments(); ++i) {
+		Trajectory.Segment current = input.getSegment(i);
+		Trajectory.Segment s_right = right.getSegment(i);
+		Trajectory.Segment s_left = left.getSegment(i);
+
+		// Flip r & l trajectories if reverse path
+		if(current.vel < 0.0) {
+			Trajectory.Segment left_copy = new Trajectory.Segment(s_left);
+			Trajectory.Segment right_copy = new Trajectory.Segment(s_right);
+
+			left.setSegment(i, right_copy);
+			right.setSegment(i, left_copy);
+		}
+	  }
+
 	  return new Trajectory.Pair(output[0], input, output[1]);
 	}
   }
