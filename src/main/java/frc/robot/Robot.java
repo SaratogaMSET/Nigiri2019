@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
   public static boolean autoControl = true;
   public static boolean newAuto = false;
   public static boolean isManualMode = false;
-  public static boolean isLogging = true;
+  public static boolean isLogging = false;
 
 
   // Subsystems
@@ -205,7 +205,7 @@ public class Robot extends TimedRobot {
 
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
-      jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
+      // jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
       if(jack.isJackAtTop()) {
         jack.resetJackEncoder();
       }
@@ -222,14 +222,14 @@ public class Robot extends TimedRobot {
       Double dist = vision.getDistance();
       if(angle != null) {
         if(Math.abs(angle) < 3.0) {
-          led.solidGreen(0);
+          led.solidRed(0);
           // SmartDashboard.putBoolean("VSTATUS", true);
         } else {
           led.solidBlue(0);
           // SmartDashboard.putBoolean("VSTATUS", false);
         }
       } else {
-        led.solidRed(0);
+        // led.solidRed(1);
       }
       if(dist != null) {
         SmartDashboard.putNumber("VISION DISTANCE", dist);
@@ -533,7 +533,7 @@ public class Robot extends TimedRobot {
         new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
         new ChangeIntakeState(CargoIntakePositionState.OUT).start();
         jack.setJackMPVals(false);
-        new MoveJackCommand(0,3);
+        new MoveJackCommand(0,3).start();
         isClimb = false;
       }
     } else if(isDefenseMode) { //****************************************DEFENSE****************** */
@@ -582,21 +582,12 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      if(oi.gyroHoldButton.get()) {
-        visionFixCommand.cancel();
-        if(!g.isRunning())
-        {
-          g.setTargetAngle(Pathfinder.boundHalfDegrees(gyro.getGyroAngle() + 15.0));
-          g.start();
-        }
-        // drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
-      }
-      else if(oi.visionFixButton.get()) {
+      if(oi.visionFixButton.get()) {
         g.cancel();
         if(!visionFixCommand.isRunning()) {
           visionFixCommand.start();
         }
-        // drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
       } else {
         visionFixCommand.cancel();
         g.cancel();
@@ -622,7 +613,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Lift Velocity", lift.getVel());
     SmartDashboard.putBoolean("Bottom Hal", lift.getBottomHal());
     SmartDashboard.putBoolean("isMoving", lift.isMoving());
-    SmartDashboard.putNumber("Lift Motor Current", lift.getCurrentMainMotor());
+    // SmartDashboard.putNumber("Lift Motor Current", lift.getCurrentMainMotor());
     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());
 
     //***************************************************** INTAKE */
@@ -630,7 +621,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
     // SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
     // SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
-    cargoIntake.smartdashboard();
+    // cargoIntake.smartdashboard();
 
     //***************************************************** JACK */
     // SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());

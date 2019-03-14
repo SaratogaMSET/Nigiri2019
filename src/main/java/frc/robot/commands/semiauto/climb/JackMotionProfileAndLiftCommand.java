@@ -75,7 +75,7 @@ public class JackMotionProfileAndLiftCommand extends Command {
       SmartDashboard.putBoolean("JACK HALL FIRING", false);
 
     }
-    System.out.println(Robot.jack.getJackVel());
+    // System.out.println(Robot.jack.getJackVel());
   }
 
   // Make this return true when this Command no longer needs to run execute()

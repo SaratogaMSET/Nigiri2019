@@ -53,9 +53,9 @@ public class JackSubsystem extends Subsystem {
     public static final double UP_kD = 0;
     public static final double DOWN_kD = 0;
     public static final int UP_VEL = 7000;
-    public static final int DOWN_VEL = 6200;//1800
+    public static final int DOWN_VEL = 5600;//1800
     public static final int UP_ACCEL = 12000;//150
-    public static final int DOWN_ACCEL = 4400;
+    public static final int DOWN_ACCEL = 4000;
 
   }
 
@@ -91,8 +91,11 @@ public class JackSubsystem extends Subsystem {
   public int getJackEncoder(){
     return jackMotor.getSelectedSensorPosition();
   }
+
+  // TODO: ERROR
   public double getJackVel(){
-    return jackMotor.getSelectedSensorVelocity();
+    return 0.0;
+    // return jackMotor.getSelectedSensorVelocity();
   }
   public void setJackMotorMP(double pos){
     jackMotor.set(ControlMode.MotionMagic, pos);

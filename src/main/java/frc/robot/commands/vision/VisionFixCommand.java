@@ -44,7 +44,7 @@ public class VisionFixCommand extends FishyCommand {
   protected void initialize() {
     time.start();
     angleSet = false;
-    gyroHoldCommand.cancel();
+    // gyroHoldCommand.cancel();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -55,15 +55,18 @@ public class VisionFixCommand extends FishyCommand {
     Double distance = Robot.vision.getDistance();
     Double angle = Robot.vision.getAngleDisplacement();
 
-    if(angleSet || (angle == null || distance == null || distance < 80.0)) {
+    if(angleSet || angle == null || (distance != null && distance < 50.0)) {
 
     }
     else {
       angleSet = true;
-      gyroHoldCommand.setTargetAngle(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + angle));
+      SmartDashboard.putNumber("VISION ANGLE", angle);
       gyroHoldCommand.start();
+      gyroHoldCommand.setTargetAngle(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + angle));
+      System.out.println(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + angle));
 
     }
+
   }
 
   // Make this return true when this Command no longer needs to run execute()
