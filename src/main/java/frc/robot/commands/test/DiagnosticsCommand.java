@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class DiagnosticsCommand extends Command {
-  Command [] tests = {new AutoTest1(), new AutoTest2(), new AutoTest3(), new CargoDeployTest(), new DrivetrainTest(),
+  Command [] tests = { new CargoDeployTest(), new DrivetrainTest(),
   new HatchTest(), new IntakeMotorsTest(), new LedTest(), new LiftTest(), new TestSensorsCommand()};
  
   public DiagnosticsCommand() {

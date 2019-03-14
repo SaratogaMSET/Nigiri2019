@@ -16,10 +16,10 @@ public class CargoIntakeMidToOut extends CommandGroup {
    * Add your docs here.
    */
   public CargoIntakeMidToOut() {
-    if(Robot.isLogging) {
-      String string = String.format("%.4f, CargoIntakeMidToOut", Robot.time.get());
-      Logging.print(string);
-    }
+    // if(Robot.isLogging) {
+    //   String string = String.format("%.4f, CargoIntakeMidToOut", Robot.time.get());
+    //   Logging.print(string);
+    // }
     addSequential(new SetMidStatePistons(true));
     addSequential(new SetIntakePistons(true));
   }

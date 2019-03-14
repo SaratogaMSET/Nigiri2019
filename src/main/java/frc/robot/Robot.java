@@ -153,12 +153,12 @@ public class Robot extends TimedRobot {
 
     time = new Timer();
     //LOOP COUNT
-    loopTimer = new Timer();
-    loopTimer.start();
+    // loopTimer = new Timer();
+    // loopTimer.start();
     time.reset();
     time.start();
-    lastTime = time.get();
-    loopCount = 1;
+    // lastTime = time.get();
+    // loopCount = 1;
     doneClimb = false;
 
     autoCommandLeft = new IanAssistedDrive(false);
@@ -177,14 +177,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    if(loopTimer.get() > 5) {
-      loopTime = 0;
-      loopCount = 1;
-    }
-    loopTime += (time.get() - lastTime);
-    SmartDashboard.putNumber("LoopTime", loopTime/loopCount);
-    lastTime = time.get();
-    loopCount += 1;
+    // if(loopTimer.get() > 5) {
+      // loopTime = 0;
+      // loopCount = 1;
+    // }
+    // loopTime += (time.get() - lastTime);
+    // SmartDashboard.putNumber("LoopTime", loopTime/loopCount);
+    // lastTime = time.get();
+    // loopCount += 1;
     //***********************************UPDATE STATES***************************** */
     RobotState.cargoIntakeState = cargoIntake.updateIntakeState();
     RobotState.intakeMotorState = cargoIntake.updateIntakeRollerState();
@@ -576,11 +576,11 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
 
     //***************************************************** LIFT */
-    SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
-    SmartDashboard.putNumber("Lift Distance", lift.getDistance());
-    SmartDashboard.putNumber("Lift Velocity", lift.getVel());
+    // SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
+    // SmartDashboard.putNumber("Lift Distance", lift.getDistance());
+    // SmartDashboard.putNumber("Lift Velocity", lift.getVel());
     SmartDashboard.putBoolean("Bottom Hal", lift.getBottomHal());
-    SmartDashboard.putBoolean("isMoving", lift.isMoving());
+    // SmartDashboard.putBoolean("isMoving", lift.isMoving());
     // SmartDashboard.putNumber("Lift Motor Current", lift.getCurrentMainMotor());
     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());
 

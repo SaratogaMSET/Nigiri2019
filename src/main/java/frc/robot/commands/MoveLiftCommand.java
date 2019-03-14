@@ -47,7 +47,6 @@ public class MoveLiftCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    SmartDashboard.putString("LIFT COMMAND ENDED", "FALSE");
     current = RobotState.liftPosition;
     isFinished = false;
     onTarget = false;
@@ -61,9 +60,7 @@ public class MoveLiftCommand extends Command {
     } else {
       goingUp = Robot.lift.goingUp(target, current);
     }
-
     
-
     time = new Timer();
     time.reset();
     time.start();
@@ -72,11 +69,6 @@ public class MoveLiftCommand extends Command {
       String string = String.format("%.4f, MoveLiftCommand Start, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
       Logging.print(string);
     }
-
-    
-
-    // String
-
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -84,8 +76,6 @@ public class MoveLiftCommand extends Command {
   protected void execute() {
     if(RobotState.canRunLift() && !isFinished) {
       Robot.lift.moveLiftToPos(target);
-      SmartDashboard.putString("Target Position", target.toString());
-
 
       if(isTargetCargoState) {
         if(goingUp && RobotState.runIntakesWhileLifting()) {
@@ -105,11 +95,6 @@ public class MoveLiftCommand extends Command {
       }
       isFinished = true;
     }
-
-    SmartDashboard.putBoolean("is interrupted", false);
-    SmartDashboard.putBoolean("onTarget", onTarget);
-    SmartDashboard.putBoolean("isFinished", isFinished);
-    SmartDashboard.putBoolean("Is Going Up", goingUp);
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -127,9 +112,7 @@ public class MoveLiftCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    // if(!goingToBottom && !(RobotState.cargoIntakeState == CargoIntakePositionState.OUT)) {
-    //   new SetIntakeRollers(true, 0).start();
-    // }
+
     if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
       new SetIntakeRollers(true, 0).start();
     }
@@ -149,10 +132,10 @@ public class MoveLiftCommand extends Command {
     }
 
     if(Robot.isLogging) {
-      String string = String.format("%.4f, MoveLiftCommand End, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
+      String string = String.format("%.4f, MoveLiftCommand End, Current: %.2f, Target: %s", 
+      Robot.time.get(), Robot.lift.getDistance(), target.toString());
       Logging.print(string);
     }
-    SmartDashboard.putString("LIFT COMMAND ENDED", "TRUE");
   }
 
   // Called when another command which requires one or more of the same
