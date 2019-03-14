@@ -43,19 +43,19 @@ public class JackSubsystem extends Subsystem {
     public static double DRIVETRAIN_RATIO = 0.4;
   }
 
-  public static class LiftConstants{
+  public static class JackConstants{
     public static final double UP_kF = 0.3;
     public static final double DOWN_kF = 0.22755555555;
     public static final double UP_kP = 0.4;
-    public static final double DOWN_kP = 4;
+    public static final double DOWN_kP = 12;
     public static final double UP_kI = 0;
     public static final double DOWN_kI = 0;
     public static final double UP_kD = 0;
     public static final double DOWN_kD = 0;
-    public static final int UP_VEL = 3000;
-    public static final int DOWN_VEL = 1800;//1800
-    public static final int UP_ACCEL = 9000;//150
-    public static final int DOWN_ACCEL = 300;
+    public static final int UP_VEL = 7000;
+    public static final int DOWN_VEL = 6200;//1800
+    public static final int UP_ACCEL = 12000;//150
+    public static final int DOWN_ACCEL = 4400;
 
   }
 
@@ -108,19 +108,19 @@ public class JackSubsystem extends Subsystem {
   }
   public void setJackMPVals(boolean isDown){
     if(isDown){
-      jackMotor.config_kF(0, LiftConstants.DOWN_kF,Robot.timeoutMs);
-      jackMotor.config_kP(0, LiftConstants.DOWN_kP,Robot.timeoutMs);
-      jackMotor.config_kI(0, LiftConstants.DOWN_kI,Robot.timeoutMs);
-      jackMotor.config_kD(0, LiftConstants.DOWN_kD,Robot.timeoutMs);
-      jackMotor.configMotionCruiseVelocity(LiftConstants.DOWN_VEL,Robot.timeoutMs);
-      jackMotor.configMotionAcceleration(LiftConstants.DOWN_ACCEL,Robot.timeoutMs);
+      jackMotor.config_kF(0, JackConstants.DOWN_kF,Robot.timeoutMs);
+      jackMotor.config_kP(0, JackConstants.DOWN_kP,Robot.timeoutMs);
+      jackMotor.config_kI(0, JackConstants.DOWN_kI,Robot.timeoutMs);
+      jackMotor.config_kD(0, JackConstants.DOWN_kD,Robot.timeoutMs);
+      jackMotor.configMotionCruiseVelocity(JackConstants.DOWN_VEL,Robot.timeoutMs);
+      jackMotor.configMotionAcceleration(JackConstants.DOWN_ACCEL,Robot.timeoutMs);
     }else{
-      jackMotor.config_kF(0, LiftConstants.UP_kF,Robot.timeoutMs);
-      jackMotor.config_kP(0, LiftConstants.UP_kP,Robot.timeoutMs);
-      jackMotor.config_kI(0, LiftConstants.UP_kI,Robot.timeoutMs);
-      jackMotor.config_kD(0, LiftConstants.UP_kD,Robot.timeoutMs);
-      jackMotor.configMotionCruiseVelocity(LiftConstants.UP_VEL,Robot.timeoutMs);
-      jackMotor.configMotionAcceleration(LiftConstants.UP_ACCEL,Robot.timeoutMs);
+      jackMotor.config_kF(0, JackConstants.UP_kF,Robot.timeoutMs);
+      jackMotor.config_kP(0, JackConstants.UP_kP,Robot.timeoutMs);
+      jackMotor.config_kI(0, JackConstants.UP_kI,Robot.timeoutMs);
+      jackMotor.config_kD(0, JackConstants.UP_kD,Robot.timeoutMs);
+      jackMotor.configMotionCruiseVelocity(JackConstants.UP_VEL,Robot.timeoutMs);
+      jackMotor.configMotionAcceleration(JackConstants.UP_ACCEL,Robot.timeoutMs);
     }
   }
 

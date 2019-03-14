@@ -34,6 +34,7 @@ public class OI {
   public Joystick buttonBoardLeft;
 
   public Button visionFixButton;
+  public Button gyroHoldButton;
 
   public Driver driver;
   public Gamepad gamePad;
@@ -49,6 +50,8 @@ public class OI {
     gamePad = new Gamepad();
 
     visionFixButton = new JoystickButton(driverHorizontal, 1); // driver rot stick trigger
+    gyroHoldButton = new JoystickButton(driverVertical, 1); // driver vert stick trigger
+
   }
 
   public class Driver {

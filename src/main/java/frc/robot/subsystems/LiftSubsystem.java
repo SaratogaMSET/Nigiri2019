@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -73,16 +74,16 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CLIMB_kF = 0.59;
     public static final double CLIMB_kP = 1.4; //1.6
     public static final double CLIMB_kI = 0.0;
-    public static final double CLIMB_kD = 0.0;
+    public static final double CLIMB_kD = 0.01;
   }
 
   public static class PIDConstants {
     public static final double k_f = 0.2925714;
-    public static double k_p = 1.5;
+    public static double k_p = 0.8;
     public static double k_i = 0.0;
-    public static double k_d = 0.005;
-    public static final int MAX_ACCELERATION = 4000; //measured 40000-70000
-    public static final int MAX_VELOCITY = 4500; // measured 4500
+    public static double k_d = 0.0;
+    public static final int MAX_ACCELERATION = 6500; //measured 40000-70000
+    public static final int MAX_VELOCITY = 8000; // measured 4500
   }
 
   private TalonSRX motor1;
@@ -169,7 +170,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor1.configMotionCruiseVelocity(PIDConstants.MAX_VELOCITY, Robot.timeoutMs);
     motor1.config_kP(0, LiftPidConstants.CLIMB_kP);
     motor1.config_kI(0, PIDConstants.k_i);
-    motor1.config_kD(0, PIDConstants.k_d);
+    motor1.config_kD(0, LiftPidConstants.CLIMB_kD);
     motor1.config_kF(0, PIDConstants.k_f);
     // motor1.configMotionCruiseVelocity(LiftPidConstants.HANG_VEL, Robot.timeoutMs);
     // motor1.configMotionAcceleration(LiftPidConstants.HANG_ACCEL, Robot.timeoutMs);

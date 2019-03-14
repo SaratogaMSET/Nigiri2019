@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
   // Vision
   public static VisionSubsystem vision;
   public static VisionFixCommand visionFixCommand;
+  GyroRotationalHoldCommand g = new GyroRotationalHoldCommand();
 
   public static Preferences prefs;
 
@@ -218,6 +219,7 @@ public class Robot extends TimedRobot {
       }
 
       Double angle = vision.getAngleDisplacement();
+      Double dist = vision.getDistance();
       if(angle != null) {
         if(Math.abs(angle) < 3.0) {
           led.solidGreen(0);
@@ -229,6 +231,10 @@ public class Robot extends TimedRobot {
       } else {
         led.solidRed(0);
       }
+      if(dist != null) {
+        SmartDashboard.putNumber("VISION DISTANCE", dist);
+      }
+      SmartDashboard.putNumber("VISION DISTANCE", -1.0);
     } else {
       led.solidRed(0);
       SmartDashboard.putBoolean("Is Vision", false);
@@ -319,6 +325,7 @@ public class Robot extends TimedRobot {
       // autoCommand.start();
       // new TestTalonVelocity(100).start();
       // new PrepareClimb2().start();
+      
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       gyro.resetGyro();
@@ -476,12 +483,11 @@ public class Robot extends TimedRobot {
 
   
       // *************************** DEPLOY ********************************************/
-      if(oi.gamePad.getBackButtonPressed()) { //*********GUNNER DEPLOY********** */
+      if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
         new DeployCommand(RobotState.liftPosition, 1, 2).start();
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
-        new DeployCommand(RobotState.liftPosition, 1, 2).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
@@ -497,13 +503,13 @@ public class Robot extends TimedRobot {
         // start climb sequence level 2
         isClimb = true;
         isLevel3 = false;
-        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+        new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         new PrepareClimb2().start();
       } else if(oi.gamePad.getPOVRight()) {
         // start climb sequence level 3
         isClimb = true;
         isLevel3 = true;
-        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+        new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         new PrepareClimb3().start();
       }
     } else if(isClimb){ // ****************************************** CLIMBING ************/
@@ -522,7 +528,8 @@ public class Robot extends TimedRobot {
         }
       } else if(oi.gamePad.getPOVUp()) {
         doneClimb = true;
-        // new ChangeIntakeState(CargoIntakePositionState.OUT).start();
+        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+        new ChangeIntakeState(CargoIntakePositionState.OUT).start();
         jack.setJackMPVals(false);
         new MoveJackCommand(0,3);
         isClimb = false;
@@ -573,11 +580,25 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      if(oi.visionFixButton.get()) {
-        visionFixCommand.start();
+      if(oi.gyroHoldButton.get()) {
+        visionFixCommand.cancel();
+        if(!g.isRunning()) 
+        {
+          g.setTargetAngle(Pathfinder.boundHalfDegrees(gyro.getGyroAngle() + 15.0));
+          g.start();
+        }
+        // drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
+      }
+      else if(oi.visionFixButton.get()) {
+        g.cancel();
+        if(!visionFixCommand.isRunning()) {
+          visionFixCommand.start();
+        }
+        // drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
       } else {
         visionFixCommand.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        g.cancel();
+        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 50.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }

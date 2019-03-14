@@ -88,7 +88,7 @@ public class VisionSubsystem extends Subsystem {
             if(angleHistory.size() > ANGLE_HISTORY_LENGTH) {
                 angleHistory.remove(0);
             }
-            jevoisData = jevoisData.substring(am.start(1));
+            jevoisData = jevoisData.substring(am.end(1));
         }
         else {
             SmartDashboard.putNumber("VISION TARGET", 0);
@@ -96,9 +96,9 @@ public class VisionSubsystem extends Subsystem {
         }
         Matcher dm = distRegex.matcher(jevoisData);
         if(dm.find()) {
-            SmartDashboard.putNumber("VISION DIST", 1);
             distance = Double.parseDouble(dm.group(1).substring(8));
-            jevoisData = jevoisData.substring(dm.start(1));
+            SmartDashboard.putNumber("VISION DIST", distance);
+            jevoisData = jevoisData.substring(dm.end(1));
         }
         else {
             SmartDashboard.putNumber("VISION DIST", 0);

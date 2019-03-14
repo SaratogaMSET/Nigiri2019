@@ -38,7 +38,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
 
   // PID
   public PIDController gyroPIDController;
-  private Double gyroPIDOutput; // Normalized output (-1.0 to 1.0) to feed. CLOCKWISE  power output. A positive value means that the robot needs to turn to the right to hit the angle target.
+  public Double gyroPIDOutput; // Normalized output (-1.0 to 1.0) to feed. CLOCKWISE  power output. A positive value means that the robot needs to turn to the right to hit the angle target.
 
   public PIDController driverGyroPID;
   public double driverPIDOutput; 
@@ -50,23 +50,23 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     lastAccelY = getLinearAccelY();
     collision = false;
 
-    gyroPIDController = new PIDController(0.011, 0.0, 0.02, gyro, this);
+    gyroPIDController = new PIDController(0.027, 0.0, 0.02, gyro, this);
     gyroPIDController.setInputRange(-180.0f, 180.0f);
     gyroPIDController.setOutputRange(-1.0, 1.0);
     gyroPIDController.setAbsoluteTolerance(1.0);
     gyroPIDController.setContinuous(true);
     gyroPIDController.disable();
 
-    driverGyroPID = new PIDController(0.04, 0.0, 0.018, gyro, new PIDOutput(){
+    driverGyroPID = new PIDController(0.03, 0.0, 0.0, gyro, new PIDOutput(){
     
       @Override
       public void pidWrite(double output) {
         driverPIDOutput = output;
       }
-    });
+    }, 0.01);
     driverGyroPID.setInputRange(-180.0f, 180.0f);
     driverGyroPID.setOutputRange(-1.0, 1.0);
-    driverGyroPID.setAbsoluteTolerance(1.0);
+    driverGyroPID.setAbsoluteTolerance(5.0);
     driverGyroPID.setContinuous(true);
     driverGyroPID.disable();
 

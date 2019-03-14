@@ -68,8 +68,14 @@ public class JackMotionProfileAndLiftCommand extends Command {
       Robot.lift.motionMagicLift(moveLiftVal);
     }
     if(Robot.jack.isJackAtBottom()) {
-      Robot.jack.setJackMotor(0.0);
+      SmartDashboard.putBoolean("JACK HALL FIRING", true);
+      // Robot.jack.setJackMotor(0.0);
     }
+    else {
+      SmartDashboard.putBoolean("JACK HALL FIRING", false);
+
+    }
+    System.out.println(Robot.jack.getJackVel());
   }
 
   // Make this return true when this Command no longer needs to run execute()
