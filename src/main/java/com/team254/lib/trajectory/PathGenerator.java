@@ -58,7 +58,9 @@ public class PathGenerator {
 				0.0, 
 				spline_lengths[0], 
 				path.getWaypoint(1).endVelocity, 
-				path.getWaypoint(1).maxVelocity);
+				path.getWaypoint(1).maxVelocity,
+				path.getWaypoint(1).isReverse,
+				path.getWaypoint(1).isFacingReverse);
 		double distance = spline_lengths[0];
 		for (int i = 2; i < path.num_waypoints_; ++i) {
 			distance += spline_lengths[i - 1];
@@ -69,7 +71,10 @@ public class PathGenerator {
 							traj.getSegment(traj.getNumSegments() - 1).pos, 
 							distance, 
 							path.getWaypoint(i).endVelocity, 
-							path.getWaypoint(i).maxVelocity));
+							path.getWaypoint(i).maxVelocity,
+							path.getWaypoint(i).isReverse,
+							path.getWaypoint(i).isFacingReverse));
+							// System.out.println(traj);
 		}
 
 		// Assign headings based on the splines.
@@ -154,7 +159,7 @@ public class PathGenerator {
 		s_left.y = current.y + wheelbase_width / 2 * cos_angle;
 		if (i > 0) {
 		  // Get distance between current and last segment
-		  double dist = Math.sqrt((s_left.x - left.getSegment(i - 1).x)
+		  double dist = Math.signum(current.vel) * Math.sqrt((s_left.x - left.getSegment(i - 1).x)
 				  * (s_left.x - left.getSegment(i - 1).x)
 				  + (s_left.y - left.getSegment(i - 1).y)
 				  * (s_left.y - left.getSegment(i - 1).y));
@@ -169,7 +174,7 @@ public class PathGenerator {
 		s_right.y = current.y - wheelbase_width / 2 * cos_angle;
 		if (i > 0) {
 		  // Get distance between current and last segment
-		  double dist = Math.sqrt((s_right.x - right.getSegment(i - 1).x)
+		  double dist = Math.signum(current.vel) * Math.sqrt((s_right.x - right.getSegment(i - 1).x)
 				  * (s_right.x - right.getSegment(i - 1).x)
 				  + (s_right.y - right.getSegment(i - 1).y)
 				  * (s_right.y - right.getSegment(i - 1).y));
@@ -179,7 +184,22 @@ public class PathGenerator {
 		  s_right.jerk = (s_right.acc - right.getSegment(i - 1).acc) / s_right.dt;
 		}
 	  }
-  
+
+	  for (int i = 0; i < input.getNumSegments(); ++i) {
+		Trajectory.Segment current = input.getSegment(i);
+		Trajectory.Segment s_right = right.getSegment(i);
+		Trajectory.Segment s_left = left.getSegment(i);
+
+		// Flip r & l trajectories if reverse path
+		if(current.vel < 0.0) {
+			Trajectory.Segment left_copy = new Trajectory.Segment(s_left);
+			Trajectory.Segment right_copy = new Trajectory.Segment(s_right);
+
+			left.setSegment(i, right_copy);
+			right.setSegment(i, left_copy);
+		}
+	  }
+
 	  return new Trajectory.Pair(output[0], input, output[1]);
 	}
   }

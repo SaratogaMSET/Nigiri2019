@@ -31,9 +31,6 @@ public class FishyPathGenerator extends PathGenerator {
 			p.offsetHeading(-Math.PI);
 		}
 
-		if (fishyPath.isBackwardsPath()) {
-			p = reversePath(p);
-		}
 		
 		return p;
 	}

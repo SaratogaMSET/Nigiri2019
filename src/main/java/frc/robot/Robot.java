@@ -136,7 +136,7 @@ public class Robot extends TimedRobot {
 
     led.solidRed();
 
-    autoCommand = new MotionProfileCommand("FarRocketLeft", true);
+    autoCommand = new MotionProfileCommand("HAB1LxROCKLF", true);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use

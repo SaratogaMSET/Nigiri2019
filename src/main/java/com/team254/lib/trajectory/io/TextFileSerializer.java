@@ -2,6 +2,7 @@ package com.team254.lib.trajectory.io;
 
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.Trajectory.Segment;
+import com.team319x649.FishyPathCreator;
 import com.team254.lib.trajectory.Path;
 
 /**
@@ -42,6 +43,14 @@ public class TextFileSerializer {
     String content = "position,velocity,acceleration,jerk,heading,dt,x,y\n";
     for (int i = 0; i < trajectory.getNumSegments(); ++i) {
       Segment segment = trajectory.getSegment(i);
+      if(i > 2) {
+        Segment prev = trajectory.getSegment(i-1);
+        Segment prev_2 = trajectory.getSegment(i-2);
+        if(Math.abs(segment.vel - prev.vel) > 3 * FishyPathCreator.config.dt * FishyPathCreator.config.max_acc &&
+           Math.abs(segment.vel - prev_2.vel) > 5 * FishyPathCreator.config.dt * FishyPathCreator.config.max_acc) {
+          continue;
+        }
+      }
       content += String.format(
               "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n", 
               segment.pos, segment.vel, segment.acc, segment.jerk,

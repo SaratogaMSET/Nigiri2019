@@ -9,7 +9,6 @@ import com.team254.lib.trajectory.WaypointSequence.Waypoint;
 public class FishyPath {
 	private Config config;
 	private WaypointSequence waypointSequence;
-	private boolean isBackwards;
 	private String name;
 	private double wheelbase;
 	private Path path;
@@ -22,7 +21,6 @@ public class FishyPath {
 		this.name = name;
 		this.config = config;
 		this.waypointSequence = new WaypointSequence(10);
-		this.isBackwards = driveBackwards;
 		this.wheelbase = wheelbaseFeet;
 	}
 
@@ -44,42 +42,70 @@ public class FishyPath {
 	}
 
 	public void addWaypoint(Waypoint wp) {
+		addWaypoint(wp, false, false);
+	}
+
+	public void addWaypoint(Waypoint wp, boolean isReverse, boolean isFacingReverse) {
 		if (wp.maxVelocity == 0.0 && waypointSequence.getNumWaypoints() > 0) {
 			getLastWaypoint().endVelocity = config.max_vel;
 		}
-		this.waypointSequence.addWaypoint(new Waypoint(wp, 0, config.max_vel));
+		this.waypointSequence.addWaypoint(new Waypoint(wp, 0, config.max_vel, isReverse, isFacingReverse));
 	}
 
 	public void addWaypointRadians(double x, double y, double theta_rad, double endVelocity, double maxVelocity) {
-		this.waypointSequence.addWaypoint(new Waypoint(x, y, theta_rad, endVelocity, maxVelocity));
+		addWaypointRadians(x, y, theta_rad, endVelocity, maxVelocity, false, false);
+	}
+
+	public void addWaypointRadians(double x, double y, double theta_rad, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+		this.waypointSequence.addWaypoint(new Waypoint(x, y, theta_rad, endVelocity, maxVelocity, isReverse, isFacingReverse));
 	}
 
 	public void addWaypoint(double x, double y, double theta_deg, double endVelocity, double maxVelocity) {
-		this.waypointSequence.addWaypoint(new Waypoint(x, y, Math.toRadians(theta_deg), endVelocity, maxVelocity));
+		addWaypoint(x, y, theta_deg, endVelocity, maxVelocity, false, false);
+	}
+
+	public void addWaypoint(double x, double y, double theta_deg, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+		this.waypointSequence.addWaypoint(new Waypoint(x, y, Math.toRadians(theta_deg), endVelocity, maxVelocity, isReverse, isFacingReverse));
 	}
 
 	public void addWaypoint(double x, double y, double theta_deg) {
+		addWaypoint(x, y, theta_deg, false, false);
+	}
+
+	public void addWaypoint(double x, double y, double theta_deg, boolean isReverse, boolean isFacingReverse) {
 		if (waypointSequence.getNumWaypoints() > 0) {
 			getLastWaypoint().endVelocity = config.max_vel;
 		}
-		addWaypoint(new Waypoint(x, y, Math.toRadians(theta_deg), 0, config.max_vel));
+		addWaypoint(new Waypoint(x, y, Math.toRadians(theta_deg), 0, config.max_vel, isReverse, isFacingReverse));
 	}
 
 	public void addWaypoint(Waypoint wp, double endVelocity, double maxVelocity) {
-		this.waypointSequence.addWaypoint(new Waypoint(wp, endVelocity, maxVelocity));
+		addWaypoint(wp, endVelocity, maxVelocity, false, false);
+	}
+
+	public void addWaypoint(Waypoint wp, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+		this.waypointSequence.addWaypoint(new Waypoint(wp, endVelocity, maxVelocity, isReverse, isFacingReverse));
 	}
 
 	public void addWaypointRelative(double x, double y, double theta_deg) {
+		addWaypointRelative(x, y, theta_deg, false, false);
+	}
+
+	public void addWaypointRelative(double x, double y, double theta_deg, boolean isReverse, boolean isFacingReverse) {
 		if (waypointSequence.getNumWaypoints() > 1) {
 			getLastWaypoint().endVelocity = config.max_vel;
 		}
-		addWaypointRelative(x, y, theta_deg, 0, config.max_vel);
+		addWaypointRelative(x, y, theta_deg, 0, config.max_vel, isReverse, isFacingReverse);
 	}
 
 	public void addWaypointRelative(double x, double y, double theta_deg, double endVelocity, double maxVelocity) {
+		addWaypointRelative(x, y, theta_deg, endVelocity, maxVelocity, false, false);
+	}
+
+	public void addWaypointRelative(double x, double y, double theta_deg, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
 		Waypoint lastWaypoint = getLastWaypoint();
 		Waypoint newWaypoint = new Waypoint(lastWaypoint.x + x, lastWaypoint.y + y,
-				lastWaypoint.theta + Math.toRadians(theta_deg), endVelocity, maxVelocity);
+				lastWaypoint.theta + Math.toRadians(theta_deg), endVelocity, maxVelocity, isReverse, isFacingReverse);
 		this.waypointSequence.addWaypoint(newWaypoint);
 	}
 
@@ -95,11 +121,7 @@ public class FishyPath {
 	public Config getConfig() {
 		return this.config;
 	}
-
-	public boolean isBackwardsPath() {
-		return isBackwards;
-	}
-
+	
 	public String getName() {
 		return name;
 	}
