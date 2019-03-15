@@ -19,7 +19,9 @@ import math
 # @restrictions None
 # @ingroup modules
 
-DEBUG = 1
+DEBUG = 0
+DRAW = 0
+
 FOCAL_LENGTH = 1732.050808
 ANGLE_MULTIPLIER = math.cos(math.radians(14.5))
 TARGET_WIDTH_FT = (2.0/12.0)*ANGLE_MULTIPLIER
@@ -177,10 +179,11 @@ class Nigiri2019Vision:
             box = cv2.boxPoints(rot_box)
             box = np.int0(box)
             rectArea = cv2.contourArea(box)
-
-            for a in box:
-                for b in box:
-                    jevois.drawLine(outimg, int(a[0]), int(a[1]), int(b[0]), int(b[1]), 1, jevois.YUYV.MedPink)
+            
+            if(DRAW):
+                for a in box:
+                    for b in box:
+                        jevois.drawLine(outimg, int(a[0]), int(a[1]), int(b[0]), int(b[1]), 1, jevois.YUYV.MedPink)
 
             self.logMessage((rot_w/rot_h, theta), "ROT RECT ")
             #jevois.LINFO("theta {}".format(theta))
@@ -197,7 +200,7 @@ class Nigiri2019Vision:
 
 
             # Calculate the center of the contour
-            M = cv2.moments(c)
+            M = cv2.moments(box)
             center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
 
             self.logMessage(match)
@@ -290,7 +293,7 @@ class Nigiri2019Vision:
         #correctedAngle = math.degrees(math.asin(math.cos(math.radians(raw_angle)) * distance/d))-90.0
             #if abs(math.sin(math.radians(raw_angle)))*distance > camera_offset_inches:
             #correctedAngle = -correctedAngle
-        theta1 = math.degrees(math.atan((-5.5 - distance * math.cos(math.radians(raw_angle)))/(7.2+CAMERA_OFFSET_IN - distance * math.sin(math.radians(raw_angle)))))
+        theta1 = math.degrees(math.atan((-3.5 - distance * math.cos(math.radians(raw_angle)))/(6+CAMERA_OFFSET_IN - distance * math.sin(math.radians(raw_angle)))))
         correctedAngle = math.copysign(1, theta1) * (90 - math.copysign(1, theta1) * theta1)
         return correctedAngle
 
@@ -301,6 +304,8 @@ class Nigiri2019Vision:
     # ###################################################################################################
     ## Draw circle at detected center
     def drawDetections(self, outimg, centers, center):
+        if DRAW == 0: 
+            return
         if centers == None:
             return
         jevois.drawCircle(outimg, int(center[0]), int(center[1]), 10, 1, jevois.YUYV.MedPink)
