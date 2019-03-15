@@ -76,9 +76,7 @@ public class Robot extends TimedRobot {
   public static JackSubsystem jack;
   public static HatchSubsystem hatch;
   public static AutoSelector autoSelector;
-  private static Subsystem[] subsystems = {
-    cargoDeploy, drive, led, camera, gyro, cargoIntake, lift, jack, hatch, autoSelector
-  };
+  private static Subsystem[] subsystems;
 
   // Vision
   public static VisionSubsystem vision;
@@ -135,6 +133,9 @@ public class Robot extends TimedRobot {
     compressor = new Compressor(4);
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);
+
+    subsystems = new Subsystem[] {drive, cargoDeploy, cargoIntake,
+      led, jack, autoSelector, camera, gyro, lift, hatch};
 
     try {
       vision = new VisionSubsystem();
@@ -270,10 +271,14 @@ public class Robot extends TimedRobot {
         // Auto Kill Switch and Start Teleop
         led.chase(0);
         Scheduler.getInstance().removeAll();
-        //stopAll();
+        stopAll();
         autoControl = false;
         init(autoControl);
         teleopLoop();
+      } else if (oi.driver.getDriverButton3()) {
+        stopAll();
+        autoControl = false;
+        init(autoControl);
       } else {
         // Put all reg auto periodic shit here
       }
@@ -283,6 +288,8 @@ public class Robot extends TimedRobot {
   }
 
   public void stopAll() {
+    autoCommandLeft.cancel();
+    autoCommandRight.cancel();
     for(Subsystem s : subsystems) {s.stopAll();}
   }
 
@@ -368,13 +375,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     // Remove all commands from queue
     Scheduler.getInstance().removeAll();
-
-    // Stop drivetrain motion
-    drive.rawDrive(0, 0);
-    // hatch.changeHatchState();
-    // Stop lift motion
-
-    // Stop jack motion - note: robot safety is priority. Is it safe for the robot's jack to stop running?
+    stopAll();
     if(isLogging) {
       Logging.closeWriter();
     }
@@ -382,6 +383,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    Scheduler.getInstance().removeAll();
+    stopAll();
+    if(isLogging) {
+      Logging.closeWriter();
+    }
   }
 
   public void teleopLoop() {
