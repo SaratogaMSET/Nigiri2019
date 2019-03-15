@@ -107,6 +107,7 @@ public class Robot extends TimedRobot {
   public static boolean isLevel3;
   public static boolean isJackRunning;
   public static boolean doneClimb;
+  public static boolean isClimbPrepared = false;
 
   public static Command autoCommandLeft;
   public static Command autoCommandRight;
@@ -145,7 +146,6 @@ public class Robot extends TimedRobot {
       SmartDashboard.putString("VISION INIT", "0");
       e.printStackTrace();
     }
-    prefs = Preferences.getInstance();
     robotState = new RobotState();
 
     drive.changeBrakeCoast(false);
@@ -268,7 +268,7 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
 
     if(autoControl) {
-      if(oi.driver.getDriverButton2()) {
+      if(oi.driver.getDriverButton8()) {
         // Auto Kill Switch and Start Teleop
         led.chase(0);
         Scheduler.getInstance().removeAll();
@@ -276,7 +276,7 @@ public class Robot extends TimedRobot {
         autoControl = false;
         init(autoControl);
         teleopLoop();
-      } else if (oi.driver.getDriverButton3()) {
+      } else if (oi.driver.getDriverButton9()) {
         stopAll();
         autoControl = false;
         init(autoControl);
@@ -338,7 +338,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    // teleopLoop();
+    teleopLoop();
   }
 
   @Override
@@ -443,11 +443,10 @@ public class Robot extends TimedRobot {
         new MoveLiftCommand(LiftPositions.CARGO_SHIP, 1.2).start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
-        compressor.start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
       } else if(!lift.isMoving()) {
-        lift.stallLift(RobotState.liftPosition);
+        // lift.stallLift(RobotState.liftPosition);
       }
 
       // *************************** DEPLOY ********************************************/
@@ -456,7 +455,7 @@ public class Robot extends TimedRobot {
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
-      } if(oi.driver.driverDeployReleased()) {
+      } if(oi.driver.driverDeployPressed()) {
         new DeployCommand(RobotState.liftPosition, 1, 2).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
@@ -484,6 +483,20 @@ public class Robot extends TimedRobot {
       }
     } else if(isClimb){ // ****************************************** CLIMBING ************/
       compressor.stop();
+      // if(oi.gamePad.getPOVLeft()) {
+      //   new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO, 1.2).start();
+      // } else if(oi.gamePad.getPOVRight()) {
+      //   new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 1.2).start();
+      // }
+      if(isClimbPrepared) {
+        if(oi.gamePad.getPOVLeft()) {
+          new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO_TOL, 1.2).start();
+          isLevel3 = false;
+        } else if(oi.gamePad.getPOVRight()) {
+          new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 1.2).start();
+          isLevel3 = true;
+        }
+      }
       if(oi.gamePad.getPOVDown()) {
         // push down jack
         if(!isJackRunning){
@@ -496,6 +509,7 @@ public class Robot extends TimedRobot {
             new ClimbTwoJack().start();
           }
         }
+        
       } else if(oi.gamePad.getPOVUp()) {
         doneClimb = true;
         new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
@@ -538,7 +552,7 @@ public class Robot extends TimedRobot {
       }
       lift.setManualLift(pow);
 
-      if(lift.isZero()) {
+      if(lift.getBottomHal()) {
         lift.resetEncoder();
       }
     }

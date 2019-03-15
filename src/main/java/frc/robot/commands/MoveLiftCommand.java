@@ -75,8 +75,9 @@ public class MoveLiftCommand extends Command {
   @Override
   protected void execute() {
     if(RobotState.canRunLift() && !isFinished) {
-      Robot.lift.moveLiftToPos(target);
 
+      Robot.lift.moveLiftToPos(target);
+      SmartDashboard.putString("Target", target.toString());
       if(isTargetCargoState) {
         if(goingUp && RobotState.runIntakesWhileLifting()) {
           if(RobotState.intakeMotorState != CargoIntakeMotorState.TOP_BAR_ONLY) {
@@ -130,6 +131,10 @@ public class MoveLiftCommand extends Command {
         new ChangeIntakeState(CargoIntakePositionState.IN).start();
       }
     }
+
+    // if(RobotState.liftPosition == LiftPositions.CLIMB_HAB_THREE_TOL || RobotState.liftPosition == LiftPositions.CLIMB_HAB_TWO_TOL) {
+    //   Robot.isClimb = true;
+    // }
 
     if(Robot.isLogging) {
       String string = String.format("%.4f, MoveLiftCommand End, Current: %.2f, Target: %s", 

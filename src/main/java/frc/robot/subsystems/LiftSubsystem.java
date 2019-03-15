@@ -52,7 +52,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
     public static final int TOLERANCE = 75;
     public static final int STATE_TOLERANCE = 200;
-    public static final int VELOCITY_THRESH = 0;
+    public static final int VELOCITY_THRESH = 50;
   }
 
   public static class LiftDistanceConstants {
@@ -130,9 +130,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor1.config_kD(0, PIDConstants.k_d);
     motor1.config_kF(0, PIDConstants.k_f);
 
-    motor1.setNeutralMode(NeutralMode.Brake);
-    motor2.setNeutralMode(NeutralMode.Brake);
-    motor3.setNeutralMode(NeutralMode.Brake);
+    motor1.setNeutralMode(NeutralMode.Coast);
+    motor2.setNeutralMode(NeutralMode.Coast);
+    motor3.setNeutralMode(NeutralMode.Coast);
 
     motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     
@@ -179,6 +179,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public void motionMagicLift(int pos) {
     motor1.set(ControlMode.MotionMagic, pos);
+    motor2.set(ControlMode.Follower, motor1.getDeviceID());
+    motor3.set(ControlMode.Follower, motor1.getDeviceID());
     // SmartDashboard.putNumber("Encoder Target", pos);
   }
   public void pidLift(int pos){

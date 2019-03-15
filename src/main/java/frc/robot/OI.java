@@ -164,17 +164,17 @@ public class OI {
     }
 
     public boolean driverDeploy() {
-      return getDriverButton6() || getDriverButton7() || getDriverButton8() || getDriverButton9()
+      return getDriverButton6() || getDriverButton7()
             || getDriverButton10() || getDriverButton11();
     }
 
     public boolean driverDeployPressed() {
-      return getDriverButton6Pressed() || getDriverButton7Pressed() || getDriverButton8Pressed() || getDriverButton9Pressed()
+      return getDriverButton6Pressed() || getDriverButton7Pressed()
             || getDriverButton10Pressed() || getDriverButton11Pressed();
     }
 
     public boolean driverDeployReleased() {
-      return getDriverButton6Released() || getDriverButton7Released() || getDriverButton8Released() || getDriverButton9Released()
+      return getDriverButton6Released() || getDriverButton7Released()
             || getDriverButton10Released() || getDriverButton11Released();
     }
   }
