@@ -93,6 +93,10 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
     }
   }
 
+  public double getPercentOutput() {
+    return intakeWheel.getMotorOutputPercent();
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

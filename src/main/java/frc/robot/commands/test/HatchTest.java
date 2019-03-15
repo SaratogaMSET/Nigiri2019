@@ -26,30 +26,34 @@ public class HatchTest extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if (Robot.oi.driver.getDriverButton2()) {
+    if (Robot.oi.gamePad.getButtonYPressed()) {
       Robot.hatch.hatchOut();
     }
-    if (Robot.oi.driver.getDriverButton3()) {
+    if (Robot.oi.gamePad.getButtonAPressed()) {
       Robot.hatch.hatchIn();
     }
-    if (Robot.oi.driver.getDriverButton4()) {
+    if (Robot.oi.gamePad.getButtonBPressed()) {
       Robot.hatch.hatchDeploy();
     }
-    if (Robot.oi.driver.getDriverButton5()) {
+    if (Robot.oi.gamePad.getButtonXPressed()) {
       Robot.hatch.hatchDeployIn();
     }
-    //SmartDashboard.putBoolean("Hatch", Robot.hatch.getHatchAcquired());
+    SmartDashboard.putBoolean("Hatch Position", Robot.hatch.getHatchPositionSol());
+    SmartDashboard.putBoolean("Hatch Deploy", Robot.hatch.getHatchDeploySol());
+    SmartDashboard.putString("Currently Running Diagnostic", "Hatch");
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.oi.driver.getDriverButton1();
+    return Robot.oi.gamePad.getBackButton();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.hatch.hatchIn();
+    Robot.hatch.hatchDeployIn();
   }
 
   // Called when another command which requires one or more of the same

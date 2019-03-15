@@ -29,6 +29,7 @@ import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
 import frc.robot.commands.semiauto.climb.PrepareClimb2;
 import frc.robot.commands.semiauto.climb.PrepareClimb3;
 import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
+import frc.robot.commands.test.DiagnosticsCommand;
 import frc.robot.commands.test.IntakeMotorsTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.commands.test.TestDTMaxVA;
@@ -326,6 +327,7 @@ public class Robot extends TimedRobot {
       isLevel3 = false;
       isJackRunning = false;
       jack.setJackMPVals(true);
+      // new DiagnosticsCommand().start();
     }
   }
 
@@ -336,7 +338,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    teleopLoop();
+    // teleopLoop();
   }
 
   @Override
@@ -448,8 +450,6 @@ public class Robot extends TimedRobot {
         lift.stallLift(RobotState.liftPosition);
       }
 
-
-
       // *************************** DEPLOY ********************************************/
       if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
         new DeployCommand(RobotState.liftPosition, 1, 2).start();
@@ -504,7 +504,7 @@ public class Robot extends TimedRobot {
         new MoveJackCommand(0,3).start();
         isClimb = false;
       }
-    } else if(isDefenseMode) { //****************************************DEFENSE****************** */
+    } else if(isDefenseMode) { //*********************************DEFENSE****************** */
       if(oi.gamePad.getLeftButtonPressed()) {
         new SetIntakeRollers(true, 0, 0, 1).start();
       } else if(oi.gamePad.getLeftButtonReleased()) {

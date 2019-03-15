@@ -119,6 +119,14 @@ public class HatchSubsystem extends Subsystem {
     updateHatchPositionState();
   }
 
+  public boolean getHatchPositionSol() {
+    return hatchSol.get();
+  }
+
+  public boolean getHatchDeploySol() {
+    return hatchDeploySol.get();
+  }
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.

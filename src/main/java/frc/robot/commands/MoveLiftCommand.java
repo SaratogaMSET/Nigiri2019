@@ -142,7 +142,6 @@ public class MoveLiftCommand extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
-    SmartDashboard.putBoolean("is interrupted", true);
     end();
   }
 }

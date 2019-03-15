@@ -35,7 +35,7 @@ public class RunCargoDeployCommand extends Command {
     if(Robot.oi.driverVertical.getTriggerPressed()) {
       Robot.cargoDeploy.anglePistons();
     } 
-    SmartDashboard.putBoolean("Acquired Cargo", Robot.cargoDeploy.hasCargo());
+    // SmartDashboard.putBoolean("Acquired Cargo", Robot.cargoDeploy.hasCargo());
   }
 
   // Make this return true when this Command no longer needs to run execute()

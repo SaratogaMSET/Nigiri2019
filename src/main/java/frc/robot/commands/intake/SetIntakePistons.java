@@ -42,8 +42,8 @@ public class SetIntakePistons extends Command {
       Robot.cargoIntake.switchSol(out);
     }
     
-    SmartDashboard.putBoolean("SetIntakePistons Done?", false);
-    SmartDashboard.putBoolean("Intake Timeout?", false);
+    // SmartDashboard.putBoolean("SetIntakePistons Done?", false);
+    // SmartDashboard.putBoolean("Intake Timeout?", false);
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -51,7 +51,7 @@ public class SetIntakePistons extends Command {
   protected void execute() {
     if(time.get() > timeout) {
       isFinished = true;
-      SmartDashboard.putBoolean("Intake Timeout?", true);
+      // SmartDashboard.putBoolean("Intake Timeout?", true);
     }
     
   }
@@ -73,8 +73,8 @@ public class SetIntakePistons extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    SmartDashboard.putBoolean("SetIntakePistons Done?", true);
-    SmartDashboard.putString("Current Intake", RobotState.cargoIntakeState.toString());
+    // SmartDashboard.putBoolean("SetIntakePistons Done?", true);
+    // SmartDashboard.putString("Current Intake", RobotState.cargoIntakeState.toString());
   }
 
   // Called when another command which requires one or more of the same

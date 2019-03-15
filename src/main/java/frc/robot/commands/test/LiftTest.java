@@ -28,47 +28,48 @@ public class LiftTest extends Command {
     Robot.lift.setPercentOutput();
     currentlyRunningMotor = 0;
     slow = 2.0;
-    SmartDashboard.putString("Currently Testing: ", "Lift");
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(Robot.oi.driver.getDriverButton2()) {
+    if(Robot.oi.gamePad.getButtonBPressed()) {
       currentlyRunningMotor = 1;
-    } else if(Robot.oi.driver.getDriverButton3()) {
+    } else if(Robot.oi.gamePad.getButtonYPressed()) {
       currentlyRunningMotor = 2;
-    } else if(Robot.oi.driver.getDriverButton4()) {
+    } else if(Robot.oi.gamePad.getButtonXPressed()) {
       currentlyRunningMotor = 3;
     }
 
-    if(Robot.oi.driver.getDriverButton5()) {
+    if(Robot.oi.gamePad.getPOVUp()) {
       slow = 1.0;
-    } else if (Robot.oi.driver.getDriverButton6()) {
+    } else if (Robot.oi.gamePad.getPOVDown()) {
       slow = 2.0;
     }
 
-    if(Robot.oi.driver.getDriverButton7()) {
+    if(Robot.oi.gamePad.getPOVRight()) {
       Robot.lift.setPercentOutput();
-    } else if (Robot.oi.driver.getDriverButton8()) {
+    } else if (Robot.oi.gamePad.getPOVLeft()) {
       Robot.lift.setFollowers();
     }
 
     
-    Robot.lift.setLiftMotor(currentlyRunningMotor, Robot.oi.driver.getDriverVertical()/slow);
+    Robot.lift.setLiftMotor(currentlyRunningMotor, Robot.oi.gamePad.getLeftJoystickY()/slow);
 
     SmartDashboard.putNumber("Currently Running Motor ID", Robot.lift.getLiftMotorID(currentlyRunningMotor));
     SmartDashboard.putNumber("Lift Encoder", Robot.lift.getRawEncoder());
     SmartDashboard.putBoolean("Slow", (slow == 1? false : true));
     // SmartDashboard.putBoolean("Top Hal", Robot.lift.getTopHal());
     SmartDashboard.putBoolean("Bottom Hal", Robot.lift.getBottomHal());
+    SmartDashboard.putString("Currently Running Diagnostic", "Lift");
+
 
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.oi.driver.getDriverButton1();
+    return Robot.oi.gamePad.getBackButton();
   }
 
   // Called once after isFinished returns true

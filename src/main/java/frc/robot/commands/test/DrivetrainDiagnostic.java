@@ -8,46 +8,61 @@
 package frc.robot.commands.test;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
-public class DiagnosticsCommand extends Command {
-  Command [] tests = { new CargoDeployTest(), new DrivetrainDiagnostic(),
-  new HatchTest(), new IntakeMotorsTest(), new LedTest(), new LiftTest()};
- 
-  public DiagnosticsCommand() {
-    
+public class DrivetrainDiagnostic extends Command {
+
+  int motorNum;
+  public DrivetrainDiagnostic() {
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    motorNum = 0;
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    for(Command c : tests){
-      if(!Robot.oi.gamePad.getStartButtonPressed()){
-        //wait for button press
-        c.start();
-      }
+    if(Robot.oi.gamePad.getButtonAPressed()) {
+      increaseMotorNum();
     }
+
+    Robot.drive.testMotor(motorNum, Robot.oi.gamePad.getRightJoystickY());
+    
+    SmartDashboard.putNumber("Drive Left Encoder", Robot.drive.getRawLeftEncoder());
+    SmartDashboard.putNumber("Drive Right Encoder", Robot.drive.getRawRightEncoder());
+    SmartDashboard.putString("Currently Running Diagnostic", "Drivetrain");
+
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return Robot.oi.gamePad.getLeftJoystickButtonPressed();
+    return Robot.oi.gamePad.getBackButtonPressed();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    Robot.drive.rawDrive(0,0);
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+  }
+
+  private void increaseMotorNum() {
+    if(motorNum < 5) {
+      motorNum ++;
+    } else {
+      motorNum = 0;
+    }
   }
 }

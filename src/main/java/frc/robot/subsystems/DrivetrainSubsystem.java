@@ -188,19 +188,19 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     }
 
     if (motor < 6) {
-      SmartDashboard.putNumber("Motor", motors[motor].getDeviceID());
-      testMotor(fwd);
+      // SmartDashboard.putNumber("Motor", motors[motor].getDeviceID());
+      // testMotor(fwd);
     }
     else {
-      SmartDashboard.putString("Motor", "all");
+      // SmartDashboard.putString("Motor", "all");
       testAllMotors(fwd);
     }
-    SmartDashboard.putNumber("Left Encoder", getRawLeftEncoder());
-    SmartDashboard.putNumber("Right Encoder", getRawRightEncoder());
+    // SmartDashboard.putNumber("Left Encoder", getRawLeftEncoder());
+    // SmartDashboard.putNumber("Right Encoder", getRawRightEncoder());
   }
 
-  public void testMotor(double fwd) {
-    motors[motor].set(ControlMode.PercentOutput, fwd);
+  public void testMotor(int num, double fwd) {
+    motors[num].set(ControlMode.PercentOutput, fwd);
   }
 
   public void testAllMotors(double fwd) {

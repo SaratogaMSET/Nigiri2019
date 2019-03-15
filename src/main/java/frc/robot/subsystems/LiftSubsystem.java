@@ -276,7 +276,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public boolean isMoving() {
     if(Math.abs(motor1.getSelectedSensorVelocity(0)) > LiftEncoderConstants.VELOCITY_THRESH) {
-      SmartDashboard.putNumber("Lift Velocity", motor1.getSelectedSensorVelocity(0));
+      // SmartDashboard.putNumber("Lift Velocity", motor1.getSelectedSensorVelocity(0));
       return true;
     }
     return false;

@@ -27,16 +27,16 @@ public class CargoDeployTest extends Command {
   @Override
   protected void execute() {
     Robot.cargoDeploy.runIntake(Robot.oi.driverVertical.getY());
-    if(Robot.oi.driverVertical.getTriggerPressed()) {
-      Robot.cargoDeploy.anglePistons();
-    } 
+    
     SmartDashboard.putBoolean("Acquired Cargo", Robot.cargoDeploy.hasCargo());
+    SmartDashboard.putNumber("Motor Output", Robot.cargoDeploy.getPercentOutput());
+    SmartDashboard.putString("Currently Running Diagnostic", "Cargo Deploy");
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return false;
+    return Robot.oi.gamePad.getBackButton();
   }
 
   // Called once after isFinished returns true
