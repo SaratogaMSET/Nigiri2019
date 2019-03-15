@@ -61,7 +61,6 @@ public class Robot extends TimedRobot {
 
   public static boolean isDefenseMode = false;
   public static boolean autoControl = true;
-  public static boolean newAuto = false;
   public static boolean isManualMode = false;
   public static boolean isLogging = false;
 
@@ -110,7 +109,8 @@ public class Robot extends TimedRobot {
   public static boolean isJackRunning;
   public static boolean doneClimb;
 
-  public Command autoCommand;
+  public static Command autoCommandLeft;
+  public static Command autoCommandRight;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -160,7 +160,9 @@ public class Robot extends TimedRobot {
     loopCount = 1;
     doneClimb = false;
 
-    autoCommand = new MotionProfileCommand("IanAssistRocketLeft", true);
+    autoCommandLeft = new IanAssistedDrive(false);
+    autoCommandRight = new IanAssistedDrive(true);
+
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -266,7 +268,7 @@ public class Robot extends TimedRobot {
     if(autoControl) {
       if(oi.driver.getDriverButton2()) {
         // Auto Kill Switch and Start Teleop
-        led.blink(0);
+        led.chase(0);
         Scheduler.getInstance().removeAll();
         //stopAll();
         autoControl = false;
@@ -274,10 +276,8 @@ public class Robot extends TimedRobot {
         teleopLoop();
       } else {
         // Put all reg auto periodic shit here
-        led.solidBlue(0);
       }
     } else {
-      led.solidRed(0);
       teleopLoop();
     }
   }
@@ -296,8 +296,12 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      // led.solidGreen(2);
-      // autoCommand.start();
+      if(autoSelector.getSide() == "Right") {
+        autoCommandRight.start();
+      }
+      else {
+        autoCommandLeft.start();
+      }
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);
@@ -352,12 +356,14 @@ public class Robot extends TimedRobot {
   }
 
   public static void switchAutoToTeleop() {
-    Scheduler.getInstance().removeAll();
-    //stopAll();
-    autoControl = false;
-    init(autoControl);
+    if(autoControl) {
+      Scheduler.getInstance().removeAll();
+      //stopAll();
+      autoControl = false;
+      init(autoControl);
+    }
   }
-  
+
   @Override
   public void disabledInit() {
     // Remove all commands from queue
@@ -376,7 +382,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-
   }
 
   public void teleopLoop() {
