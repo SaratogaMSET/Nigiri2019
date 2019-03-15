@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
     loopCount = 1;
     doneClimb = false;
 
-    autoCommand = new MotionProfileCommand("HAB1LxROCKLF", true);
+    autoCommand = new MotionProfileCommand("IanAssistRocketLeft", true);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use

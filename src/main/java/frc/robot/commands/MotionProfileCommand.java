@@ -35,8 +35,8 @@ public class MotionProfileCommand extends FishyCommand {
 
   double previous_heading = 0.0;
 
-  public static final double kP_gyro_doubletraction = -4.4;
-  public static final double kP_gyro_omnitraction = -2.2;
+  public static final double kP_gyro_doubletraction = -22.0;
+  public static final double kP_gyro_omnitraction = -12.0;
 
   public MotionProfileCommand(String pathName, boolean robotStartedBackwards) {
     this();
@@ -105,8 +105,8 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    leftFollower.configure(45.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(45.0, 0.0, Robot.drive.getRightEncoderDistance());
+    leftFollower.configure(140.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(190.0, 0.0, Robot.drive.getRightEncoderDistance());
 
     previous_heading = leftFollower.getHeading();
   }
