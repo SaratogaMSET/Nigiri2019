@@ -27,11 +27,11 @@ public class AutoSelector extends Subsystem {
     }
 
     public String getControl() {
-        return control.get() ? "Auto" : "Teleop"; //T-Auto, F-Teleop
+        return control.get() ? "Teleop" : "Auto"; //T-Auto, F-Teleop
     }
 
     public String getSide() {
-        return side.get() ? "Left" : "Right"; // T-Left, F-Right
+        return side.get() ? "Right" : "Left"; // T-Left, F-Right
     }
 
     public String getAuto() {

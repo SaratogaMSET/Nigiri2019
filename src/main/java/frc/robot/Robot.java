@@ -252,12 +252,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    // autoControl = autoSelector.getControl() == "Auto";
-    // init(autoControl);
+    autoControl = autoSelector.getControl() == "Auto";
+    init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit
-    gyro.resetGyro();
-    drive.resetEncoders();
-    autoCommand.start();
   }
   /**
    * This function is called periodically during autonomous.
@@ -267,37 +264,21 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
 
     if(autoControl) {
-      if(oi.driver.getDriverButton1()) {
+      if(oi.driver.getDriverButton2()) {
         // Auto Kill Switch and Start Teleop
-        led.blink(1);
+        led.blink(0);
         Scheduler.getInstance().removeAll();
-        stopAll();
+        //stopAll();
         autoControl = false;
         init(autoControl);
         teleopLoop();
-      } else if(newAuto) {
-        // Second Auto Command
-        led.solidGreen(1);
       } else {
         // Put all reg auto periodic shit here
-        led.solidBlue(1);
+        led.solidBlue(0);
       }
     } else {
-      if(oi.driver.getDriverButton2()) {
-        led.blink(1);
-        autoControl = true;
-        newAuto = true;
-        init(autoControl);
-      } else {
-        led.solidRed(1);
-        teleopLoop();
-      }
-      // Put all the auto code here–the stuff you normally run in auto
-      // lift.pidLift(100);
-      // new JackMotionProfileCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE,
-      // true, 10.0).start();
-      // lift.motionMagicLift(LiftSubsystem.LiftEncoderConstants.INTAKE);
-      // SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
+      led.solidRed(0);
+      teleopLoop();
     }
   }
 
@@ -311,28 +292,14 @@ public class Robot extends TimedRobot {
   }
 
   //Init method for both auto and teleop
-  public void init(boolean auto) {
+  public static void init(boolean auto) {
     if(auto) {
-      drive.resetEncoders();
       gyro.resetGyro();
-      // new HAB1LxCLFxLOADLxCL1().start();
-      // (new MotionProfileCommand("FarRocketLeft1", true)).start();
-      // new
-      // JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_2,
-      // true, 30.0).start();
-      // new TestJackDriveMotors().start();
-      // new
-      // JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstatns.DOWN_STATE_LEVEL_3,
-      // true, 30.0).start();
-      // new TestDTMaxVA(10.0).start();
-      // new HAB1LxROCKLF().start();
+      drive.resetEncoders();
+      // led.solidGreen(2);
       // autoCommand.start();
-      // new TestTalonVelocity(100).start();
-      // new PrepareClimb2().start();
-
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
-      gyro.resetGyro();
       drive.changeBrakeCoast(false);
 
       visionFixCommand = new VisionFixCommand();
@@ -348,7 +315,6 @@ public class Robot extends TimedRobot {
       isLevel3 = false;
       isJackRunning = false;
       jack.setJackMPVals(true);
-      // new WaitUntilEncoderCommand(2, new LedPatternCommand(3, 5), 30).start();
     }
   }
 
@@ -385,26 +351,13 @@ public class Robot extends TimedRobot {
 
   }
 
-
-  // public void sendShuffleboard(SubsystemEnum[] subs) {
-    // THIS IS THROWING AN ERROR. COMMENTING OUT. - Dhruv
-    /*
-    if(subs[0].equals(SubsystemEnum.AllEssentials)) {
-      for(Subsystem s : loggingArr.values()) {
-        s.essentialShuffleboard();
-      }
-    }
-    for(SubsystemEnum s : subs) {
-      Subsystem sub = loggingArr.get(s);
-      sub.diagnosticShuffleboard();
-    }
-    */
-    // SmartDashboard.putNumber("Right Encoder", drive.getRightEncoder());
-    // SmartDashboard.putNumber("Left Encoder", drive.getLeftEncoder());
-  // }
-
-
-
+  public static void switchAutoToTeleop() {
+    Scheduler.getInstance().removeAll();
+    //stopAll();
+    autoControl = false;
+    init(autoControl);
+  }
+  
   @Override
   public void disabledInit() {
     // Remove all commands from queue
