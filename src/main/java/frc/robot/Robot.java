@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
     loopCount = 1;
     doneClimb = false;
 
-    autoCommand = new MotionProfileCommand("FarRocketLeft", true);
+    autoCommand = new MotionProfileCommand("HAB1LxROCKLF", true);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -230,6 +230,7 @@ public class Robot extends TimedRobot {
         }
       } else {
         // led.solidRed(1);
+        led.solidBlue(0);
       }
       if(dist != null) {
         SmartDashboard.putNumber("VISION DISTANCE", dist);
@@ -251,9 +252,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    autoControl = autoSelector.getControl() == "Auto";
-    init(autoControl);
+    // autoControl = autoSelector.getControl() == "Auto";
+    // init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit
+    gyro.resetGyro();
+    drive.resetEncoders();
+    autoCommand.start();
   }
   /**
    * This function is called periodically during autonomous.
@@ -591,7 +595,7 @@ public class Robot extends TimedRobot {
       } else {
         visionFixCommand.cancel();
         g.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 50.0));
+        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 40.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }

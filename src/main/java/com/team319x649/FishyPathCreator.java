@@ -129,7 +129,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		anglePath.addWaypoint(24, 24, 45, 0, 0);
 		anglePath.addWaypoint(15, 15, 45, 0, 11.5);
 
-		return asList(exampleArc, frontCargo, nearCargoShip, frontToLoadingStation1, frontToLoadingStation2, loadingToNearRocketLeft1, loadingToNearRocketLeft2, loadingToMidCargoShip1, loadingToMidCargoShip2, cargoShipLeft1ToLoading1, cargoShipLeft1ToLoading2, straightPath, revPath, anglePath, nearRocketLeftToLoading1, nearRocketLeftToLoading2 ); // return asList(path1, path2, path3, ...);
+		return asList(exampleArc, frontCargo, nearCargoShip, frontToLoadingStation1, frontToLoadingStation2, loadingToNearRocketLeft1, loadingToNearRocketLeft2, loadingToMidCargoShip1, loadingToMidCargoShip2, cargoShipLeft1ToLoading1, cargoShipLeft1ToLoading2, straightPath, revPath, anglePath, nearRocketLeftToLoading1, nearRocketLeftToLoading2, getHAB1LxROCKLF()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -181,7 +181,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// Relative coordinates
 		HAB1LxROCKLF.addWaypointRelative(4.5, 0, 0, 3, 3, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		// Add the next point to be at global coordinates
-		HAB1LxROCKLF.addWaypoint(25, 23.5, 0, 0, 11.7, true, true);
+		HAB1LxROCKLF.addWaypoint(25, 24.3, 0, 0, 11.7, true, true);
 		// Relative coordinates
 		HAB1LxROCKLF.addWaypointRelative(-4.1, 1.0, -29.5, 4.0, 4.0, false, true);
 
