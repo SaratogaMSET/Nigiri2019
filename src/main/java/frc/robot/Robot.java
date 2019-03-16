@@ -210,7 +210,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
-    SmartDashboard.putString("Auto", autoSelector.getAuto());
+    // SmartDashboard.putString("Auto", autoSelector.getAuto());
     SmartDashboard.putString("Side", autoSelector.getSide());
     SmartDashboard.putString("Control", autoSelector.getControl());
 

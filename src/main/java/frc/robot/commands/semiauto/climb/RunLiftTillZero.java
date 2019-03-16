@@ -17,7 +17,7 @@ import frc.robot.util.RobotState;
 public class RunLiftTillZero extends Command {
   double power;
   boolean isFinished;
-  double timeout = 0.5;
+  double timeout = 0.25;
   Timer timer;
   public RunLiftTillZero(double power) {
     this.power = power;
