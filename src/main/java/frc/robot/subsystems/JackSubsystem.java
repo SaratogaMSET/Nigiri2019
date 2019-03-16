@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -47,15 +48,15 @@ public class JackSubsystem extends Subsystem {
     public static final double UP_kF = 0.3;
     public static final double DOWN_kF = 0.22755555555;
     public static final double UP_kP = 0.4;
-    public static final double DOWN_kP = 12;
+    public static final double DOWN_kP = 10;
     public static final double UP_kI = 0;
     public static final double DOWN_kI = 0;
     public static final double UP_kD = 0;
     public static final double DOWN_kD = 0;
     public static final int UP_VEL = 7000;
-    public static final int DOWN_VEL = 5600;//1800
+    public static final int DOWN_VEL = 4300;//1800
     public static final int UP_ACCEL = 12000;//150
-    public static final int DOWN_ACCEL = 4000;
+    public static final int DOWN_ACCEL = 3300;
 
   }
 
@@ -71,6 +72,9 @@ public class JackSubsystem extends Subsystem {
     jackMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Robot.timeoutMs);
     jackMotor.setSensorPhase(true);
     jackMotor.setNeutralMode(NeutralMode.Brake);
+    jackMotor.configContinuousCurrentLimit(70);
+    jackMotor.configPeakCurrentDuration(1000);
+    jackMotor.configPeakCurrentLimit(80);
     jackMotor.selectProfileSlot(0, 0);
     forkDeploy = new Solenoid(4, RobotMap.Jacks.FORK_DEPLOY);
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);
@@ -125,6 +129,10 @@ public class JackSubsystem extends Subsystem {
       jackMotor.configMotionCruiseVelocity(JackConstants.UP_VEL,Robot.timeoutMs);
       jackMotor.configMotionAcceleration(JackConstants.UP_ACCEL,Robot.timeoutMs);
     }
+  }
+
+  public void smartdashCurrent() {
+    SmartDashboard.putNumber("Jack Current", jackMotor.getOutputCurrent());
   }
 
   @Override

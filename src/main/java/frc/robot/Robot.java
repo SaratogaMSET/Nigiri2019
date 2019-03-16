@@ -29,8 +29,12 @@ import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
 import frc.robot.commands.semiauto.climb.PrepareClimb2;
 import frc.robot.commands.semiauto.climb.PrepareClimb3;
 import frc.robot.commands.semiauto.climb.TestJackDriveMotors;
+import frc.robot.commands.test.CargoDeployTest;
 import frc.robot.commands.test.DiagnosticsCommand;
+import frc.robot.commands.test.DrivetrainDiagnostic;
+import frc.robot.commands.test.HatchTest;
 import frc.robot.commands.test.IntakeMotorsTest;
+import frc.robot.commands.test.LedTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.commands.test.TestDTMaxVA;
 import frc.robot.commands.test.TestTalonVelocity;
@@ -196,12 +200,15 @@ public class Robot extends TimedRobot {
     RobotState.liftPosition = lift.updateLiftPosition();
     smartdashboardTesting();
 
+    lift.smartdashCurrent();
+    jack.smartdashCurrent();
+
     //*********************************CHECK STATE VALIDITY*********************** */
     // cargoIntake.checkIntakeState();
     // hatch.checkHatchStateValid();
     // SmartDashboard.putNumber("JACK ENCODER", jack.getJackEncoder());
-    SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
-    SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
+    // SmartDashboard.putBoolean("Is Defense Mode", isDefenseMode);
+    // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     SmartDashboard.putString("Auto", autoSelector.getAuto());
     SmartDashboard.putString("Side", autoSelector.getSide());
@@ -234,14 +241,14 @@ public class Robot extends TimedRobot {
         }
       } else {
         // led.solidRed(1);
-        led.solidBlue(0);
+        led.chase(0);
       }
       if(dist != null) {
         SmartDashboard.putNumber("VISION DISTANCE", dist);
       }
       SmartDashboard.putNumber("VISION DISTANCE", -1.0);
     } else {
-      led.solidRed(0);
+      led.chase(0);
       SmartDashboard.putBoolean("Is Vision", false);
     }
 
@@ -327,7 +334,14 @@ public class Robot extends TimedRobot {
       isLevel3 = false;
       isJackRunning = false;
       jack.setJackMPVals(true);
+      // new ChangeIntakeState(CargoIntakePositionState.MID).start();
       // new DiagnosticsCommand().start();
+      // new LiftTest().start();
+      // new DrivetrainDiagnostic().start();
+      // new IntakeMotorsTest().start();
+      // new HatchTest().start();
+      // new LedTest().start();
+      // new CargoDeployTest().start();
     }
   }
 
@@ -445,8 +459,8 @@ public class Robot extends TimedRobot {
       } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
-      } else if(!lift.isMoving()) {
-        // lift.stallLift(RobotState.liftPosition);
+      } else if(!RobotState.isRunningLiftCommand) {
+        lift.stallLift(RobotState.liftPosition);
       }
 
       // *************************** DEPLOY ********************************************/
@@ -483,11 +497,18 @@ public class Robot extends TimedRobot {
       }
     } else if(isClimb){ // ****************************************** CLIMBING ************/
       compressor.stop();
-      // if(oi.gamePad.getPOVLeft()) {
-      //   new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO, 1.2).start();
-      // } else if(oi.gamePad.getPOVRight()) {
-      //   new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 1.2).start();
-      // }
+      // *************************** DEPLOY ********************************************/
+      if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
+        new DeployCommand(RobotState.liftPosition, 1, 2).start();
+      } else if(oi.gamePad.getBackButtonReleased()) {
+        new SetIntakeRollers(false, 0, 0, 0).start();
+        hatch.hatchDeployIn();
+      } if(oi.driver.driverDeployPressed()) {
+        new DeployCommand(RobotState.liftPosition, 1, 2).start();
+      } else if(oi.driver.driverDeployReleased()) {
+        new SetIntakeRollers(false, 0, 0, 0).start();
+        hatch.hatchDeployIn();
+      }
       if(isClimbPrepared) {
         if(oi.gamePad.getPOVLeft()) {
           new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO_TOL, 1.2).start();
@@ -573,7 +594,7 @@ public class Robot extends TimedRobot {
       } else {
         visionFixCommand.cancel();
         g.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 40.0));
+        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }
@@ -590,10 +611,10 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
 
     //***************************************************** LIFT */
-    // SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
-    // SmartDashboard.putNumber("Lift Distance", lift.getDistance());
+    SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
+    SmartDashboard.putNumber("Lift Distance", lift.getDistance());
     // SmartDashboard.putNumber("Lift Velocity", lift.getVel());
-    SmartDashboard.putBoolean("Bottom Hal", lift.getBottomHal());
+    // SmartDashboard.putBoolean("Bottom Hal", lift.getBottomHal());
     // SmartDashboard.putBoolean("isMoving", lift.isMoving());
     // SmartDashboard.putNumber("Lift Motor Current", lift.getCurrentMainMotor());
     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());

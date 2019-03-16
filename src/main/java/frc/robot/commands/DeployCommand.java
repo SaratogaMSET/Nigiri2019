@@ -40,14 +40,14 @@ public class DeployCommand extends Command {
 
     isFinished = false;
 
-    if (pos == LiftPositions.CARGO_SHIP || pos == LiftPositions.CARGO_LOADING_STATION ||
+    if (pos == LiftPositions.CARGO_LOADING_STATION ||
      pos == LiftPositions.CARGO_ROCKET_LEVEL_TWO) {
       new DeployCargoCommand(-power).start();
     } else if (pos == LiftPositions.HATCH_MID || pos == LiftPositions.HATCH_HIGH) {
       new DeployHatchCommand().start();
     } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_ONE) {
       new SetIntakeRollers(false, 1, 0, 1).start();
-    } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_THREE) {
+    } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_THREE || pos == LiftPositions.CARGO_SHIP) {
       new DeployCargoCommand(-0.8).start();
     } else if(pos == LiftPositions.LOW) {
       if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
@@ -56,6 +56,8 @@ public class DeployCommand extends Command {
         new DeployHatchCommand().start();
       }
     } else {
+      new DeployCargoCommand(-power).start();
+      new DeployHatchCommand().start();
       isFinished = true;
     }
   }

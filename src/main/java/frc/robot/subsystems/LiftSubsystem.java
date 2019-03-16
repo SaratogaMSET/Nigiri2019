@@ -61,7 +61,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
     public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
-    public static final double CARGO_ROCKET_LEVEL_THREE = 67.0;
+    public static final double CARGO_ROCKET_LEVEL_THREE = 67.5;
     public static final double CARGO_LOADING_STATION = 32.5;
     public static final double HATCH_MID = 27.88;
     public static final double HATCH_HIGH = 54.4;
@@ -82,8 +82,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static double k_p = 0.8;
     public static double k_i = 0.0;
     public static double k_d = 0.0;
-    public static final int MAX_ACCELERATION = 6500; //measured 40000-70000
-    public static final int MAX_VELOCITY = 8000; // measured 4500
+    public static final int MAX_ACCELERATION = 4500; //measured 40000-70000
+    public static final int MAX_VELOCITY = 6000; // measured 4500
   }
 
   private TalonSRX motor1;
@@ -392,6 +392,12 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     }
   }
 
+  public void smartdashCurrent() {
+    SmartDashboard.putNumber("Motor 1 Current", motor1.getOutputCurrent());
+    SmartDashboard.putNumber("Motor 2 Current", motor2.getOutputCurrent());
+    SmartDashboard.putNumber("Motor 3 Current", motor3.getOutputCurrent());
+  }
+
 
   @Override
   public void initDefaultCommand() {
@@ -411,8 +417,6 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   @Override
   public void stopAll() {
-    motor1.set(ControlMode.PercentOutput, 0);
-    motor2.set(ControlMode.PercentOutput, 0);
-    motor3.set(ControlMode.PercentOutput, 0);
+    setManualLift(0);
   }
 }

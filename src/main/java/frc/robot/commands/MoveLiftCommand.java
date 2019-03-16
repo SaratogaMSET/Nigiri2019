@@ -69,6 +69,7 @@ public class MoveLiftCommand extends Command {
       String string = String.format("%.4f, MoveLiftCommand Start, Current: %.2f, Target: %s", Robot.time.get(), Robot.lift.getDistance(), target.toString());
       Logging.print(string);
     }
+    RobotState.isRunningLiftCommand = true;
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -113,6 +114,7 @@ public class MoveLiftCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    RobotState.isRunningLiftCommand = false;
 
     if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
       new SetIntakeRollers(true, 0).start();

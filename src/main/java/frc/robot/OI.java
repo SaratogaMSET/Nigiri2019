@@ -169,13 +169,11 @@ public class OI {
     }
 
     public boolean driverDeployPressed() {
-      return getDriverButton6Pressed() || getDriverButton7Pressed()
-            || getDriverButton10Pressed() || getDriverButton11Pressed();
+      return getDriverButton10Pressed() || getDriverButton11Pressed();
     }
 
     public boolean driverDeployReleased() {
-      return getDriverButton6Released() || getDriverButton7Released()
-            || getDriverButton10Released() || getDriverButton11Released();
+      return getDriverButton10Released() || getDriverButton11Released();
     }
   }
 

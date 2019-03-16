@@ -31,6 +31,8 @@ public class RobotState {
     public static CargoDeployMotorState cargoDeployState;
     public static CargoGamePiece cargoGamePiece;
 
+    public static boolean isRunningLiftCommand = false;
+    
     public RobotState() {
         liftPosition = LiftPositions.LOW;
         hatchPositionState = HatchPositionState.HATCH_OUT;

@@ -26,7 +26,7 @@ public class CargoDeployTest extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    Robot.cargoDeploy.runIntake(Robot.oi.driverVertical.getY());
+    Robot.cargoDeploy.runIntake(Robot.oi.gamePad.getLeftJoystickY());
     
     SmartDashboard.putBoolean("Acquired Cargo", Robot.cargoDeploy.hasCargo());
     SmartDashboard.putNumber("Motor Output", Robot.cargoDeploy.getPercentOutput());

@@ -38,12 +38,12 @@ public class RobotMap {
   }
 
   public static class CargoDeploy {
-    public static final int DEPLOY_INTAKE_MOTOR = 12;
+    public static final int DEPLOY_INTAKE_MOTOR = 13;
     public static final int IR_SENSOR = 1;
     public static final int INTAKE_SOL = 5;
   }
   public static class Jacks {
-    public static final int JACK_MOTOR = 13;
+    public static final int JACK_MOTOR = 12;
     public static final int JACK_DRIVE_MOTOR = 14;
     public static final int DOWN_HAL = 4;
     public static final int UP_HAL = 6;
