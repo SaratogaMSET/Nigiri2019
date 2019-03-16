@@ -22,8 +22,11 @@ public class CommandLogger {
     private HashMap<String,String> values = new HashMap<String,String>();
     private ArrayList<String> fieldNames = new ArrayList<String>();
     private boolean first_time = true;
+
+    public static boolean DEBUG_ENABLED = false;
         
     public CommandLogger(String prefix) {
+        if(!DEBUG_ENABLED){ return; }
         File file = logFileName(prefix);
         try {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), "utf-8"));
@@ -33,19 +36,23 @@ public class CommandLogger {
 
     }
     public void addDataElement(String name) {
+        if(!DEBUG_ENABLED){return;}
         fieldNames.add(name);
         values.put(name, "");
     }
     
     public void set(String key, String val) {
+        if(!DEBUG_ENABLED){return;}
         values.put(key, val);
     }
     
     public void set(String key, double val) {
+        if(!DEBUG_ENABLED){return;}
         values.put(key, Double.toString(val));
     }
     
     public void write() {
+        if(!DEBUG_ENABLED){return;}
         if (first_time) {
             writeHeader();
             first_time = false;
@@ -54,6 +61,7 @@ public class CommandLogger {
     }
     
     private void writeHeader() {
+        if(!DEBUG_ENABLED){return;}
         String header = "timestamp";
         for (String fld : fieldNames) {
             header += "," + fld;
@@ -62,10 +70,12 @@ public class CommandLogger {
     }
 
     private void logString(String s) {
+        if(!DEBUG_ENABLED){return;}
         overflow |= !buffer.offer(s);
     }
     
     public void writeValues() {
+        if(!DEBUG_ENABLED){return;}
         if(values.isEmpty()) return;
         String line = Double.toString(Timer.getFPGATimestamp());
         for (String fld : fieldNames) {
@@ -75,6 +85,7 @@ public class CommandLogger {
     }
     
     private File logFileName(String prefix) {
+        if(!DEBUG_ENABLED){return null;}
         File base = null;
 
         // find the mount point
@@ -104,6 +115,7 @@ public class CommandLogger {
     }
 
     public void drain() {
+        if(!DEBUG_ENABLED){return;}
         try {
             buffer.drainTo(drain);
             for (String msg : drain) {
@@ -129,6 +141,7 @@ public class CommandLogger {
     }
     
     public void flush() {
+        if(!DEBUG_ENABLED){return;}
         try {
             writer.flush();
         } catch (IOException e) {
@@ -137,6 +150,7 @@ public class CommandLogger {
     }
     
     public void close() {
+        if(!DEBUG_ENABLED){return;}
         try {
             writer.close();
         } catch (IOException e) {

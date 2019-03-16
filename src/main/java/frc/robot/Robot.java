@@ -144,7 +144,7 @@ public class Robot extends TimedRobot {
       led, jack, autoSelector, camera, gyro, lift, hatch};
 
     try {
-      vision = new VisionSubsystem();
+      // vision = new VisionSubsystem();
       SmartDashboard.putString("VISION INIT", "1");
     } catch(Exception e){
       SmartDashboard.putString("VISION INIT", "0");
@@ -200,8 +200,8 @@ public class Robot extends TimedRobot {
     RobotState.liftPosition = lift.updateLiftPosition();
     smartdashboardTesting();
 
-    lift.smartdashCurrent();
-    jack.smartdashCurrent();
+    // lift.smartdashCurrent();
+    // jack.smartdas                                                hCurrent();
 
     //*********************************CHECK STATE VALIDITY*********************** */
     // cargoIntake.checkIntakeState();
@@ -223,34 +223,34 @@ public class Robot extends TimedRobot {
     }
 
     // Vision
-    if(vision != null) {
-      SmartDashboard.putBoolean("Is Vision", true);
-      if(visionFixCommand != null && !visionFixCommand.isRunning()) {
-        vision.readData();
-      }
+    // if(vision != null) {
+    //   SmartDashboard.putBoolean("Is Vision", true);
+    //   if(visionFixCommand != null && !visionFixCommand.isRunning()) {
+    //     vision.readData();
+    //   }
 
-      Double angle = vision.getAngleDisplacement();
-      Double dist = vision.getDistance();
-      if(angle != null) {
-        if(Math.abs(angle) < 3.0) {
-          led.solidRed(0);
-          // SmartDashboard.putBoolean("VSTATUS", true);
-        } else {
-          led.solidBlue(0);
-          // SmartDashboard.putBoolean("VSTATUS", false);
-        }
-      } else {
-        // led.solidRed(1);
-        led.chase(0);
-      }
-      if(dist != null) {
-        SmartDashboard.putNumber("VISION DISTANCE", dist);
-      }
-      SmartDashboard.putNumber("VISION DISTANCE", -1.0);
-    } else {
-      led.chase(0);
-      SmartDashboard.putBoolean("Is Vision", false);
-    }
+    //   Double angle = vision.getAngleDisplacement();
+    //   Double dist = vision.getDistance();
+    //   if(angle != null) {
+    //     if(Math.abs(angle) < 3.0) {
+    //       led.solidRed(0);
+    //       // SmartDashboard.putBoolean("VSTATUS", true);
+    //     } else {
+    //       led.solidBlue(0);
+    //       // SmartDashboard.putBoolean("VSTATUS", false);
+    //     }
+    //   } else {
+    //     // led.solidRed(1);
+    //     led.chase(0);
+    //   }
+    //   if(dist != null) {
+    //     SmartDashboard.putNumber("VISION DISTANCE", dist);
+    //   }
+    //   SmartDashboard.putNumber("VISION DISTANCE", -1.0);
+    // } else {
+    //   led.chase(0);
+    //   SmartDashboard.putBoolean("Is Vision", false);
+    // }
 
   }
 
@@ -321,7 +321,7 @@ public class Robot extends TimedRobot {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);
 
-      visionFixCommand = new VisionFixCommand();
+      // visionFixCommand = new VisionFixCommand();
 
       compressor.setClosedLoopControl(true);
       compressor.start();
@@ -585,19 +585,9 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      if(oi.visionFixButton.get()) {
-        g.cancel();
-        if(!visionFixCommand.isRunning()) {
-          visionFixCommand.start();
-        }
-        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.getGyroPIDOutput());
-      } else {
-        visionFixCommand.cancel();
-        g.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
-        Robot.gyro.driverGyroPID.enable();
-        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
-      }
+      Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+      Robot.gyro.driverGyroPID.enable();
+      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
     }
 
   }

@@ -48,15 +48,15 @@ public class JackSubsystem extends Subsystem {
     public static final double UP_kF = 0.3;
     public static final double DOWN_kF = 0.22755555555;
     public static final double UP_kP = 0.4;
-    public static final double DOWN_kP = 10;
+    public static final double DOWN_kP = 2.5;
     public static final double UP_kI = 0;
     public static final double DOWN_kI = 0;
     public static final double UP_kD = 0;
     public static final double DOWN_kD = 0;
     public static final int UP_VEL = 7000;
-    public static final int DOWN_VEL = 4300;//1800
+    public static final int DOWN_VEL = 2500;//1800
     public static final int UP_ACCEL = 12000;//150
-    public static final int DOWN_ACCEL = 3300;
+    public static final int DOWN_ACCEL = 1800;
 
   }
 
@@ -72,9 +72,9 @@ public class JackSubsystem extends Subsystem {
     jackMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Robot.timeoutMs);
     jackMotor.setSensorPhase(true);
     jackMotor.setNeutralMode(NeutralMode.Brake);
-    jackMotor.configContinuousCurrentLimit(70);
-    jackMotor.configPeakCurrentDuration(1000);
-    jackMotor.configPeakCurrentLimit(80);
+    jackMotor.configContinuousCurrentLimit(55,30);
+    jackMotor.configPeakCurrentDuration(200,30);
+    jackMotor.configPeakCurrentLimit(60,30);
     jackMotor.selectProfileSlot(0, 0);
     forkDeploy = new Solenoid(4, RobotMap.Jacks.FORK_DEPLOY);
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);

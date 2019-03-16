@@ -26,10 +26,16 @@ public abstract class FishyCommand extends Command {
     protected abstract String[] getLogFields();
 
     protected void log(String field, String value) {
+        if(!CommandLogger.DEBUG_ENABLED) {
+            return;
+        }
         logger.set(field, value);
     }
 
     protected void log(String field, double value) {
+        if(!CommandLogger.DEBUG_ENABLED) {
+            return;
+        }
         logger.set(field, value);
     }
 
@@ -41,6 +47,9 @@ public abstract class FishyCommand extends Command {
     @Override
     protected void end() {
         super.end();
+        if(!CommandLogger.DEBUG_ENABLED) {
+            return;
+        }
         logger.drain();
         logger.flush();
     }

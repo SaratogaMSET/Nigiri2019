@@ -10,12 +10,13 @@ package frc.robot.commands.semiauto.climb;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.commands.FishyCommand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.JackSubsystem;
 import frc.robot.subsystems.LiftSubsystem;
 
-public class JackMotionProfileAndLiftCommand extends Command {
+public class JackMotionProfileAndLiftCommand extends FishyCommand {
   int jackHeight;
   int liftHeightEncoder;
   boolean isDown;
@@ -35,6 +36,11 @@ public class JackMotionProfileAndLiftCommand extends Command {
     this.timeout = timeout;
     this.liftHeightEncoder = liftHeightEncoder;
     time = new Timer();
+  }
+
+  @Override
+  protected String[] getLogFields() {
+    return new String[] {"Jack APos", "Jack TPos", "Jack AVel", "Jack TVel", "Lift AVel", "Lift TVel", "Lift TPos", "Lift APos"};
   }
 
   // Called just before this Command runs the first time
@@ -65,6 +71,8 @@ public class JackMotionProfileAndLiftCommand extends Command {
       if(moveLiftVal < 0){
         moveLiftVal = 0;
       }
+      log("Lift TPos", moveLiftVal);
+      log("Lift APos", Robot.lift.getRawEncoder());
       Robot.lift.motionMagicLift(moveLiftVal);
     }
     if(Robot.jack.isJackAtBottom()) {

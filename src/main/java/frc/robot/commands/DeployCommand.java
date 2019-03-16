@@ -47,8 +47,10 @@ public class DeployCommand extends Command {
       new DeployHatchCommand().start();
     } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_ONE) {
       new SetIntakeRollers(false, 1, 0, 1).start();
-    } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_THREE || pos == LiftPositions.CARGO_SHIP) {
+    } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_THREE) {
       new DeployCargoCommand(-0.8).start();
+    } else if(pos == LiftPositions.CARGO_SHIP) {
+      new DeployCargoCommand(-0.5).start();
     } else if(pos == LiftPositions.LOW) {
       if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
         new DeployCargoCommand(-power).start();
