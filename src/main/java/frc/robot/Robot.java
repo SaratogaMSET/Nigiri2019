@@ -144,7 +144,7 @@ public class Robot extends TimedRobot {
       led, jack, autoSelector, camera, gyro, lift, hatch};
 
     try {
-      // vision = new VisionSubsystem();
+      vision = new VisionSubsystem();
       SmartDashboard.putString("VISION INIT", "1");
     } catch(Exception e){
       SmartDashboard.putString("VISION INIT", "0");
@@ -223,34 +223,34 @@ public class Robot extends TimedRobot {
     }
 
     // Vision
-    // if(vision != null) {
-    //   SmartDashboard.putBoolean("Is Vision", true);
-    //   if(visionFixCommand != null && !visionFixCommand.isRunning()) {
-    //     vision.readData();
-    //   }
+    if(vision != null) {
+      SmartDashboard.putBoolean("Is Vision", true);
+      if(visionFixCommand == null || (visionFixCommand != null && !visionFixCommand.isRunning())) {
+        vision.readData();
+      }
 
-    //   Double angle = vision.getAngleDisplacement();
-    //   Double dist = vision.getDistance();
-    //   if(angle != null) {
-    //     if(Math.abs(angle) < 3.0) {
-    //       led.solidRed(0);
-    //       // SmartDashboard.putBoolean("VSTATUS", true);
-    //     } else {
-    //       led.solidBlue(0);
-    //       // SmartDashboard.putBoolean("VSTATUS", false);
-    //     }
-    //   } else {
-    //     // led.solidRed(1);
-    //     led.chase(0);
-    //   }
-    //   if(dist != null) {
-    //     SmartDashboard.putNumber("VISION DISTANCE", dist);
-    //   }
-    //   SmartDashboard.putNumber("VISION DISTANCE", -1.0);
-    // } else {
-    //   led.chase(0);
-    //   SmartDashboard.putBoolean("Is Vision", false);
-    // }
+      Double angle = vision.getAngleDisplacement();
+      Double dist = vision.getDistance();
+      if(angle != null) {
+        if(Math.abs(angle) < 3.0) {
+          LedSubsystem.led.set(0.61);
+          // SmartDashboard.putBoolean("VSTATUS", true);
+        } else {
+          LedSubsystem.led.set(0.87);
+          // SmartDashboard.putBoolean("VSTATUS", false);
+        }
+      } else {
+        // led.solidRed(1);
+        // led.chase(0);
+      }
+      if(dist != null) {
+        SmartDashboard.putNumber("VISION DISTANCE", dist);
+      }
+      SmartDashboard.putNumber("VISION DISTANCE", -1.0);
+    } else {
+      LedSubsystem.led.set(.11);
+      SmartDashboard.putBoolean("Is Vision", false);
+    }
 
   }
 

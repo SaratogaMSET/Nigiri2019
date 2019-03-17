@@ -17,7 +17,7 @@ public class LedSubsystem extends Subsystem implements ILogger {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  private static Spark led = new Spark(0);
+  public static Spark led = new Spark(0);
 
   @Override
   public void initDefaultCommand() {
