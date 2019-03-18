@@ -617,9 +617,9 @@ public class Robot extends TimedRobot {
     // cargoIntake.smartdashboard();
 
     //***************************************************** JACK */
-    // SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());
-    // SmartDashboard.putBoolean("Jack Stored Hal", jack.isJackAtBottom());
-    // SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
+    SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());
+    SmartDashboard.putBoolean("Jack Stored Hal", jack.isJackAtBottom());
+    SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
 
     //***************************************************** HATCH */
 
