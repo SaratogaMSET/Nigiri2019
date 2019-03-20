@@ -10,7 +10,7 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 import frc.robot.util.Logging;
 
 public class SetIntakeRollers extends Command {

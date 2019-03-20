@@ -18,7 +18,7 @@ import frc.robot.Robot;
 import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.util.Logging;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 
 public class MoveLiftCommand extends Command {
 

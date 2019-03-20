@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.util;
+package frc.robot;
 
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoDeploySubsystem.CargoDeployMotorState;

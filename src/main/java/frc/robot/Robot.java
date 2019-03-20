@@ -47,7 +47,7 @@ import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 import jaci.pathfinder.Pathfinder;
 // import sun.util.logging.PlatformLogger.Level;
 import frc.robot.commands.semiauto.climb.MoveJackCommand;
@@ -168,7 +168,7 @@ public class Robot extends TimedRobot {
 
     autoCommandLeft = new IanAssistedDrive(false);
     autoCommandRight = new IanAssistedDrive(true);
-
+    (new Thread(RobotPose.getRunnable())).start();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -221,6 +221,11 @@ public class Robot extends TimedRobot {
         jack.resetJackEncoder();
       }
     }
+
+    SmartDashboard.putNumber("ZZ ROBOT X", RobotPose.getX());
+    SmartDashboard.putNumber("ZZ ROBOT Y", RobotPose.getX());
+    SmartDashboard.putNumber("ZZ ROBOT HEADING", FishyMath.d2r(RobotPose.getHeading()));
+    SmartDashboard.putNumber("ZZ ROBOT POSE DT", RobotPose.getRunnable().getDt());
 
     // Vision
     if(vision != null) {

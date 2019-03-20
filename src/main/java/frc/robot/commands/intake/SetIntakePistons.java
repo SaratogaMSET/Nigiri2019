@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 
 public class SetIntakePistons extends Command {
 

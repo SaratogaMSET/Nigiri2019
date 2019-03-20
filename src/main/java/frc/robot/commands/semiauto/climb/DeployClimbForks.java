@@ -9,7 +9,7 @@ package frc.robot.commands.semiauto.climb;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import edu.wpi.first.wpilibj.Timer;
 

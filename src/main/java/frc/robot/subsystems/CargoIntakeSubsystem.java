@@ -13,7 +13,7 @@ import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.Robot;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 import frc.robot.util.Logging;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;

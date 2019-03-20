@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 import frc.robot.util.Logging;
 import edu.wpi.first.wpilibj.Timer;
 

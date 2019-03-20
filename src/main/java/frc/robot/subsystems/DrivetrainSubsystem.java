@@ -153,19 +153,19 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     return motors[0].getSelectedSensorPosition();
   }
 
-  public double getRightEncoderVelocity() {
+  public synchronized double getRightEncoderVelocity() {
     return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(motors[0].getSelectedSensorVelocity()));
   }
 
-  public double getLeftEncoderVelocity() {
+  public synchronized double getLeftEncoderVelocity() {
     return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(motors[3].getSelectedSensorVelocity()));
   }
 
-  public double getRightEncoderDistance() {
+  public synchronized double getRightEncoderDistance() {
     return (motors[0].getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
   }
 
-  public double getLeftEncoderDistance() {
+  public synchronized double getLeftEncoderDistance() {
     return (motors[3].getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
   }
 

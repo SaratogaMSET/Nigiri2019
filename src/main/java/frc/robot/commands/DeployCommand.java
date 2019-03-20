@@ -13,7 +13,7 @@ import frc.robot.Robot;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 
 public class DeployCommand extends Command {
   

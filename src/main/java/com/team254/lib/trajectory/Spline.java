@@ -47,7 +47,7 @@ public class Spline {
 	double theta_offset_;
 	double arc_length_;
 
-	Spline() {
+	public Spline() {
 		// All splines should be made via the static interface
 		arc_length_ = -1;
 	}
@@ -108,6 +108,29 @@ public class Spline {
 		}
 
 		return true;
+	}
+
+	public double calculateLength(double percentage) {
+		if (arc_length_ >= 0) {
+			return arc_length_;
+		}
+
+		final int kNumSamples = 100000;
+		double arc_length = 0;
+		double t, dydt;
+		double integrand, last_integrand = Math.sqrt(1 + derivativeAt(0) * derivativeAt(0)) / kNumSamples;
+		for (int i = 1; i <= kNumSamples; ++i) {
+			t = ((double) i) / (double) kNumSamples;
+			if(t > percentage+1.0) {
+				break;
+			}
+			dydt = derivativeAt(t);
+			integrand = Math.sqrt(1 + dydt * dydt) / kNumSamples;
+			arc_length += (integrand + last_integrand) / 2;
+			last_integrand = integrand;
+		}
+		arc_length_ = percentage * knot_distance_ * arc_length;
+		return arc_length_;
 	}
 
 	public double calculateLength() {

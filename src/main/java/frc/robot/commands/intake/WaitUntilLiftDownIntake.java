@@ -14,7 +14,7 @@ import frc.robot.commands.MoveHatchCommand;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 import frc.robot.util.Logging;
 
 public class WaitUntilLiftDownIntake extends Command {

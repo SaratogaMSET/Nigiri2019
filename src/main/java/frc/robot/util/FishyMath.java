@@ -113,4 +113,8 @@ public class FishyMath {
     public static double talaonunits2rpm(double talonunits) {
         return talonunits * 600.0 / ((double)DrivetrainSubsystem.TICKS_PER_REV);
     }
+
+    public static boolean epsilonEquals(double a, double b, double epsilon) {
+        return (a - epsilon <= b) && (a + epsilon >= b);
+    }
 }

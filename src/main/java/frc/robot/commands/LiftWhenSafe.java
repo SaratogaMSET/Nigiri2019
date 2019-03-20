@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 
 public class LiftWhenSafe extends Command {
 
