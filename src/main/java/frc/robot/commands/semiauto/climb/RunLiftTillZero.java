@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import frc.robot.util.RobotState;
+import frc.robot.RobotState;
 
 public class RunLiftTillZero extends Command {
   double power;
