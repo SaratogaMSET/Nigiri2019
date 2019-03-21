@@ -77,7 +77,7 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     return gyro.getFusedHeading();
   }
 
-  public double getGyroAngle() {
+  public synchronized double getGyroAngle() {
     return gyro.getAngle();
   }
 
