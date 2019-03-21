@@ -223,8 +223,8 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("ZZ ROBOT X", RobotPose.getX());
-    SmartDashboard.putNumber("ZZ ROBOT Y", RobotPose.getX());
-    SmartDashboard.putNumber("ZZ ROBOT HEADING", FishyMath.d2r(RobotPose.getHeading()));
+    SmartDashboard.putNumber("ZZ ROBOT Y", RobotPose.getY());
+    SmartDashboard.putNumber("ZZ ROBOT HEADING", FishyMath.r2d(RobotPose.getHeading()));
     SmartDashboard.putNumber("ZZ ROBOT POSE DT", RobotPose.getRunnable().getDt());
 
     // Vision
