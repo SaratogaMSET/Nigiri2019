@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import com.team254.lib.trajectory.Spline;
+import com.team254.lib.trajectory.WaypointSequence;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
@@ -48,7 +51,6 @@ import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
 import frc.robot.RobotState;
-import jaci.pathfinder.Pathfinder;
 // import sun.util.logging.PlatformLogger.Level;
 import frc.robot.commands.semiauto.climb.MoveJackCommand;
 
@@ -347,6 +349,9 @@ public class Robot extends TimedRobot {
       // new HatchTest().start();
       // new LedTest().start();
       // new CargoDeployTest().start();
+      Spline purePursuitSplineTest = new Spline();
+      Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(0.0)), new WaypointSequence.Waypoint(10, 5, FishyMath.d2r(0.0)), purePursuitSplineTest, Spline.QuinticHermite);
+      (new PurePursuitCommand(purePursuitSplineTest)).start();
     }
   }
 
@@ -356,8 +361,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-
-    teleopLoop();
+    // teleopLoop();
   }
 
   @Override
@@ -590,7 +594,7 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      Robot.gyro.driverGyroPID.setSetpoint(Pathfinder.boundHalfDegrees(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+      Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
       Robot.gyro.driverGyroPID.enable();
       drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
     }

@@ -65,6 +65,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   public static final double WHEEL_DIAMETER = (4.06/12.0); // feet
   public static final int TICKS_PER_REV = 4096;
   public static final double WHEELBASE_FEET = 2.1804; // feet
+  public static final double EMPIRICAL_WHEELBASE_FEET = 2.1804; // feet
 
   public DrivetrainSubsystem() {
     motors = new TalonSRX[6];

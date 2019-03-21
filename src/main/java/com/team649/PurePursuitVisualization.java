@@ -67,10 +67,6 @@ public class PurePursuitVisualization {
         }
     }
 
-    public static double LOOKAHEAD_DISTANCE(double r) {
-        return r;
-    }
-
     public static double ROBOT_X = 6.0;
     public static double ROBOT_Y = 0.3;
     public static double ROBOT_HEADING = FishyMath.d2r(35);
@@ -84,7 +80,7 @@ public class PurePursuitVisualization {
 
     // CONSTANTS
     public static int NUM_SAMPLES = 100;
-    public static double LOOKAHEAD_DISTANCE = 2.5;
+    public static double LOOKAHEAD_DISTANCE = 2.5; // feet
 
 
 
