@@ -10,6 +10,13 @@ import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoSelector extends Subsystem {
+    public static enum Side {
+        LEFT, RIGHT
+    }
+
+    public static enum Control {
+        AUTO, TELEOP
+    }
 
     private DigitalInput side;
     private DigitalInput control;
@@ -26,12 +33,12 @@ public class AutoSelector extends Subsystem {
         rotary = new AnalogPotentiometer(RobotMap.AutoSelector.ROTARY, autos.length, 0); //May need to change the offset value depending on pot shift
     }
 
-    public String getControl() {
-        return control.get() ? "Teleop" : "Auto"; //T-Auto, F-Teleop
+    public Control getControl() {
+        return control.get() ? Control.TELEOP : Control.AUTO; //T-Auto, F-Teleop
     }
 
-    public String getSide() {
-        return side.get() ? "Right" : "Left"; // T-Left, F-Right
+    public Side getSide() {
+        return side.get() ? Side.RIGHT : Side.LEFT; // T-Left, F-Right
     }
 
     public String getAuto() {
@@ -48,8 +55,8 @@ public class AutoSelector extends Subsystem {
     @Override
     public void essentialShuffleboard() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drive");
-        tab.add("Side", getSide());
-        tab.add("Sandstorm Control", getControl());
+        tab.add("Side", getSide() == Side.LEFT ? "Left" : "Right");
+        tab.add("Sandstorm Control", getControl() == Control.TELEOP ? "Teleop" : "Auto");
         tab.add("Auto", autos[chosenAuto]);
     }
     @Override

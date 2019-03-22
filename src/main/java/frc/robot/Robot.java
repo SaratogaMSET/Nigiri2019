@@ -215,8 +215,14 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     // SmartDashboard.putString("Auto", autoSelector.getAuto());
-    SmartDashboard.putString("Side", autoSelector.getSide());
-    SmartDashboard.putString("Control", autoSelector.getControl());
+    String side = autoSelector.getSide() == AutoSelector.Side.LEFT ? "Left" : "Right";
+    String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
+    SmartDashboard.putString("Side", side);
+    SmartDashboard.putString("Control", control);
+    
+    // Important Front Page DS Stuff
+    SmartDashboard.putString("Auto", autoControl ? side + " Rocket Auto" : "Teleop");
+    SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
 
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
@@ -272,7 +278,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    autoControl = autoSelector.getControl() == "Auto";
+    autoControl = autoSelector.getControl() == AutoSelector.Control.AUTO;
     init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit
   }
@@ -320,7 +326,7 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      if(autoSelector.getSide() == "Right") {
+      if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
         autoCommandRight.start();
       }
       else {
@@ -394,6 +400,7 @@ public class Robot extends TimedRobot {
   public static void switchAutoToTeleop() {
     if(autoControl) {
       Scheduler.getInstance().removeAll();
+      // The error should be fixed, if ur using the robot test the stopAll() method
       //stopAll();
       autoControl = false;
       init(autoControl);
