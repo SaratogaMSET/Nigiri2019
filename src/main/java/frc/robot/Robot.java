@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
   // Vision
   public static VisionSubsystem vision;
   public static VisionFixCommand visionFixCommand;
-  GyroRotationalHoldCommand g = new GyroRotationalHoldCommand();
+  public static VisionSplineCommand visionSplineCommand;
 
   public static Preferences prefs;
 
@@ -170,6 +170,8 @@ public class Robot extends TimedRobot {
 
     autoCommandLeft = new IanAssistedDrive(false);
     autoCommandRight = new IanAssistedDrive(true);
+
+    Robot.gyro.resetGyro();
     (new Thread(RobotPose.getRunnable())).start();
   }
    /**
@@ -349,9 +351,11 @@ public class Robot extends TimedRobot {
       // new HatchTest().start();
       // new LedTest().start();
       // new CargoDeployTest().start();
-      Spline purePursuitSplineTest = new Spline();
-      Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(0.0)), new WaypointSequence.Waypoint(10, 5, FishyMath.d2r(0.0)), purePursuitSplineTest, Spline.QuinticHermite);
-      (new PurePursuitCommand(purePursuitSplineTest)).start();
+
+      Robot.gyro.gyro.setAngleAdjustment(-30.0);
+      Spline test = new Spline();
+      Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(30)), new WaypointSequence.Waypoint(13, -2.833333333333, FishyMath.d2r(0)), test, Spline.QuinticHermite);
+      (new PurePursuitCommand(test)).start();
     }
   }
 
@@ -594,9 +598,14 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
-      Robot.gyro.driverGyroPID.enable();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
+      if(oi.visionFixButton.get()) {
+        // if()
+      }
+      else {
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        Robot.gyro.driverGyroPID.enable();
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
+      }
     }
 
   }
