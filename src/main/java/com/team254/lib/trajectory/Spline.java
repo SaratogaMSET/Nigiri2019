@@ -2,6 +2,8 @@ package com.team254.lib.trajectory;
 
 import com.team254.lib.util.ChezyMath;
 
+import frc.robot.util.FishyMath;
+
 /**
  * Do cubic spline interpolation between points.
  *
@@ -241,6 +243,10 @@ public class Spline {
 	}
 
 	public String toString() {
-		return "a=" + a_ + "; b=" + b_ + "; c=" + c_ + "; d=" + d_ + "; e=" + e_;
+		double[] xy0 = getXandY(0.0);
+		double[] xy1 = getXandY(1.0);
+		double h0 = FishyMath.r2d(angleAt(0.0));
+		double h1 = FishyMath.r2d(angleAt(1.0));
+		return "start=(" + xy0[0] + ", " + xy0[1] + ", " + h0 + ")\nend=(" + xy1[0] + ", " + xy1[1] + ", " + h1 + ")";
 	}
 }

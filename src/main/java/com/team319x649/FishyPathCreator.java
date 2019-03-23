@@ -27,6 +27,13 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		new FishyPathCreator().generatePaths();
 	}
 
+	private FishyPath getTest() {
+		FishyPath ianAssistRight = new FishyPath(config, "Test", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistRight.addWaypoint(new Waypoint(35.5, 10.93750033, 20, 0, 0));
+		ianAssistRight.addWaypoint(21.8, 27-2.3, 150.2, 0, 11.4, true, true);
+		return ianAssistRight;
+	}
+
 	private FishyPathCreator() {
 		// DO NOT TOUCH
 		config.dt = 0.02;
@@ -50,7 +57,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight()); // return asList(path1, path2, path3, ...);
+		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getTest()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -100,6 +107,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 11.4, true, true);
 		return ianAssistRight;
 	}
+
+	
 
 	/**
 	 * Single-hatch far-rocket-left auto: Starts at the left of HAB1, goes to far rocket left.

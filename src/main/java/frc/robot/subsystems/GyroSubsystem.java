@@ -11,13 +11,16 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.util.FishyMath;
 
 /**
  * Add your docs here.
  */
-public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
+public class GyroSubsystem extends Subsystem implements ILogger {
   /**
    * Add your docs here.
    */
@@ -50,15 +53,41 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
     lastAccelY = getLinearAccelY();
     collision = false;
 
-    gyroPIDController = new PIDController(0.05, 0.0, 0.6, gyro, this, 0.01);
+    gyroPIDController = new PIDController(0.05, 0.0, 0.6, new PIDSource(){
+      @Override
+      public void setPIDSourceType(PIDSourceType pidSource) {}
+      @Override
+      public PIDSourceType getPIDSourceType() { return null; }
+    
+      @Override
+      public double pidGet() {
+        return FishyMath.boundThetaNeg180to180(gyro.getAngle());
+      }
+    }, 
+    new PIDOutput(){
+      @Override
+      public void pidWrite(double output) {
+        gyroPIDOutput = output;
+      }
+    }, 0.01);
     gyroPIDController.setInputRange(-180.0f, 180.0f);
     gyroPIDController.setOutputRange(-1.0, 1.0);
     gyroPIDController.setAbsoluteTolerance(1.0);
     gyroPIDController.setContinuous(true);
     gyroPIDController.disable();
 
-    driverGyroPID = new PIDController(0.03, 0.0, 0.0, gyro, new PIDOutput(){
+    driverGyroPID = new PIDController(0.03, 0.0, 0.0, 
+    new PIDSource(){
+      @Override
+      public void setPIDSourceType(PIDSourceType pidSource) {}
+      @Override
+      public PIDSourceType getPIDSourceType() { return null; }
     
+      @Override
+      public double pidGet() {
+        return FishyMath.boundThetaNeg180to180(gyro.getAngle());
+      }
+    }, new PIDOutput(){
       @Override
       public void pidWrite(double output) {
         driverPIDOutput = output;
@@ -154,14 +183,6 @@ public class GyroSubsystem extends Subsystem implements ILogger, PIDOutput {
   @Override
   public void essentialShuffleboard() {
     
-  }
-
-  /**
-   * Output for the PID Controller. Writes to a subsystem-owned variable of the offset to add to the drivetrain motors. If Robot activates the Gyro PID, it should read from the variable to actuate the motors.
-   */
-  @Override
-  public void pidWrite(double output) {
-    this.gyroPIDOutput = output;
   }
 
   public double getGyroPIDOutput() {

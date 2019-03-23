@@ -68,29 +68,42 @@ public class VisionSubsystem extends Subsystem {
 
         jevoisData += jevoisSerial.readString();
         if(jevoisData.length() > 500) {
-            jevoisData = jevoisData.substring(400);
-        }        
+            jevoisData = jevoisData.substring(100);
+        }
+
+        // System.out.println(jevoisData);
 
         Matcher endMatcher = endRegex.matcher(jevoisData);
 
         if(endMatcher.find()) {
             int substrIndex = endMatcher.start(1);
-            jevoisData = jevoisData.substring(0, substrIndex);
+            String processData = jevoisData.substring(0, substrIndex);
 
-            Matcher startMatcher = startRegex.matcher(jevoisData);
-            int startMatch = startMatcher.end(1);
+            System.out.println("DATA:" + processData);
+            Matcher startMatcher = startRegex.matcher(processData);
+            if(startMatcher.find()) {
+                int startMatch = startMatcher.start(1);
 
-            jevoisData = jevoisData.substring(startMatch);
+                processData = processData.substring(startMatch);
+    
+                Matcher dxMatcher = deltaXRegex.matcher(processData);
+                Matcher dyMatcher = deltaYRegex.matcher(processData);
 
-            Matcher dxMatcher = deltaXRegex.matcher(jevoisData);
-            Matcher dyMatcher = deltaYRegex.matcher(jevoisData);
+                if(dxMatcher.find() && dyMatcher.find()) {
+                    double dx = Double.parseDouble(dxMatcher.group(1).substring(6)); 
+                    double dy = Double.parseDouble(dyMatcher.group(1).substring(6)); 
+        
+                    delta_x = dx/12.0;
+                    delta_y = dy/12.0;
+                    received_timestamp = Timer.getFPGATimestamp();
 
-            double dx = Double.parseDouble(dxMatcher.group(1).substring(6)); 
-            double dy = Double.parseDouble(dyMatcher.group(1).substring(6)); 
+                    System.out.println("VISION MESSAGE:");
+                    System.out.println("DX: " + delta_x);
+                    System.out.println("DY: " + delta_y);
+                    System.out.println("TIME: " + received_timestamp);
 
-            delta_x = dx;
-            delta_y = dy;
-            received_timestamp = Timer.getFPGATimestamp();
+                }
+            }
         }
     }
 

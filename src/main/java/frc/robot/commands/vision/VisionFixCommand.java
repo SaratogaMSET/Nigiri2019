@@ -52,8 +52,8 @@ public class VisionFixCommand extends FishyCommand {
   protected void execute() {
     // Activate vision target hold
     Robot.vision.readData();
-    Double distance = Robot.vision.getDistance();
-    Double angle = Robot.vision.getAngleDisplacement();
+    Double distance = 0.0;
+    Double angle = 0.0;
 
     if(angleSet || angle == null || (distance != null && distance < 50.0)) {
 

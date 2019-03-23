@@ -172,7 +172,10 @@ public class Robot extends TimedRobot {
     autoCommandRight = new IanAssistedDrive(true);
 
     Robot.gyro.resetGyro();
+    Robot.gyro.gyro.setAngleAdjustment(180.0);
+    // Robot.gyro.gyro.zeroYaw();
     (new Thread(RobotPose.getRunnable())).start();
+    visionSplineCommand = new VisionSplineCommand();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -238,34 +241,34 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("ZZ ROBOT POSE DT", RobotPose.getRunnable().getDt());
 
     // Vision
-    if(vision != null) {
-      SmartDashboard.putBoolean("Is Vision", true);
-      if(visionFixCommand == null || (visionFixCommand != null && !visionFixCommand.isRunning())) {
-        vision.readData();
-      }
+    // if(vision != null) {
+    //   SmartDashboard.putBoolean("Is Vision", true);
+    //   if(visionFixCommand == null || (visionFixCommand != null && !visionFixCommand.isRunning())) {
+    //     vision.readData();
+    //   }
 
-      Double angle = vision.getAngleDisplacement();
-      Double dist = vision.getDistance();
-      if(angle != null) {
-        if(Math.abs(angle) < 3.0) {
-          LedSubsystem.led.set(0.61);
-          // SmartDashboard.putBoolean("VSTATUS", true);
-        } else {
-          LedSubsystem.led.set(0.87);
-          // SmartDashboard.putBoolean("VSTATUS", false);
-        }
-      } else {
-        // led.solidRed(1);
-        // led.chase(0);
-      }
-      if(dist != null) {
-        SmartDashboard.putNumber("VISION DISTANCE", dist);
-      }
-      SmartDashboard.putNumber("VISION DISTANCE", -1.0);
-    } else {
-      LedSubsystem.led.set(.11);
-      SmartDashboard.putBoolean("Is Vision", false);
-    }
+    //   Double angle = vision.getAngleDisplacement();
+    //   Double dist = vision.getDistance();
+    //   if(angle != null) {
+    //     if(Math.abs(angle) < 3.0) {
+    //       LedSubsystem.led.set(0.61);
+    //       // SmartDashboard.putBoolean("VSTATUS", true);
+    //     } else {
+    //       LedSubsystem.led.set(0.87);
+    //       // SmartDashboard.putBoolean("VSTATUS", false);
+    //     }
+    //   } else {
+    //     // led.solidRed(1);
+    //     // led.chase(0);
+    //   }
+    //   if(dist != null) {
+    //     SmartDashboard.putNumber("VISION DISTANCE", dist);
+    //   }
+    //   SmartDashboard.putNumber("VISION DISTANCE", -1.0);
+    // } else {
+    //   LedSubsystem.led.set(.11);
+    //   SmartDashboard.putBoolean("Is Vision", false);
+    // }
 
   }
 
@@ -358,10 +361,9 @@ public class Robot extends TimedRobot {
       // new LedTest().start();
       // new CargoDeployTest().start();
 
-      Robot.gyro.gyro.setAngleAdjustment(-30.0);
-      Spline test = new Spline();
-      Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(30)), new WaypointSequence.Waypoint(13, -2.833333333333, FishyMath.d2r(0)), test, Spline.QuinticHermite);
-      (new PurePursuitCommand(test)).start();
+    //   Spline test = new Spline();
+    //   Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(30)), new WaypointSequence.Waypoint(13, -2.833333333333, FishyMath.d2r(0)), test, Spline.QuinticHermite);
+    //   (new PurePursuitCommand(test)).start();
     }
   }
 
@@ -371,7 +373,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    // teleopLoop();
+    teleopLoop();
   }
 
   @Override
@@ -605,10 +607,13 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      if(oi.visionFixButton.get()) {
-        // if()
+      if(visionSplineCommand != null && oi.visionFixButton.get()) {
+        if(!visionSplineCommand.isRunning()){
+          visionSplineCommand.start();
+        }
       }
       else {
+        if(visionSplineCommand != null) visionSplineCommand.cancel();
         Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);

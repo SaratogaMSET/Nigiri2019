@@ -8,7 +8,7 @@ import java.util.Arrays;
 import com.team254.lib.trajectory.Spline;
 import com.team254.lib.trajectory.WaypointSequence.Waypoint;
 
-import frc.robot.util.FishyMath;
+import frc.robot.util.*;
 
 import java.awt.Color;
 import javax.swing.JFrame;
@@ -113,8 +113,15 @@ public class PurePursuitVisualization {
     }
 
     public static void main(String[] args) {
+        RigidTransform2d robot = new RigidTransform2d(new Translation2d(0, 0), Rotation2d.fromDegrees(180));
+        RigidTransform2d goal = robot.transformBy(new RigidTransform2d(new Translation2d(5, -2), Rotation2d.fromDegrees(0)));
+        goal.setRotation(Rotation2d.fromDegrees(180));
+
+        double rx = robot.getTranslation().x(), ry = robot.getTranslation().y(), rh = robot.getRotation().getRadians();
+        double gx = goal.getTranslation().x(), gy = goal.getTranslation().y(), gh = goal.getRotation().getRadians();
+
         path = new Spline();
-        Spline.reticulateSplines(new Waypoint(0, 0, FishyMath.d2r(15)), new Waypoint(16, 3.7, FishyMath.d2r(0)), path, Spline.QuinticHermite);
+        Spline.reticulateSplines(new Waypoint(rx, ry, rh), new Waypoint(gx, gy, gh), path, Spline.QuinticHermite);
         spline_x = new Double[NUM_SAMPLES+1];
         spline_y = new Double[NUM_SAMPLES+1];
         for (double i = 0.0; i <= (1.0 + 1.0/(double) NUM_SAMPLES); i += 1.0/(double) NUM_SAMPLES) {
@@ -126,11 +133,14 @@ public class PurePursuitVisualization {
         }
 
         Plot p = new Plot(spline_x, spline_y);
-        double[] gp = getGoalPoint();
-        p.ext.add(gp[0], gp[1]);
-        p.ext.add(ROBOT_X, ROBOT_Y);
-        p.ext.add(ROBOT_X + Math.cos(ROBOT_HEADING), ROBOT_Y + Math.sin(ROBOT_HEADING));
-        System.out.println(getLeftToRightVelocityRatio(getCurvature(gp), 2.3));
+        // double[] gp = getGoalPoint();
+        // p.ext.add(gp[0], gp[1]);
+        // p.ext.add(ROBOT_X, ROBOT_Y);
+        // p.ext.add(ROBOT_X + Math.cos(ROBOT_HEADING), ROBOT_Y + Math.sin(ROBOT_HEADING));
+        // System.out.println(getLeftToRightVelocityRatio(getCurvature(gp), 2.3));
+
+        
+
 
     }
 }
