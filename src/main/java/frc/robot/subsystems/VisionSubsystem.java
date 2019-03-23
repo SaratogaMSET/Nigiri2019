@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -30,11 +31,17 @@ public class VisionSubsystem extends Subsystem {
 
     // State
     private String jevoisData;
-    private Double angleDisplacement;
-    private Double distance;
 
-    public ArrayList<Double> angleHistory; // can contain null
-    private static final int ANGLE_HISTORY_LENGTH = 300;
+    public Double delta_x;
+    public Double delta_y;
+    public Double received_timestamp;
+
+    // Extract angle
+    Pattern endRegex = Pattern.compile(".*(END)");
+    Pattern startRegex = Pattern.compile(".*(START)");
+    Pattern deltaXRegex = Pattern.compile(".*(DELTAX [-\\d.]+)");
+    Pattern deltaYRegex = Pattern.compile(".*(DELTAY [-\\d.]+)");
+
 
     // Comm
     private NetworkTable visionTable;
@@ -53,65 +60,38 @@ public class VisionSubsystem extends Subsystem {
 
         // NT Table for logging
         visionTable = NetworkTableInstance.getDefault().getTable("Vision");
-
-        angleHistory = new ArrayList<>();
     }
 
     public void readData() {
-        NetworkTableEntry jevoisDataEntry = visionTable.getEntry("jevoisData");
-        NetworkTableEntry jevoisAngleEntry = visionTable.getEntry("jevoisAngle");
-        NetworkTableEntry angleEntry = visionTable.getEntry("angle");
+        NetworkTableEntry deltaXEntry = visionTable.getEntry("Delta X");
+        NetworkTableEntry deltaYEntry = visionTable.getEntry("Delta Y");
 
         jevoisData += jevoisSerial.readString();
-        jevoisDataEntry.setString(jevoisData);
         if(jevoisData.length() > 500) {
-            jevoisData = "";
-        }
+            jevoisData = jevoisData.substring(400);
+        }        
 
-        // Extract angle
-        Pattern angleRegex = Pattern.compile(".*(ANGLE [-\\d.]+)");
-        Pattern distRegex = Pattern.compile(".*(DISTANCE [-\\d.]+)");
+        Matcher endMatcher = endRegex.matcher(jevoisData);
 
-        Matcher am = angleRegex.matcher(jevoisData);
+        if(endMatcher.find()) {
+            int substrIndex = endMatcher.start(1);
+            jevoisData = jevoisData.substring(0, substrIndex);
 
-        if(am.find()) {
-            SmartDashboard.putNumber("VISION TARGET", 1);
-            angleDisplacement = Double.parseDouble(am.group(1).substring(5));
-            if(Math.abs(angleDisplacement) > 30.0) {
-                angleDisplacement = null;
-            }
-            else {
-                angleEntry.setNumber(angleDisplacement);
-                SmartDashboard.putNumber("VISION ANGLE", angleDisplacement);
-            }
-            angleHistory.add(angleDisplacement);
-            if(angleHistory.size() > ANGLE_HISTORY_LENGTH) {
-                angleHistory.remove(0);
-            }
-            jevoisData = jevoisData.substring(am.end(1));
-        }
-        else {
-            SmartDashboard.putNumber("VISION TARGET", 0);
-            angleDisplacement = null;
-        }
-        Matcher dm = distRegex.matcher(jevoisData);
-        if(dm.find()) {
-            distance = Double.parseDouble(dm.group(1).substring(8));
-            SmartDashboard.putNumber("VISION DIST", distance);
-            jevoisData = jevoisData.substring(dm.end(1));
-        }
-        else {
-            SmartDashboard.putNumber("VISION DIST", 0);
-            distance = null;
-        }
-    }
+            Matcher startMatcher = startRegex.matcher(jevoisData);
+            int startMatch = startMatcher.end(1);
 
-    public Double getAngleDisplacement() {
-        return angleDisplacement;
-    }
+            jevoisData = jevoisData.substring(startMatch);
 
-    public Double getDistance() {
-        return distance;
+            Matcher dxMatcher = deltaXRegex.matcher(jevoisData);
+            Matcher dyMatcher = deltaYRegex.matcher(jevoisData);
+
+            double dx = Double.parseDouble(dxMatcher.group(1).substring(6)); 
+            double dy = Double.parseDouble(dyMatcher.group(1).substring(6)); 
+
+            delta_x = dx;
+            delta_y = dy;
+            received_timestamp = Timer.getFPGATimestamp();
+        }
     }
 
     @Override

@@ -115,6 +115,7 @@ public class PurePursuitCommand extends FishyCommand {
             // System.out.println(path.calculateLength(i));
             // System.out.println(path.calculateLength());
         }
+        
     }
 
     public double[] getGoalPoint() {
