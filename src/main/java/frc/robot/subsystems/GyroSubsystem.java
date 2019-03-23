@@ -81,7 +81,7 @@ public class GyroSubsystem extends Subsystem implements ILogger {
       @Override
       public void setPIDSourceType(PIDSourceType pidSource) {}
       @Override
-      public PIDSourceType getPIDSourceType() { return null; }
+      public PIDSourceType getPIDSourceType() { return PIDSourceType.kDisplacement; }
     
       @Override
       public double pidGet() {
