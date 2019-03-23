@@ -289,6 +289,7 @@ public class CargoIntakeSubsystem extends Subsystem {
 
   @Override
   public void stopAll() {
+    // TODO: Change this if u set the intakes to followers
     leftIntake.set(ControlMode.PercentOutput, 0);
     rightIntake.set(ControlMode.PercentOutput, 0);
     frontIntake.set(ControlMode.PercentOutput, 0);

@@ -36,8 +36,8 @@ public class PurePursuitCommand extends FishyCommand {
     boolean isPathFinished = false;
 
     int LAST_CLOSEST_POINT = 0;
-    Double spline_x[];
-    Double spline_y[];
+    Double spline_x[] = new Double[NUM_SAMPLES + 11];
+    Double spline_y[] = new Double[NUM_SAMPLES + 11];
 
     // CONSTANTS
     public static final int NUM_SAMPLES = 100;
@@ -115,13 +115,23 @@ public class PurePursuitCommand extends FishyCommand {
             // System.out.println(path.calculateLength(i));
             // System.out.println(path.calculateLength());
         }
-        
+        double angle = path.angleAt(1.0);
+        double[] last_xy = path.getXandY(1.0);
+        double curx = last_xy[0];
+        double cury = last_xy[1];
+        for(int i = 1; i < 11; i++) {
+            curx += LOOKAHEAD_DISTANCE/3.0 * Math.cos(angle);
+            cury += LOOKAHEAD_DISTANCE/3.0 * Math.sin(angle);
+
+            spline_x[NUM_SAMPLES + i] = curx;
+            spline_y[NUM_SAMPLES + i] = cury;
+        }
     }
 
     public double[] getGoalPoint() {
         double[] goal = new double[3];
         double mindist = Double.POSITIVE_INFINITY;
-        for(int i = LAST_CLOSEST_POINT; i < NUM_SAMPLES; i++) {
+        for(int i = LAST_CLOSEST_POINT; i < NUM_SAMPLES + 10; i++) {
             double d = LOOKAHEAD_DISTANCE - Math.hypot(spline_x[i] - RobotPose.getX(), spline_y[i] - RobotPose.getY());
             if(d > 0.0 && d <= mindist) {
                 mindist = d;

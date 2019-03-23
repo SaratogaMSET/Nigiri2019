@@ -126,6 +126,6 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
 
   @Override
   public void stopAll() {
-    intakeWheel.set(ControlMode.PercentOutput, 0);
+    runIntake(0.0);
   }
 }

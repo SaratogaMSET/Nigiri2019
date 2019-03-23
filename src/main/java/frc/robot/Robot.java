@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
   // Vision
   public static VisionSubsystem vision;
   public static VisionFixCommand visionFixCommand;
-  GyroRotationalHoldCommand g = new GyroRotationalHoldCommand();
+  public static VisionSplineCommand visionSplineCommand;
 
   public static Preferences prefs;
 
@@ -170,6 +170,8 @@ public class Robot extends TimedRobot {
 
     autoCommandLeft = new IanAssistedDrive(false);
     autoCommandRight = new IanAssistedDrive(true);
+
+    Robot.gyro.resetGyro();
     (new Thread(RobotPose.getRunnable())).start();
   }
    /**
@@ -213,8 +215,14 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     // SmartDashboard.putString("Auto", autoSelector.getAuto());
-    SmartDashboard.putString("Side", autoSelector.getSide());
-    SmartDashboard.putString("Control", autoSelector.getControl());
+    String side = autoSelector.getSide() == AutoSelector.Side.LEFT ? "Left" : "Right";
+    String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
+    SmartDashboard.putString("Side", side);
+    SmartDashboard.putString("Control", control);
+    
+    // Important Front Page DS Stuff
+    SmartDashboard.putString("Auto", autoControl ? side + " Rocket Auto" : "Teleop");
+    SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
 
     // Safety Checks
     if(!jack.isJackAtTop() && !isClimb){
@@ -270,7 +278,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    autoControl = autoSelector.getControl() == "Auto";
+    autoControl = autoSelector.getControl() == AutoSelector.Control.AUTO;
     init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit
   }
@@ -318,7 +326,7 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      if(autoSelector.getSide() == "Right") {
+      if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
         autoCommandRight.start();
       }
       else {
@@ -349,9 +357,11 @@ public class Robot extends TimedRobot {
       // new HatchTest().start();
       // new LedTest().start();
       // new CargoDeployTest().start();
-      Spline purePursuitSplineTest = new Spline();
-      Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(0.0)), new WaypointSequence.Waypoint(10, 5, FishyMath.d2r(0.0)), purePursuitSplineTest, Spline.QuinticHermite);
-      (new PurePursuitCommand(purePursuitSplineTest)).start();
+
+      Robot.gyro.gyro.setAngleAdjustment(-30.0);
+      Spline test = new Spline();
+      Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(30)), new WaypointSequence.Waypoint(13, -2.833333333333, FishyMath.d2r(0)), test, Spline.QuinticHermite);
+      (new PurePursuitCommand(test)).start();
     }
   }
 
@@ -390,6 +400,7 @@ public class Robot extends TimedRobot {
   public static void switchAutoToTeleop() {
     if(autoControl) {
       Scheduler.getInstance().removeAll();
+      // The error should be fixed, if ur using the robot test the stopAll() method
       //stopAll();
       autoControl = false;
       init(autoControl);
@@ -594,9 +605,14 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
-      Robot.gyro.driverGyroPID.enable();
-      drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
+      if(oi.visionFixButton.get()) {
+        // if()
+      }
+      else {
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        Robot.gyro.driverGyroPID.enable();
+        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
+      }
     }
 
   }
