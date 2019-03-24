@@ -20,7 +20,7 @@ import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.util.Logging;
 import frc.robot.RobotState;
 
-public class MoveLiftCommand extends Command {
+public class MoveLiftCommand extends FishyCommand {
 
   LiftPositions target;
   LiftPositions current;
@@ -44,9 +44,16 @@ public class MoveLiftCommand extends Command {
     this.timeout = timeout;
   }
 
+  protected String[] getLogFields() {
+    // velocities for MP
+    return new String[] {"vel", "time"};
+  }
+
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    SmartDashboard.putBoolean("isFInishedLIFT",false);
+
     current = RobotState.liftPosition;
     isFinished = false;
     onTarget = false;
@@ -75,6 +82,9 @@ public class MoveLiftCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    log("vel",Robot.lift.getVel());
+    log("time",time.getFPGATimestamp());
+    logger.write();
     if(RobotState.canRunLift() && !isFinished) {
 
       Robot.lift.moveLiftToPos(target);
@@ -115,7 +125,8 @@ public class MoveLiftCommand extends Command {
   @Override
   protected void end() {
     RobotState.isRunningLiftCommand = false;
-
+    logger.drain();
+    logger.flush();
     if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
       new SetIntakeRollers(true, 0).start();
     }
@@ -143,6 +154,7 @@ public class MoveLiftCommand extends Command {
       Robot.time.get(), Robot.lift.getDistance(), target.toString());
       Logging.print(string);
     }
+    SmartDashboard.putBoolean("isFInishedLIFT",true);
   }
 
   // Called when another command which requires one or more of the same
