@@ -24,6 +24,7 @@ import frc.robot.commands.intake.CargoIntakeMidToIn;
 import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.WaitUntilLiftDownIntake;
+import frc.robot.commands.semiauto.CargoShipLiftAndIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
 import frc.robot.commands.semiauto.climb.ClimbThreeJack;
 import frc.robot.commands.semiauto.climb.ClimbTwoJack;
@@ -476,7 +477,7 @@ public class Robot extends TimedRobot {
         new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 1.2).start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       } else if(oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
-        new MoveLiftCommand(LiftPositions.CARGO_SHIP, 1.2).start();
+        new CargoShipLiftAndIntake().start();
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
       } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
         new MoveHatchCommand(HatchPositionState.HATCH_IN).start();

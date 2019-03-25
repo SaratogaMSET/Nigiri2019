@@ -58,8 +58,11 @@ public class DeployCommand extends Command {
         new DeployHatchCommand().start();
       }
     } else {
-      new DeployCargoCommand(-power).start();
-      new DeployHatchCommand().start();
+      if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
+        new DeployCargoCommand(-power).start();
+      } else {
+        new DeployHatchCommand().start();
+      }
       isFinished = true;
     }
   }
