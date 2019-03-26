@@ -72,9 +72,10 @@ public class JackSubsystem extends Subsystem {
     jackMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, Robot.timeoutMs);
     jackMotor.setSensorPhase(true);
     jackMotor.setNeutralMode(NeutralMode.Brake);
-    jackMotor.configContinuousCurrentLimit(55,30);
-    jackMotor.configPeakCurrentDuration(200,30);
+    jackMotor.configContinuousCurrentLimit(40,30);
+    jackMotor.configPeakCurrentDuration(2000,30);
     jackMotor.configPeakCurrentLimit(60,30);
+    jackMotor.enableCurrentLimit(true);
     jackMotor.selectProfileSlot(0, 0);
     forkDeploy = new Solenoid(4, RobotMap.Jacks.FORK_DEPLOY);
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);

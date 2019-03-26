@@ -78,12 +78,12 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public static class PIDConstants {
-    public static final double k_f = 0.2925714; //0.295
-    public static double k_p = 0.8; //0.8
+    public static final double k_f = 0.15; //0.295
+    public static double k_p = 0.5; //0.8
     public static double k_i = 0.0;
-    public static double k_d = 0;
-    public static final int MAX_ACCELERATION = 6500; //measured 40000-70000
-    public static final int MAX_VELOCITY = 8000; // measured 4500
+    public static double k_d = 15;
+    public static final int MAX_ACCELERATION = 18000; //measured 40000-70000
+    public static final int MAX_VELOCITY = 5000; // measured 4500
   }
 
   private TalonSRX motor1;

@@ -23,23 +23,16 @@ public class DeployCommand extends Command {
   double power;
   double timeout;
 
-  public DeployCommand(LiftPositions liftPos, double power, double timeout) {
+  public DeployCommand(LiftPositions liftPos, double power) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
     this.pos = liftPos;
     this.power = power;
-    this.timeout = timeout;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    timer = new Timer();
-    timer.reset();
-    timer.start();
-
-    isFinished = false;
-
     if (pos == LiftPositions.CARGO_LOADING_STATION ||
      pos == LiftPositions.CARGO_ROCKET_LEVEL_TWO) {
       new DeployCargoCommand(-power).start();
@@ -51,28 +44,19 @@ public class DeployCommand extends Command {
       new DeployCargoCommand(-0.8).start();
     } else if(pos == LiftPositions.CARGO_SHIP) {
       new DeployCargoCommand(-0.5).start();
-    } else if(pos == LiftPositions.LOW) {
-      if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
-        new DeployCargoCommand(-power).start();
-      } else {
-        new DeployHatchCommand().start();
-      }
     } else {
       if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
         new DeployCargoCommand(-power).start();
       } else {
         new DeployHatchCommand().start();
       }
-      isFinished = true;
     }
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if (timer.get() > timeout) {
-      isFinished = true;
-    }
+    
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -84,7 +68,6 @@ public class DeployCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    timer.stop();
     
   }
 

@@ -487,13 +487,13 @@ public class Robot extends TimedRobot {
       }
 
       // *************************** DEPLOY ********************************************/
-      if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
-        new DeployCommand(RobotState.liftPosition, 1, 2).start();
+      if(oi.gamePad.getBackButtonPressed()) { //*********GUNNER DEPLOY********** */
+        new DeployCommand(RobotState.liftPosition, 1).start();
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
-      } if(oi.driver.driverDeployPressed()) {
-        new DeployCommand(RobotState.liftPosition, 1, 2).start();
+      } else if(oi.driver.driverDeployPressed()) {
+        new DeployCommand(RobotState.liftPosition, 1).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
@@ -522,12 +522,12 @@ public class Robot extends TimedRobot {
       compressor.stop();
       // *************************** DEPLOY ********************************************/
       if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
-        new DeployCommand(RobotState.liftPosition, 1, 2).start();
+        new DeployCommand(RobotState.liftPosition, 1).start();
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
       } if(oi.driver.driverDeployPressed()) {
-        new DeployCommand(RobotState.liftPosition, 1, 2).start();
+        new DeployCommand(RobotState.liftPosition, 1).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();

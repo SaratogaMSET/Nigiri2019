@@ -20,7 +20,7 @@ import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.util.Logging;
 import frc.robot.RobotState;
 
-public class MoveLiftCommand extends FishyCommand {
+public class MoveLiftCommand extends Command {
 
   LiftPositions target;
   LiftPositions current;
@@ -82,9 +82,9 @@ public class MoveLiftCommand extends FishyCommand {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    log("vel",Robot.lift.getVel());
-    log("time",time.getFPGATimestamp());
-    logger.write();
+    // log("vel",Robot.lift.getVel());
+    // log("time",time.getFPGATimestamp());
+    // logger.write();
     if(RobotState.canRunLift() && !isFinished) {
 
       Robot.lift.moveLiftToPos(target);
@@ -125,8 +125,8 @@ public class MoveLiftCommand extends FishyCommand {
   @Override
   protected void end() {
     RobotState.isRunningLiftCommand = false;
-    logger.drain();
-    logger.flush();
+    // logger.drain();
+    // logger.flush();
     if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
       new SetIntakeRollers(true, 0).start();
     }

@@ -164,8 +164,7 @@ public class OI {
     }
 
     public boolean driverDeploy() {
-      return getDriverButton6() || getDriverButton7()
-            || getDriverButton10() || getDriverButton11();
+      return getDriverButton10() || getDriverButton11();
     }
 
     public boolean driverDeployPressed() {
