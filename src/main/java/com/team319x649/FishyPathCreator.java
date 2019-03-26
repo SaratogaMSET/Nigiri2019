@@ -57,7 +57,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getTest()); // return asList(path1, path2, path3, ...);
+		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -108,7 +108,40 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		return ianAssistRight;
 	}
 
-	
+	private FishyPath getFrontCargoPath() {
+		FishyPath frontCargo = new FishyPath(config, "HABM-CF", DrivetrainSubsystem.WHEELBASE_FEET);
+		frontCargo.addWaypoint(5.5, 14.5, 0, 0, 0);
+		frontCargo.addWaypointRelative(4.5, 0, 0, 6, 6);
+		frontCargo.addWaypoint(14, 14.5, 0, 0, 7);
+		return frontCargo;
+	}
+
+	private FishyPath getCloseFrontPath() {
+		FishyPath closeFrontCargo = new FishyPath(config, "HABM-CF-close", DrivetrainSubsystem.WHEELBASE_FEET);
+		closeFrontCargo.addWaypoint(5.5, 14.5, 0, 0, 0);
+		closeFrontCargo.addWaypointRelative(4.5, 0, 0, 6, 6);
+		closeFrontCargo.addWaypoint(16, 14.5, 0, 0, 7);
+		return closeFrontCargo;
+	}
+
+	private FishyPath getNearCargoLeft() {
+		FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
+		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
+		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true, true);
+		//leftNearCargoShip.addWaypointRelative(7, 0.65, 15, 6, 8.5, true, true);
+		//leftNearCargoShip.addWaypoint(21.7, 22, 89.99, 0, 6, true, true);
+		leftNearCargoShip.addWaypoint(21.7, 17.354167, 0, 0, 8.5, true, true);
+		return leftNearCargoShip;
+	}
+
+	private FishyPath getNearCargoRight() {
+		FishyPath rightNearCargoShip = new FishyPath(config, "HAB1R-CR1", DrivetrainSubsystem.WHEELBASE_FEET);
+		rightNearCargoShip.addWaypoint(5.5, 9.7, 0, 0, 0);
+		rightNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true, true);
+		rightNearCargoShip.addWaypoint(16.5, 9.25, 0, 6, 8.5, true, true);
+		rightNearCargoShip.addWaypoint(21.7, 5, 89.99, 0, 6, true, true);
+		return rightNearCargoShip;
+	}
 
 	/**
 	 * Single-hatch far-rocket-left auto: Starts at the left of HAB1, goes to far rocket left.

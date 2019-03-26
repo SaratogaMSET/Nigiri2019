@@ -117,6 +117,7 @@ public class Robot extends TimedRobot {
   public static boolean doneClimb;
   public static boolean isClimbPrepared = false;
 
+  public static SendableChooser<Command> autoChooser;
   public static Command autoCommandLeft;
   public static Command autoCommandRight;
 
@@ -172,9 +173,19 @@ public class Robot extends TimedRobot {
 
     autoCommandLeft = new IanAssistedDrive(false);
     autoCommandRight = new IanAssistedDrive(true);
+    
+    // SmartDashboard Auto Selector
+    autoChooser = new SendableChooser<>();
+    autoChooser.setDefaultOption("Cargo Ship Front", new MotionProfileCommand("HABM-CF", false));
+    autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
+    autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
+    autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
+    autoChooser.addOption("Rocket Back Left", autoCommandLeft);
+    autoChooser.addOption("Rocket Back Right", autoCommandRight);
+    SmartDashboard.putData("Auto Selector", autoChooser);
 
     Robot.gyro.resetGyro();
-    Robot.gyro.gyro.setAngleAdjustment(180.0);
+    //Robot.gyro.gyro.setAngleAdjustment(180.0);
     // Robot.gyro.gyro.zeroYaw();
     (new Thread(RobotPose.getRunnable())).start();
     visionSplineCommand = new VisionSplineCommand();
@@ -220,6 +231,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     // SmartDashboard.putString("Auto", autoSelector.getAuto());
+
     String side = autoSelector.getSide() == AutoSelector.Side.LEFT ? "Left" : "Right";
     String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
     SmartDashboard.putString("Side", side);
@@ -237,10 +249,19 @@ public class Robot extends TimedRobot {
       }
     }
 
+    
+    // SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoderDistance());
+    // SmartDashboard.putNumber("Raw Right Encoder", Robot.drive.getRawRightEncoder());
+    // SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoderDistance());
+    // SmartDashboard.putNumber("Raw Left Encoder", Robot.drive.getRawLeftEncoder());
+    
+    // SmartDashboard.putNumber("Gyro Angle", Robot.gyro.getGyroAngle());
+
     SmartDashboard.putNumber("ZZ ROBOT X", RobotPose.getX());
     SmartDashboard.putNumber("ZZ ROBOT Y", RobotPose.getY());
     SmartDashboard.putNumber("ZZ ROBOT HEADING", FishyMath.r2d(RobotPose.getHeading()));
     SmartDashboard.putNumber("ZZ ROBOT POSE DT", RobotPose.getRunnable().getDt());
+
 
     // Vision
     // if(vision != null) {
@@ -283,8 +304,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    autoControl = autoSelector.getControl() == AutoSelector.Control.AUTO;
-    init(true);
+    autoControl = true; // autoSelector.getControl() == AutoSelector.Control.AUTO;
+    init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit
   }
   /**
@@ -317,7 +338,9 @@ public class Robot extends TimedRobot {
 
   public void stopAll() {
     autoCommandLeft.cancel();
-    autoCommandRight.cancel();
+    /*autoCommandRight.cancel();
+    autoCommandFwd.cancel();
+    */
     for(Subsystem s : subsystems) {s.stopAll();}
   }
 
@@ -331,16 +354,16 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-    //   if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
-    //     autoCommandRight.start();
-    //   }
-    //   else {
-    //     autoCommandLeft.start();
-    //   }
-    // } else {
-    //   Robot.drive.rawDrive(0.0, 0.0);
-    //   drive.changeBrakeCoast(false);
-    new AutoIntakeHatch().start();
+      // if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
+      //   autoCommandRight.start();
+      // }
+      // else {
+      //   autoCommandLeft.start();
+      // }
+      autoChooser.getSelected().start();
+    } else {
+      Robot.drive.rawDrive(0.0, 0.0);
+      drive.changeBrakeCoast(false);
 
       // visionFixCommand = new VisionFixCommand();
 
