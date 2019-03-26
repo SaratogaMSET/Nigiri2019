@@ -24,6 +24,7 @@ import frc.robot.commands.intake.CargoIntakeMidToIn;
 import frc.robot.commands.intake.ChangeIntakeState;
 import frc.robot.commands.intake.SetIntakeRollers;
 import frc.robot.commands.intake.WaitUntilLiftDownIntake;
+import frc.robot.commands.semiauto.AutoIntakeHatch;
 import frc.robot.commands.semiauto.CargoShipLiftAndIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
 import frc.robot.commands.semiauto.climb.ClimbThreeJack;
@@ -283,7 +284,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoControl = autoSelector.getControl() == AutoSelector.Control.AUTO;
-    init(autoControl);
+    init(true);
     // Stop putting all your code here and put it in the init() method–don't override this shit
   }
   /**
@@ -330,15 +331,16 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
-        autoCommandRight.start();
-      }
-      else {
-        autoCommandLeft.start();
-      }
-    } else {
-      Robot.drive.rawDrive(0.0, 0.0);
-      drive.changeBrakeCoast(false);
+    //   if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
+    //     autoCommandRight.start();
+    //   }
+    //   else {
+    //     autoCommandLeft.start();
+    //   }
+    // } else {
+    //   Robot.drive.rawDrive(0.0, 0.0);
+    //   drive.changeBrakeCoast(false);
+    new AutoIntakeHatch().start();
 
       // visionFixCommand = new VisionFixCommand();
 
