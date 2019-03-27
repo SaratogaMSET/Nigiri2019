@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   public static boolean isDefenseMode = false;
   public static boolean autoControl = true;
   public static boolean isManualMode = false;
-  public static boolean isLogging = false;
+  public static boolean isLogging = true;
 
 
   // Subsystems
@@ -181,7 +181,7 @@ public class Robot extends TimedRobot {
     autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
     autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
     autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
-    autoChooser.addOption("Near Rocket", new MotionProfileCommand("NearRocket", true, -29.5));
+    autoChooser.addOption("Near Rocket", new MotionProfileCommand("NearRocket", false));
     autoChooser.addOption("Rocket Back Left", autoCommandLeft);
     autoChooser.addOption("Rocket Back Right", autoCommandRight);
     SmartDashboard.putData("Auto Selector", autoChooser);
@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     // SmartDashboard.putString("Auto", autoSelector.getAuto());
-
+ 
     String side = autoSelector.getSide() == AutoSelector.Side.LEFT ? "Left" : "Right";
     String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
     SmartDashboard.putString("Side", side);

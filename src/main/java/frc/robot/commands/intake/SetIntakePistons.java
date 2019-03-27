@@ -23,8 +23,9 @@ public class SetIntakePistons extends Command {
   public SetIntakePistons(boolean out) {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
+    requires(Robot.cargoIntake);
     this.out = out;
-    timeout=2;
+    timeout=1;
   }
 
   // Called just before this Command runs the first time
@@ -81,5 +82,6 @@ public class SetIntakePistons extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    end();
   }
 }
