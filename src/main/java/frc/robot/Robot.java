@@ -240,6 +240,8 @@ public class Robot extends TimedRobot {
     String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
     SmartDashboard.putString("Side", side);
     SmartDashboard.putString("Control", control);
+    SmartDashboard.putNumber("Auto Rotary", autoSelector.getPotVoltage());
+    SmartDashboard.putNumber("Auto Rotary Number", autoSelector.getAutoPotNumber());
     
     // Important Front Page DS Stuff
     SmartDashboard.putString("Auto", autoControl ? side + " Rocket Auto" : "Teleop");
@@ -456,6 +458,7 @@ public class Robot extends TimedRobot {
     if(isLogging) {
       Logging.closeWriter();
     }
+    
   }
 
   public void teleopLoop() {

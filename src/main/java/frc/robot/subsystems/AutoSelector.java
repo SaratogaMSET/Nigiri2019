@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -18,8 +19,8 @@ public class AutoSelector extends Subsystem {
     }
 
     public static class PotValues {
-        public static final double[] range1 = {0.007, 0.01};
-        public static final double[] range2 = {0.535, 0.54};
+        public static final double[] range1 = {0.007, 0.1};
+        public static final double[] range2 = {0.335, 0.6};
         public static final double[] range3 = {1.05, 1.06};
         public static final double[] range4 = {1.55, 1.6};
         public static final double[] range5 = {2.06, 2.1};
@@ -89,6 +90,14 @@ public class AutoSelector extends Subsystem {
             return 0;
         }
     }
+
+    public void setAutoCommand() {
+        switch(getAutoPotNumber()) {
+            case 1:
+            // if(Robot.autoCommandLeft != )
+        }
+    }
+
     public boolean inRange(double x, double lower, double upper) {
         if (x > lower && x < upper) {
             return true;
