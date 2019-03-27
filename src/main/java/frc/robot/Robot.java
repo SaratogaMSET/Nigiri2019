@@ -91,6 +91,7 @@ public class Robot extends TimedRobot {
   public static VisionSubsystem vision;
   public static VisionFixCommand visionFixCommand;
   public static VisionSplineCommand visionSplineCommand;
+  public static GyroRotationalHoldCommand gholdTest;
 
   public static Preferences prefs;
 
@@ -180,6 +181,7 @@ public class Robot extends TimedRobot {
     autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
     autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
     autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
+    autoChooser.addOption("Rocket To LS Left", new MotionProfileCommand("ROCKLF-LSL", true, -29.5));
     autoChooser.addOption("Rocket Back Left", autoCommandLeft);
     autoChooser.addOption("Rocket Back Right", autoCommandRight);
     SmartDashboard.putData("Auto Selector", autoChooser);
@@ -187,8 +189,10 @@ public class Robot extends TimedRobot {
     Robot.gyro.resetGyro();
     //Robot.gyro.gyro.setAngleAdjustment(180.0);
     // Robot.gyro.gyro.zeroYaw();
-    (new Thread(RobotPose.getRunnable())).start();
-    visionSplineCommand = new VisionSplineCommand();
+    // (new Thread(RobotPose.getRunnable())).start();
+    // visionSplineCommand = new VisionSplineCommand();
+    visionFixCommand = new VisionFixCommand();
+    gholdTest = new GyroRotationalHoldCommand();
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -264,34 +268,34 @@ public class Robot extends TimedRobot {
 
 
     // Vision
-    // if(vision != null) {
-    //   SmartDashboard.putBoolean("Is Vision", true);
-    //   if(visionFixCommand == null || (visionFixCommand != null && !visionFixCommand.isRunning())) {
-    //     vision.readData();
-    //   }
+    if(vision != null) {
+      SmartDashboard.putBoolean("Is Vision", true);
+      if(visionFixCommand == null || (visionFixCommand != null && !visionFixCommand.isRunning())) {
+        vision.readData();
+      }
 
-    //   Double angle = vision.getAngleDisplacement();
-    //   Double dist = vision.getDistance();
-    //   if(angle != null) {
-    //     if(Math.abs(angle) < 3.0) {
-    //       LedSubsystem.led.set(0.61);
-    //       // SmartDashboard.putBoolean("VSTATUS", true);
-    //     } else {
-    //       LedSubsystem.led.set(0.87);
-    //       // SmartDashboard.putBoolean("VSTATUS", false);
-    //     }
-    //   } else {
-    //     // led.solidRed(1);
-    //     // led.chase(0);
-    //   }
-    //   if(dist != null) {
-    //     SmartDashboard.putNumber("VISION DISTANCE", dist);
-    //   }
-    //   SmartDashboard.putNumber("VISION DISTANCE", -1.0);
-    // } else {
-    //   LedSubsystem.led.set(.11);
-    //   SmartDashboard.putBoolean("Is Vision", false);
-    // }
+      Double angle = vision.getAngle();
+      Double dist = vision.getDistance();
+      if(angle != null) {
+        if(Math.abs(angle) < 3.0) {
+          LedSubsystem.led.set(0.61);
+          // SmartDashboard.putBoolean("VSTATUS", true);
+        } else {
+          LedSubsystem.led.set(0.87);
+          // SmartDashboard.putBoolean("VSTATUS", false);
+        }
+      } else {
+        // led.solidRed(1);
+        // led.chase(0);
+      }
+      if(dist != null) {
+        SmartDashboard.putNumber("VISION DISTANCE", dist);
+      }
+      SmartDashboard.putNumber("VISION DISTANCE", -1.0);
+    } else {
+      LedSubsystem.led.set(.11);
+      SmartDashboard.putBoolean("Is Vision", false);
+    }
 
   }
 
@@ -633,13 +637,18 @@ public class Robot extends TimedRobot {
       drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
-      if(visionSplineCommand != null && oi.visionFixButton.get()) {
-        if(!visionSplineCommand.isRunning()){
-          visionSplineCommand.start();
+      if(vision != null && visionFixCommand != null && oi.visionFixButton.get()) {
+        if(!visionFixCommand.isRunning()){
+          visionFixCommand.start();
         }
+        // if(!gholdTest.isRunning()) {
+        //   gholdTest.setTargetAngle(gyro.getGyroAngle() + 45.0);
+        //   gholdTest.start();
+        // }
       }
       else {
-        if(visionSplineCommand != null) visionSplineCommand.cancel();
+        if(visionFixCommand != null) visionFixCommand.cancel();
+        if(gholdTest != null) gholdTest.cancel();
         Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);

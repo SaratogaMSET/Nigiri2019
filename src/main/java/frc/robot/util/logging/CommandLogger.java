@@ -23,7 +23,7 @@ public class CommandLogger {
     private ArrayList<String> fieldNames = new ArrayList<String>();
     private boolean first_time = true;
 
-    public static boolean DEBUG_ENABLED = false;
+    public static boolean DEBUG_ENABLED = true;
         
     public CommandLogger(String prefix) {
         if(!DEBUG_ENABLED){ return; }

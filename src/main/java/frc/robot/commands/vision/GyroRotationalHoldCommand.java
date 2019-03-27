@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.FishyCommand;
+import frc.robot.util.FishyMath;
 
 /**
  * Takes driver input for forward and freezes input on rotational axis of robot, using a Gyro PID controller instead.
@@ -73,6 +74,7 @@ public class GyroRotationalHoldCommand extends FishyCommand {
   }
 
   public void setTargetAngle(double angle) {
+    angle = FishyMath.boundThetaNeg180to180(angle);
     targetAngle = angle;
     Robot.gyro.gyroPIDController.setSetpoint(targetAngle);
     Robot.gyro.gyroPIDController.enable();

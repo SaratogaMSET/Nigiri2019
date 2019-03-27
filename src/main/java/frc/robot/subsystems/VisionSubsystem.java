@@ -30,18 +30,28 @@ public class VisionSubsystem extends Subsystem {
     public SerialPort jevoisSerial;
 
     // State
-    private String jevoisData;
+    private String jevoisData = "";
 
     public Double delta_x;
     public Double delta_y;
     public Double received_timestamp;
 
+    private Double angleDisplacement;
+    private Double distance;
+    private Double timestamp_2;
+
     // Extract angle
-    Pattern endRegex = Pattern.compile(".*(END)");
-    Pattern startRegex = Pattern.compile(".*(START)");
     Pattern deltaXRegex = Pattern.compile(".*(DELTAX [-\\d.]+)");
     Pattern deltaYRegex = Pattern.compile(".*(DELTAY [-\\d.]+)");
+    Pattern angleRegex = Pattern.compile(".*(ANGLE [-\\d.]+)");
+    Pattern distRegex = Pattern.compile(".*(DISTANCE [-\\d.]+)");
 
+    Matcher endMatcher;
+    Matcher startMatcher;
+    Matcher dxMatcher;
+    Matcher dyMatcher;
+    Matcher angleMatcher;
+    Matcher distMatcher;
 
     // Comm
     private NetworkTable visionTable;
@@ -52,9 +62,7 @@ public class VisionSubsystem extends Subsystem {
         // TODO: Create a NONE output module for vision on the jevois.
         UsbCamera jevoisCamera = CameraServer.getInstance().startAutomaticCapture(0);
         jevoisCamera.setVideoMode(PixelFormat.kYUYV, 640, 480, 30);
-        jevoisCamera.setConnectVerbose(1);
         jevoisCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-        
         // To read angle data, open serial-over-USB port @ 115200 baud rate.
         jevoisSerial = new SerialPort(115200, SerialPort.Port.kUSB);
 
@@ -65,45 +73,81 @@ public class VisionSubsystem extends Subsystem {
     public void readData() {
         NetworkTableEntry deltaXEntry = visionTable.getEntry("Delta X");
         NetworkTableEntry deltaYEntry = visionTable.getEntry("Delta Y");
+        String serial = jevoisSerial.readString();
+        jevoisData += serial;
 
-        jevoisData += jevoisSerial.readString();
-        if(jevoisData.length() > 500) {
-            jevoisData = jevoisData.substring(100);
-        }
+        // System.out.println("VISION LEN: " + jevoisData.length());
+        // System.out.println("SERIAL LEN: " + serial.length());
 
-        // System.out.println(jevoisData);
+        // System.out.println("SERIAL DATA: " + serial);
+        // System.out.println("VISION DATA: " + jevoisData);
 
-        Matcher endMatcher = endRegex.matcher(jevoisData);
 
-        if(endMatcher.find()) {
-            int substrIndex = endMatcher.start(1);
-            String processData = jevoisData.substring(0, substrIndex);
+        int endIndex = jevoisData.lastIndexOf("END");
+        if(endIndex > 0) {
+            String splice = jevoisData.substring(0, endIndex);
+            int startIndex = splice.lastIndexOf("START");
+            if(startIndex > 0) {
+                splice = splice.substring(startIndex);
+                jevoisData = jevoisData.substring(endIndex+2);
 
-            System.out.println("DATA:" + processData);
-            Matcher startMatcher = startRegex.matcher(processData);
-            if(startMatcher.find()) {
-                int startMatch = startMatcher.start(1);
+                // System.out.println("JEVOIS SPLICE");
+                // System.out.println(splice);
+                // System.out.println("CLOSE SPLICE");
 
-                processData = processData.substring(startMatch);
-    
-                Matcher dxMatcher = deltaXRegex.matcher(processData);
-                Matcher dyMatcher = deltaYRegex.matcher(processData);
+                if(dxMatcher == null) {
+                    dxMatcher = deltaXRegex.matcher(splice);
+                }
+                else {
+                    dxMatcher.reset(splice);
+                }
+                if(dyMatcher == null) {
+                    dyMatcher = deltaYRegex.matcher(splice);
+                }
+                else {
+                    dyMatcher.reset(splice);
+                }
+                if(angleMatcher == null) {
+                    angleMatcher = angleRegex.matcher(splice);
+                }
+                else {
+                    angleMatcher.reset(splice);
+                }
+                if(distMatcher == null) {
+                    distMatcher = distRegex.matcher(splice);
+                }
+                else {
+                    distMatcher.reset(splice);
+                }
 
                 if(dxMatcher.find() && dyMatcher.find()) {
                     double dx = Double.parseDouble(dxMatcher.group(1).substring(6)); 
                     double dy = Double.parseDouble(dyMatcher.group(1).substring(6)); 
-        
+    
                     delta_x = dx/12.0;
                     delta_y = dy/12.0;
                     received_timestamp = Timer.getFPGATimestamp();
 
-                    System.out.println("VISION MESSAGE:");
-                    System.out.println("DX: " + delta_x);
-                    System.out.println("DY: " + delta_y);
-                    System.out.println("TIME: " + received_timestamp);
+                    deltaXEntry.setNumber(delta_x);
+                    deltaYEntry.setNumber(delta_y);
+
+                    // System.out.println("VISION MESSAGE:");
+                    // System.out.println("DX: " + delta_x);
+                    // System.out.println("DY: " + delta_y);
+                    // System.out.println("TIME: " + received_timestamp);
 
                 }
+
+                if(distMatcher.find() && angleMatcher.find()) {
+                    this.angleDisplacement = Double.parseDouble(angleMatcher.group(1).substring(5)); 
+                    this.distance = Double.parseDouble(distMatcher.group(1).substring(8));
+                    this.timestamp_2 = Timer.getFPGATimestamp();
+                }
             }
+        }
+
+        if(jevoisData.length() > 1000) {
+            jevoisData = "";
         }
     }
 
@@ -115,5 +159,17 @@ public class VisionSubsystem extends Subsystem {
     @Override
     public void essentialShuffleboard() {
         
+    }
+
+    public synchronized Double getDistance() {
+        return distance;
+    }
+
+    public synchronized Double getAngle() {
+        return angleDisplacement;
+    }
+
+    public synchronized Double getPIDTimestamp() {
+        return this.timestamp_2;
     }
 }

@@ -52,10 +52,13 @@ public class VisionFixCommand extends FishyCommand {
   protected void execute() {
     // Activate vision target hold
     Robot.vision.readData();
-    Double distance = 0.0;
-    Double angle = 0.0;
+    if(Math.abs(Timer.getFPGATimestamp() - Robot.vision.getPIDTimestamp()) > 0.5) {
+      return;
+    }
+    Double distance = Robot.vision.getDistance();
+    Double angle = Robot.vision.getAngle();
 
-    if(angleSet || angle == null || (distance != null && distance < 50.0)) {
+    if(angleSet || angle == null || (distance != null && distance < 30.0)) {
 
     }
     else {

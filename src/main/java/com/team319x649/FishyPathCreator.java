@@ -27,13 +27,6 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		new FishyPathCreator().generatePaths();
 	}
 
-	private FishyPath getTest() {
-		FishyPath ianAssistRight = new FishyPath(config, "Test", DrivetrainSubsystem.WHEELBASE_FEET);
-		ianAssistRight.addWaypoint(new Waypoint(35.5, 10.93750033, 20, 0, 0));
-		ianAssistRight.addWaypoint(21.8, 27-2.3, 150.2, 0, 11.4, true, true);
-		return ianAssistRight;
-	}
-
 	private FishyPathCreator() {
 		// DO NOT TOUCH
 		config.dt = 0.02;
@@ -57,7 +50,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight()); // return asList(path1, path2, path3, ...);
+		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getRocketToLoadingStationLeft()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -141,6 +134,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		rightNearCargoShip.addWaypoint(16.5, 9.25, 0, 6, 8.5, true, true);
 		rightNearCargoShip.addWaypoint(21.7, 5, 89.99, 0, 6, true, true);
 		return rightNearCargoShip;
+	}
+
+	private FishyPath getRocketToLoadingStationLeft() {
+		FishyPath rocketLSLeft = new FishyPath(config, "ROCKLF-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
+		rocketLSLeft.addWaypoint(new Waypoint(20.0, 10.0, FishyMath.d2r(-29.5), 0, 0));
+		rocketLSLeft.addWaypointRelative(4.5, -1.5, 29.5+25, 0, 10, true, true);
+		rocketLSLeft.addWaypoint(3.0, 8.0, 0, 0, 12, false, true);
+		return rocketLSLeft;
 	}
 
 	/**
