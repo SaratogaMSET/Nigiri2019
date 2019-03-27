@@ -181,7 +181,7 @@ public class Robot extends TimedRobot {
     autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
     autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
     autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
-    autoChooser.addOption("Rocket To LS Left", new MotionProfileCommand("ROCKLF-LSL", true, -29.5));
+    autoChooser.addOption("Near Rocket", new MotionProfileCommand("NearRocket", true, -29.5));
     autoChooser.addOption("Rocket Back Left", autoCommandLeft);
     autoChooser.addOption("Rocket Back Right", autoCommandRight);
     SmartDashboard.putData("Auto Selector", autoChooser);

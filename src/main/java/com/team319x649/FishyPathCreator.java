@@ -50,7 +50,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getRocketToLoadingStationLeft()); // return asList(path1, path2, path3, ...);
+		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -142,6 +142,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		rocketLSLeft.addWaypointRelative(4.5, -1.5, 29.5+25, 0, 10, true, true);
 		rocketLSLeft.addWaypoint(3.0, 8.0, 0, 0, 12, false, true);
 		return rocketLSLeft;
+	}
+
+	private FishyPath getNearRocketLeft() {
+		FishyPath ianAssistLeft = new FishyPath(config, "NearRocket", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
+		// ianAssistLeft.addWaypointRelative(2, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistLeft.addWaypoint(16, 23.8, 30, 0, 6, false, false);
+		return ianAssistLeft;
 	}
 
 	/**

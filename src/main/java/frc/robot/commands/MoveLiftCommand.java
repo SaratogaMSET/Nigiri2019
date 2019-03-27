@@ -127,7 +127,7 @@ public class MoveLiftCommand extends Command {
     RobotState.isRunningLiftCommand = false;
     // logger.drain();
     // logger.flush();
-    if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY) {
+    if(RobotState.intakeMotorState == CargoIntakeMotorState.TOP_BAR_ONLY && !Robot.oi.gamePad.getLeftButton()) {
       new SetIntakeRollers(true, 0).start();
     }
     if(RobotState.liftPosition != LiftPositions.LOW) {

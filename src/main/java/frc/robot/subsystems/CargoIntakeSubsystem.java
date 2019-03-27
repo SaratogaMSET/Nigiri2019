@@ -85,6 +85,10 @@ public class CargoIntakeSubsystem extends Subsystem {
     frontIntake.configPeakOutputForward(1, Robot.timeoutMs);
     frontIntake.configPeakOutputReverse(-1, Robot.timeoutMs);
 
+    frontIntake.configPeakCurrentDuration(3, Robot.timeoutMs);
+    frontIntake.configPeakCurrentLimit(40, Robot.timeoutMs);
+    frontIntake.configContinuousCurrentLimit(40, Robot.timeoutMs);
+    frontIntake.enableCurrentLimit(true);
     // leftIntake.configPeakCurrentLimit(20, Robot.timeoutMs);
     // rightIntake.configPeakCurrentLimit(20, Robot.timeoutMs);
     // frontIntake.configPeakCurrentLimit(20, Robot.timeoutMs);
