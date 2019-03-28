@@ -7,17 +7,26 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSourceType;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.util.FishyMath;
 
 public class GyroPIDCommand extends Command {
 
   Timer time;
+  Timer timer;
   double timeout;
 
   double targetAngle;
+
+  PIDController pidController;
 
   public GyroPIDCommand(double targetAngle, double timeout) {
     // Use requires() here to declare subsystem dependencies
@@ -33,8 +42,32 @@ public class GyroPIDCommand extends Command {
     time.reset();
     time.start();
 
-    Robot.gyro.gyroPIDController.setSetpoint(targetAngle);
-    Robot.gyro.gyroPIDController.enable();
+    timer = new Timer();
+
+    pidController = new PIDController(0.05, 0.0, 0.6, new PIDSource() {
+      @Override
+      public void setPIDSourceType(PIDSourceType pidSource) {}
+      @Override
+      public PIDSourceType getPIDSourceType() { return PIDSourceType.kDisplacement; }
+    
+      @Override
+      public double pidGet() {
+        return FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle());
+      }
+    }, new PIDOutput(){
+      @Override
+      public void pidWrite(double output) {
+        Robot.gyro.gyroPIDOutput = output;
+      }
+    }, 0.01);
+
+    pidController.setAbsoluteTolerance(1);
+    pidController.setInputRange(-180.0f, 180.0f);
+    pidController.setOutputRange(-1, 1);
+    pidController.setContinuous(true);
+    pidController.setSetpoint(targetAngle);
+    pidController.enable();
+
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -47,10 +80,17 @@ public class GyroPIDCommand extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    if (Robot.gyro.gyroPIDController.onTarget()) {
+    if (pidController.onTarget() && timer.get() > 0.01) {
+      timer.start();
+    } else if(!pidController.onTarget() && time.get()> 0.01) {
+      timer.stop();
+      timer.reset();
+    }
+    if(timer.get() > 0.2) {
       return true;
     }
     else if (time.get() > timeout) {
+      Robot.drive.rawDrive(0, 0);
       return true;
     }
     return false;
@@ -59,7 +99,7 @@ public class GyroPIDCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.gyro.gyroPIDController.disable();
+    pidController.disable();
   }
 
   // Called when another command which requires one or more of the same

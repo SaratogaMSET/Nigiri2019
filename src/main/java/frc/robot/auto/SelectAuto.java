@@ -25,6 +25,7 @@ public class SelectAuto extends CommandGroup {
     if(control == Control.TELEOP) {
       addSequential(new AutoIntakeHatch());
     } else {
+      addParallel(new AutoIntakeHatch());
       switch(autoNumber) {
         case 1:
           if(side == Side.LEFT) {
@@ -32,6 +33,7 @@ public class SelectAuto extends CommandGroup {
           } else {
             addSequential(Robot.backRocketRight);
           }
+          
           break;
         case 2:
           if(side == Side.LEFT) {
@@ -39,6 +41,7 @@ public class SelectAuto extends CommandGroup {
           } else {
             addSequential(Robot.nearRocketRight);
           }
+          Robot.secondLeg = new NearRocketToLoadingStation();
           break;
         case 3:
 

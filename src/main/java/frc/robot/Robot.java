@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   public static boolean isDefenseMode = false;
   public static boolean autoControl = true;
   public static boolean isManualMode = false;
-  public static boolean isLogging = true;
+  public static boolean isLogging = false;
 
 
   // Subsystems
@@ -123,6 +123,7 @@ public class Robot extends TimedRobot {
   public static Command backRocketRight;
   public static Command nearRocketLeft;
   public static Command nearRocketRight;
+  public static Command secondLeg;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -179,6 +180,7 @@ public class Robot extends TimedRobot {
     
     nearRocketLeft = new NearRocket(false);
     nearRocketRight = new NearRocket(true);
+
     
     // SmartDashboard Auto Selector
     autoChooser = new SendableChooser<>();
@@ -186,13 +188,14 @@ public class Robot extends TimedRobot {
     autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
     autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
     autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
-    autoChooser.addOption("Near Rocket Right", new MotionProfileCommand("NearRocketRight", false));
-    autoChooser.addOption("Near Rocket Left", new MotionProfileCommand("NearRocketLeft", false));
+    autoChooser.addOption("Near Rocket Right", nearRocketRight);
+    autoChooser.addOption("Near Rocket Left", nearRocketLeft);
     autoChooser.addOption("Rocket Back Left", backRocketLeft);
     autoChooser.addOption("Rocket Back Right", backRocketRight);
-    //autoChooser.addOption("Turn 90 degrees right", new GyroPIDCommand(90, 3));
-    //autoChooser.addOption("Turn 90 degrees left", new GyroPIDCommand(-90, 3));
+    autoChooser.addOption("Turn 90 degrees right", new GyroPIDCommand(180, 3));
+    autoChooser.addOption("Turn 90 degrees left", new GyroPIDCommand(-180, 3));
     SmartDashboard.putData("Auto Selector", autoChooser);
+
 
     Robot.gyro.resetGyro();
     //Robot.gyro.gyro.setAngleAdjustment(180.0);
@@ -377,7 +380,9 @@ public class Robot extends TimedRobot {
       // else {
       //   autoCommandLeft.start();
       // }
-      autoChooser.getSelected().start();
+      // autoChooser.getSelected().start();
+      // new SelectAuto().start();
+      new NearRocketToLoadingStation().start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);

@@ -50,7 +50,10 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(), getNearRocketRight()); // return asList(path1, path2, path3, ...);
+		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), 
+		getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), 
+		getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
+		getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -147,7 +150,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath ianAssistLeft = new FishyPath(config, "NearRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
 		// ianAssistLeft.addWaypointRelative(2, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistLeft.addWaypoint(14, 21.8, 30, 0, 6, false, false);
+		ianAssistLeft.addWaypoint(14, 23.8, 30, 0, 6, false, false);
 		return ianAssistLeft;
 	}
 
@@ -155,7 +158,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath ianAssist = new FishyPath(config, "NearRocketRight", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssist.addWaypoint(new Waypoint(5.5, 10.93750033, 0, 0, 0));
 		// ianAssistLeft.addWaypointRelative(2, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssist.addWaypoint(16, 5, -30, 0, 6, false, false);
+		ianAssist.addWaypoint(14, 4.5, -30, 0, 6, false, false);
+		return ianAssist;
+	}
+
+	private FishyPath getNearRocketToLoadingStation() {
+		FishyPath ianAssist = new FishyPath(config, "NearRocketToLoadingStation", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssist.addWaypoint(4, 7, 0, 0, 6, false, false);
+		ianAssist.addWaypoint(new Waypoint(14, 7, 0, 0, 0, false, false));
 		return ianAssist;
 	}
 
