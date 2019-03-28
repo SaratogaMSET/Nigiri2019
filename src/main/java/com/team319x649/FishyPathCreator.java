@@ -138,9 +138,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 	private FishyPath getRocketToLoadingStationLeft() {
 		FishyPath rocketLSLeft = new FishyPath(config, "ROCKLF-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
-		rocketLSLeft.addWaypoint(new Waypoint(20.0, 10.0, FishyMath.d2r(-29.5), 0, 0));
-		rocketLSLeft.addWaypointRelative(4.5, -1.5, 29.5+25, 0, 10, true, true);
-		rocketLSLeft.addWaypoint(3.0, 8.0, 0, 0, 12, false, true);
+		rocketLSLeft.addWaypoint(new Waypoint(0.0, 0.0, 0, 0, 0));
+		rocketLSLeft.addWaypoint(19.0, -2.0, 0, 0, 6);
 		return rocketLSLeft;
 	}
 

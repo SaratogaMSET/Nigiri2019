@@ -184,6 +184,7 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Near Rocket", new MotionProfileCommand("NearRocket", true, -29.5));
     autoChooser.addOption("Rocket Back Left", autoCommandLeft);
     autoChooser.addOption("Rocket Back Right", autoCommandRight);
+    autoChooser.addOption("Rocket to LS Left", new MotionProfileCommand("ROCKLF-LSL", true));
     //autoChooser.addOption("Turn 90 degrees right", new GyroPIDCommand(90, 3));
     //autoChooser.addOption("Turn 90 degrees left", new GyroPIDCommand(-90, 3));
     SmartDashboard.putData("Auto Selector", autoChooser);
@@ -225,6 +226,9 @@ public class Robot extends TimedRobot {
     RobotState.hatchDeployState = hatch.updateHatchDeployState();
     RobotState.liftPosition = lift.updateLiftPosition();
     smartdashboardTesting();
+
+    // DEBUG
+    SmartDashboard.putNumber("GYRO", Robot.gyro.getGyroAngle());
 
     // lift.smartdashCurrent();
     // jack.smartdas                                                hCurrent();

@@ -100,6 +100,7 @@ public class MotionProfileCommand extends FishyCommand {
     if(followerNotifier != null) {
       followerNotifier.stop();
     }
+    Robot.gyro.gyro.setAngleAdjustment(0.0);
   }
 
   // Called when another command which requires one or more of the same
