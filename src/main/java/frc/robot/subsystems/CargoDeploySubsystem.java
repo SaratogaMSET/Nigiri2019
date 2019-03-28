@@ -50,12 +50,11 @@ public class CargoDeploySubsystem extends Subsystem implements ILogger {
     intakeWheel = new TalonSRX(RobotMap.CargoDeploy.DEPLOY_INTAKE_MOTOR);
 
     intakeWheel.configContinuousCurrentLimit(40, Robot.timeoutMs);
-    intakeWheel.configPeakCurrentDuration(1500, Robot.timeoutMs);
-    intakeWheel.configPeakCurrentLimit(40, Robot.timeoutMs);
+    intakeWheel.configPeakCurrentDuration(500, Robot.timeoutMs);
+    intakeWheel.configPeakCurrentLimit(50, Robot.timeoutMs);
     intakeWheel.enableCurrentLimit(true);
     
     cargoIR = new DigitalInput(RobotMap.CargoDeploy.IR_SENSOR);
-    //piston = new Solenoid(4, RobotMap.CargoDeploy.INTAKE_SOL);
   }
 
   public void runIntake(double power) {

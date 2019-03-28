@@ -119,8 +119,10 @@ public class Robot extends TimedRobot {
   public static boolean isClimbPrepared = false;
 
   public static SendableChooser<Command> autoChooser;
-  public static Command autoCommandLeft;
-  public static Command autoCommandRight;
+  public static Command backRocketLeft;
+  public static Command backRocketRight;
+  public static Command nearRocketLeft;
+  public static Command nearRocketRight;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -172,8 +174,11 @@ public class Robot extends TimedRobot {
     // loopCount = 1;
     doneClimb = false;
 
-    autoCommandLeft = new IanAssistedDrive(false);
-    autoCommandRight = new IanAssistedDrive(true);
+    backRocketLeft = new IanAssistedDrive(false);
+    backRocketRight = new IanAssistedDrive(true);
+    
+    nearRocketLeft = new NearRocket(false);
+    nearRocketRight = new NearRocket(true);
     
     // SmartDashboard Auto Selector
     autoChooser = new SendableChooser<>();
@@ -183,9 +188,8 @@ public class Robot extends TimedRobot {
     autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
     autoChooser.addOption("Near Rocket Right", new MotionProfileCommand("NearRocketRight", false));
     autoChooser.addOption("Near Rocket Left", new MotionProfileCommand("NearRocketLeft", false));
-    autoChooser.addOption("Rocket Back Left", autoCommandLeft);
-    autoChooser.addOption("Rocket Back Right", autoCommandRight);
-    autoChooser.addOption("Rocket to LS Left", new MotionProfileCommand("ROCKLF-LSL", true));
+    autoChooser.addOption("Rocket Back Left", backRocketLeft);
+    autoChooser.addOption("Rocket Back Right", backRocketRight);
     //autoChooser.addOption("Turn 90 degrees right", new GyroPIDCommand(90, 3));
     //autoChooser.addOption("Turn 90 degrees left", new GyroPIDCommand(-90, 3));
     SmartDashboard.putData("Auto Selector", autoChooser);
@@ -350,7 +354,7 @@ public class Robot extends TimedRobot {
   }
 
   public void stopAll() {
-    autoCommandLeft.cancel();
+    backRocketLeft.cancel();
     /*autoCommandRight.cancel();
     autoCommandFwd.cancel();
     */
