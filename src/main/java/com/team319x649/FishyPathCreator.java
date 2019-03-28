@@ -120,19 +120,19 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getNearCargoLeft() {
 		FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
 		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
-		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true, true);
-		//leftNearCargoShip.addWaypointRelative(7, 0.65, 15, 6, 8.5, true, true);
-		//leftNearCargoShip.addWaypoint(21.7, 22, 89.99, 0, 6, true, true);
-		leftNearCargoShip.addWaypoint(21.7, 17.354167, 0, 0, 8.5, true, true);
+		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6);
+		// leftNearCargoShip.addWaypointRelative(7, 0.65, 15, 6, 8.5, true, true);
+		// leftNearCargoShip.addWaypoint(21.7, 22, 89.99, 0, 6, true, true);
+		leftNearCargoShip.addWaypoint(21.7, 20, 0, 0, 8.5);
 		return leftNearCargoShip;
 	}
 
 	private FishyPath getNearCargoRight() {
 		FishyPath rightNearCargoShip = new FishyPath(config, "HAB1R-CR1", DrivetrainSubsystem.WHEELBASE_FEET);
 		rightNearCargoShip.addWaypoint(5.5, 9.7, 0, 0, 0);
-		rightNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true, true);
-		rightNearCargoShip.addWaypoint(16.5, 9.25, 0, 6, 8.5, true, true);
-		rightNearCargoShip.addWaypoint(21.7, 5, 89.99, 0, 6, true, true);
+		rightNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6);
+		//rightNearCargoShip.addWaypoint(16.5, 9.25, 0, 6, 8.5, true, true);
+		rightNearCargoShip.addWaypoint(21.7, 7, 0, 0, 8.5);
 		return rightNearCargoShip;
 	}
 

@@ -117,7 +117,7 @@ public class MotionProfileCommand extends FishyCommand {
 
     Robot.gyro.gyro.setAngleAdjustment(heading_offset);
 
-    previous_heading = leftFollower.getHeading();
+    previous_heading = FishyMath.boundThetaNegPiToPi(leftFollower.getHeading());
   }
 
   private void followPath(){
@@ -147,9 +147,10 @@ public class MotionProfileCommand extends FishyCommand {
 
       double heading = -FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle());
       double desiredHeading = FishyMath.boundThetaNeg180to180(FishyMath.r2d(leftFollower.getHeading()));
-      if(Math.abs(leftFollower.getHeading() - previous_heading) > 1.0) {
+      if(Math.abs(FishyMath.boundThetaNegPiToPi(leftFollower.getHeading() - previous_heading)) > 1.0) {
         desiredHeading = FishyMath.boundThetaNeg180to180(FishyMath.r2d(leftFollower.getHeading())+180.0);
       }
+      previous_heading = FishyMath.boundThetaNegPiToPi(leftFollower.getHeading());
       // previous_heading = leftFollower.getHeading();
       double headingDiff = FishyMath.boundThetaNeg180to180(desiredHeading - heading);
       double gyroConstant;
