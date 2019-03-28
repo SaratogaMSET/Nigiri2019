@@ -51,7 +51,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
     public static final int TOLERANCE = 75;
-    public static final int STATE_TOLERANCE = 200;
+    public static final int STATE_TOLERANCE = 125;
     public static final int VELOCITY_THRESH = 50;
   }
 

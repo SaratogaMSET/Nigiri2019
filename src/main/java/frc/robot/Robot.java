@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   public static boolean isDefenseMode = false;
   public static boolean autoControl = true;
   public static boolean isManualMode = false;
-  public static boolean isLogging = false;
+  public static boolean isLogging = true;
 
 
   // Subsystems
@@ -237,7 +237,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     // SmartDashboard.putString("Auto", autoSelector.getAuto());
-
+ 
     String side = autoSelector.getSide() == AutoSelector.Side.LEFT ? "Left" : "Right";
     String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
     SmartDashboard.putString("Side", side);

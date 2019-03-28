@@ -73,7 +73,7 @@ public class JackSubsystem extends Subsystem {
     jackMotor.setSensorPhase(true);
     jackMotor.setNeutralMode(NeutralMode.Brake);
     jackMotor.configContinuousCurrentLimit(40,30);
-    jackMotor.configPeakCurrentDuration(2000,30);
+    jackMotor.configPeakCurrentDuration(200,30);
     jackMotor.configPeakCurrentLimit(60,30);
     jackMotor.enableCurrentLimit(true);
     jackMotor.selectProfileSlot(0, 0);
