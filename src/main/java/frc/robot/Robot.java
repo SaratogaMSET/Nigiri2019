@@ -487,41 +487,43 @@ public class Robot extends TimedRobot {
 
       // Added stopping compressor to high heights(hatch mid and above)
       //****************************** LIFTING *************************************************/
-      if(oi.gamePad.getButtonAPressed()) { // ****************** LIFT TO LOW**************/
-        if(oi.gamePad.getLeftTrigger()) {
-          new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
+      if(!doneClimb) { // Cannot move lift when we are done with the climb
+        if (oi.gamePad.getButtonAPressed()) { // ****************** LIFT TO LOW**************/
+          if (oi.gamePad.getLeftTrigger()) {
+            new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
+          } else {
+            new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+          }
+        } else if (oi.gamePad.getButtonXPressed()) {
+          if (oi.gamePad.getLeftTrigger()) { // *********************LIFT TO LOW ROCKET****** */
+            new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
+          } else { // ***********************************************LIFT TO MID HATCH****** */
+            new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+          }
+        } else if (oi.gamePad.getButtonYPressed()) {
+          if (oi.gamePad.getLeftTrigger()) { // **********************LIFT TO CARGO MID****** */
+            new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
+          } else { // ***********************************************LIFT TO HIGH HATCH***** */
+            new MoveLiftCommand(LiftPositions.HATCH_HIGH, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+          }
+        } else if (oi.gamePad.getButtonBPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO HIGH ROCKET
+          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 1.2).start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-        } else {
-          new MoveLiftCommand(LiftPositions.LOW, 1.2).start();
-          new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
-        }
-      } else if(oi.gamePad.getButtonXPressed()) {
-        if(oi.gamePad.getLeftTrigger()) { //*********************LIFT TO LOW ROCKET****** */
-          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 1.2).start();
+        } else if (oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
+          new CargoShipLiftAndIntake().start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-        } else { //***********************************************LIFT TO MID HATCH****** */
-          new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
-          new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
-        }
-      } else if(oi.gamePad.getButtonYPressed()) {
-        if(oi.gamePad.getLeftTrigger()) { //**********************LIFT TO CARGO MID****** */
-          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 1.2).start();
+        } else if (oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-        } else { //***********************************************LIFT TO HIGH HATCH***** */
-          new MoveLiftCommand(LiftPositions.HATCH_HIGH, 1.2).start();
-          new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+          new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
+        } else if (!RobotState.isRunningLiftCommand) {
+          lift.stallLift(RobotState.liftPosition);
         }
-      } else if(oi.gamePad.getButtonBPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO HIGH ROCKET
-        new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 1.2).start();
-        new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-      } else if(oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
-        new CargoShipLiftAndIntake().start();
-        new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-      } else if(oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
-        new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
-        new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
-      } else if(!RobotState.isRunningLiftCommand) {
-        lift.stallLift(RobotState.liftPosition);
       }
 
       // *************************** DEPLOY ********************************************/
