@@ -19,16 +19,16 @@ public class AutoSelector extends Subsystem {
     }
 
     public static class PotValues {
-        public static final double[] range1 = {0.007, 0.1};
+        public static final double[] range1 = {0.00, 0.1};
         public static final double[] range2 = {0.335, 0.6};
-        public static final double[] range3 = {1.05, 1.06};
-        public static final double[] range4 = {1.55, 1.6};
-        public static final double[] range5 = {2.06, 2.1};
-        public static final double[] range6 = {2.5, 2.6};
-        public static final double[] range7 = {3.1, 3.2};
-        public static final double[] range8 = {3.6, 3.7};
-        public static final double[] range9 = {4.2, 4.3};
-        public static final double[] range10 = {4.8, 5};
+        public static final double[] range3 = {0.9, 1.1};
+        public static final double[] range4 = {1.4, 1.7};
+        public static final double[] range5 = {1.9, 2.2};
+        public static final double[] range6 = {2.4, 2.7};
+        public static final double[] range7 = {3.0, 3.3};
+        public static final double[] range8 = {3.5, 3.8};
+        public static final double[] range9 = {4.1, 4.4};
+        public static final double[] range10 = {4.7, 5};
     }
     private DigitalInput side;
     private DigitalInput control;

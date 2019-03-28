@@ -177,11 +177,12 @@ public class Robot extends TimedRobot {
     
     // SmartDashboard Auto Selector
     autoChooser = new SendableChooser<>();
-    autoChooser.setDefaultOption("Cargo Ship Front", new ForwardAuto(false));
-    autoChooser.addOption("Cargo Ship Front Close", new ForwardAuto(true));
-    autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", false));
-    autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", false));
-    autoChooser.addOption("Near Rocket", new MotionProfileCommand("NearRocket", true, -29.5));
+    autoChooser.setDefaultOption("Cargo Ship Front", new MotionProfileCommand("HABM-CF", false));
+    autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
+    autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
+    autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
+    autoChooser.addOption("Near Rocket Right", new MotionProfileCommand("NearRocketRight", false));
+    autoChooser.addOption("Near Rocket Left", new MotionProfileCommand("NearRocketLeft", false));
     autoChooser.addOption("Rocket Back Left", autoCommandLeft);
     autoChooser.addOption("Rocket Back Right", autoCommandRight);
     autoChooser.addOption("Rocket to LS Left", new MotionProfileCommand("ROCKLF-LSL", true));
