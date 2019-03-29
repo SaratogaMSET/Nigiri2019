@@ -44,13 +44,17 @@ public class SelectAuto extends CommandGroup {
           Robot.secondLeg = new NearRocketToLoadingStation();
           break;
         case 3:
-
+          addSequential(Robot.closeCargoShip);
           break;
         case 4:
-
+          addSequential(Robot.cargoShipAuto);
           break;
         case 5:
-
+          if(side == Side.LEFT) {
+            addSequential(Robot.cargoSideLeft);
+          } else {
+            addSequential(Robot.cargoSideRight);
+          }
           break;
         case 6:
 

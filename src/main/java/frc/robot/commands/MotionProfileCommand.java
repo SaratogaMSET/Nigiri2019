@@ -87,7 +87,7 @@ public class MotionProfileCommand extends FishyCommand {
     if(leftFollower == null) {
       return isPathFinished;
     }
-    return isPathFinished || (leftFollower.isFinishedTrajectory() && rightFollower.isFinishedTrajectory());
+    return Robot.isManualAuto || isPathFinished || (leftFollower.isFinishedTrajectory() && rightFollower.isFinishedTrajectory());
   }
 
   // Called once after isFinished returns true

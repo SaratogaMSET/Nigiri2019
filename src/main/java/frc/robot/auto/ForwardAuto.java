@@ -10,6 +10,8 @@ package frc.robot.auto;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.semiauto.AutoIntakeHatch;
+import edu.wpi.first.wpilibj.command.Command;
+import frc.robot.Robot;
 
 public class ForwardAuto extends CommandGroup {
   /**
@@ -32,12 +34,22 @@ public class ForwardAuto extends CommandGroup {
     // e.g. if Command1 requires chassis, and Command2 requires arm,
     // a CommandGroup containing them would require both the chassis and the
     // arm.
-    addSequential(new AutoIntakeHatch());
+    // addSequential(new AutoIntakeHatch());
     if (close) {
       addSequential(new MotionProfileCommand("HABM-CF-close", false));
     }
     else {
       addSequential(new MotionProfileCommand("HABM-CF", false));
     }
+    addSequential(new Command() {
+      @Override
+      protected void initialize() {
+          Robot.switchAutoToTeleop();
+      }
+      @Override
+      protected boolean isFinished() {
+        return Robot.autoControl == false;
+      }
+    });
   }
 }

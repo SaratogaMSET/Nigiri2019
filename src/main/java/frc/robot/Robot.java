@@ -106,6 +106,7 @@ public class Robot extends TimedRobot {
   public double max_vel = 0.0;
   public double max_accel = 0.0;
   public Timer accelTime = new Timer();
+  public static boolean isManualAuto;
 
   double lastTime;
   double loopTime;
@@ -123,6 +124,10 @@ public class Robot extends TimedRobot {
   public static Command backRocketRight;
   public static Command nearRocketLeft;
   public static Command nearRocketRight;
+  public static Command cargoSideRight;
+  public static Command cargoSideLeft;
+  public static Command closeCargoShip;
+  public static Command cargoShipAuto;
   public static Command secondLeg;
 
   /**
@@ -181,20 +186,11 @@ public class Robot extends TimedRobot {
     nearRocketLeft = new NearRocket(false);
     nearRocketRight = new NearRocket(true);
 
-    
-    // SmartDashboard Auto Selector
-    autoChooser = new SendableChooser<>();
-    autoChooser.setDefaultOption("Cargo Ship Front", new MotionProfileCommand("HABM-CF", false));
-    autoChooser.setDefaultOption("Cargo Ship Front Close", new MotionProfileCommand("HABM-CF-close", false));
-    autoChooser.addOption("Cargo Ship Left", new MotionProfileCommand("HAB1L-CL1", true));
-    autoChooser.addOption("Cargo Ship Right", new MotionProfileCommand("HAB1R-CR1", true));
-    autoChooser.addOption("Near Rocket Right", nearRocketRight);
-    autoChooser.addOption("Near Rocket Left", nearRocketLeft);
-    autoChooser.addOption("Rocket Back Left", backRocketLeft);
-    autoChooser.addOption("Rocket Back Right", backRocketRight);
-    autoChooser.addOption("Turn 90 degrees right", new GyroPIDCommand(180, 3));
-    autoChooser.addOption("Turn 90 degrees left", new GyroPIDCommand(-180, 3));
-    SmartDashboard.putData("Auto Selector", autoChooser);
+    closeCargoShip = new ForwardAuto(true);
+    cargoShipAuto = new ForwardAuto(false);
+
+    cargoSideLeft = new CargoShipSide(false);
+    cargoSideRight = new CargoShipSide(true);
 
 
     Robot.gyro.resetGyro();
@@ -325,6 +321,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoControl = true; // autoSelector.getControl() == AutoSelector.Control.AUTO;
+    isManualAuto = false;
     init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit
   }
@@ -357,10 +354,11 @@ public class Robot extends TimedRobot {
   }
 
   public void stopAll() {
-    backRocketLeft.cancel();
+    // backRocketLeft.cancel();
     /*autoCommandRight.cancel();
     autoCommandFwd.cancel();
     */
+    isManualAuto = true;
     for(Subsystem s : subsystems) {s.stopAll();}
   }
 
@@ -381,8 +379,8 @@ public class Robot extends TimedRobot {
       //   autoCommandLeft.start();
       // }
       // autoChooser.getSelected().start();
-      // new SelectAuto().start();
-      new NearRocketToLoadingStation().start();
+      new SelectAuto().start();
+      // new NearRocketToLoadingStation().start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);
