@@ -9,6 +9,7 @@ package frc.robot.auto;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
+import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.semiauto.AutoIntakeHatch;
 import frc.robot.subsystems.AutoSelector.Side;
 import frc.robot.subsystems.AutoSelector.Control;
@@ -72,6 +73,16 @@ public class SelectAuto extends CommandGroup {
 
           break;
       }
+      addSequential(new Command() {
+        @Override
+        protected void initialize() {
+            Robot.switchAutoToTeleop();
+        }
+        @Override
+        protected boolean isFinished() {
+          return Robot.autoControl == false;
+        }
+      });
     }
   }
 }

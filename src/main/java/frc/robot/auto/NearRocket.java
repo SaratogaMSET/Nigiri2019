@@ -16,7 +16,7 @@ public class NearRocket extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public NearRocket(boolean isRightSide) {
+  public NearRocket(boolean isRightSide) { 
     if(isRightSide) {
       addSequential(new MotionProfileCommand("NearRocketRight", true));
     }

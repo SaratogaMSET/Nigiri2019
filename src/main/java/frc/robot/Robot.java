@@ -679,10 +679,10 @@ public class Robot extends TimedRobot {
 
   public void smartdashboardTesting() {
     //***************************************************** DRIVE */
-    // SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
-    // SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
-    // SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
-    // SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
+    SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
+    SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
+    SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
 
     //***************************************************** LIFT */
     SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());
@@ -694,11 +694,11 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());
 
     //***************************************************** INTAKE */
-    // SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());
-    // SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
-    // SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
-    // SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
-    // cargoIntake.smartdashboard();
+    SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());
+    SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
+    SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
+    SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
+    cargoIntake.smartdashboard();
 
     //***************************************************** JACK */
     SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());

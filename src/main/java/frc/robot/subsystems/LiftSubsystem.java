@@ -46,7 +46,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public static class LiftEncoderConstants {
     public static final int CLIMB_HAB_TWO = 3300;
     public static final int CLIMB_HAB_TWO_TOL = 5000;
-    public static final int CLIMB_HAB_THREE = 13600;
+    public static final int CLIMB_HAB_THREE = 13500;
     public static final int CLIMB_HAB_THREE_TOL = 15000;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
@@ -82,8 +82,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static double k_p = 0.5; //0.8
     public static double k_i = 0.0;
     public static double k_d = 15;
-    public static final int MAX_ACCELERATION = 18000; //measured 40000-70000
-    public static final int MAX_VELOCITY = 5000; // measured 4500
+    public static final int MAX_ACCELERATION = 13000; //measured 40000-70000
+    public static final int MAX_VELOCITY = 4250; // measured 4500
   }
 
   private TalonSRX motor1;

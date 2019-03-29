@@ -1,0 +1,114 @@
+[1mdiff --git a/build.gradle b/build.gradle[m
+[1mindex 1f2ae3e..6dff7da 100644[m
+[1m--- a/build.gradle[m
+[1m+++ b/build.gradle[m
+[36m@@ -1,6 +1,6 @@[m
+ plugins {[m
+     id "java"[m
+[31m-    id "edu.wpi.first.GradleRIO" version "2019.1.1"[m
+[32m+[m[32m    id "edu.wpi.first.GradleRIO" version "2019.4.1"[m
+ }[m
+ [m
+ def ROBOT_MAIN_CLASS = "frc.robot.Main"[m
+[1mdiff --git a/src/main/java/frc/robot/Robot.java b/src/main/java/frc/robot/Robot.java[m
+[1mindex 8a7fe4f..a68a60a 100644[m
+[1m--- a/src/main/java/frc/robot/Robot.java[m
+[1m+++ b/src/main/java/frc/robot/Robot.java[m
+[36m@@ -679,10 +679,10 @@[m [mpublic class Robot extends TimedRobot {[m
+ [m
+   public void smartdashboardTesting() {[m
+     //***************************************************** DRIVE */[m
+[31m-    // SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());[m
+[31m-    // SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());[m
+[31m-    // SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());[m
+[31m-    // SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());[m
+[32m+[m[32m    SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());[m
+[32m+[m[32m    SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());[m
+[32m+[m[32m    SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());[m
+[32m+[m[32m    SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());[m
+ [m
+     //***************************************************** LIFT */[m
+     SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());[m
+[36m@@ -694,11 +694,11 @@[m [mpublic class Robot extends TimedRobot {[m
+     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());[m
+ [m
+     //***************************************************** INTAKE */[m
+[31m-    // SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());[m
+[31m-    // SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());[m
+[31m-    // SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());[m
+[31m-    // SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());[m
+[31m-    // cargoIntake.smartdashboard();[m
+[32m+[m[32m    SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());[m
+[32m+[m[32m    SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());[m
+[32m+[m[32m    SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());[m
+[32m+[m[32m    SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());[m
+[32m+[m[32m    cargoIntake.smartdashboard();[m
+ [m
+     //***************************************************** JACK */[m
+     SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());[m
+[1mdiff --git a/src/main/java/frc/robot/auto/NearRocket.java b/src/main/java/frc/robot/auto/NearRocket.java[m
+[1mindex 53d595d..c78024a 100644[m
+[1m--- a/src/main/java/frc/robot/auto/NearRocket.java[m
+[1m+++ b/src/main/java/frc/robot/auto/NearRocket.java[m
+[36m@@ -16,7 +16,7 @@[m [mpublic class NearRocket extends CommandGroup {[m
+   /**[m
+    * Add your docs here.[m
+    */[m
+[31m-  public NearRocket(boolean isRightSide) {[m
+[32m+[m[32m  public NearRocket(boolean isRightSide) {[m[41m [m
+     if(isRightSide) {[m
+       addSequential(new MotionProfileCommand("NearRocketRight", true));[m
+     }[m
+[1mdiff --git a/src/main/java/frc/robot/auto/SelectAuto.java b/src/main/java/frc/robot/auto/SelectAuto.java[m
+[1mindex 52172b9..ce0ce12 100644[m
+[1m--- a/src/main/java/frc/robot/auto/SelectAuto.java[m
+[1m+++ b/src/main/java/frc/robot/auto/SelectAuto.java[m
+[36m@@ -9,6 +9,7 @@[m [mpackage frc.robot.auto;[m
+ [m
+ import edu.wpi.first.wpilibj.command.CommandGroup;[m
+ import frc.robot.Robot;[m
+[32m+[m[32mimport edu.wpi.first.wpilibj.command.Command;[m
+ import frc.robot.commands.semiauto.AutoIntakeHatch;[m
+ import frc.robot.subsystems.AutoSelector.Side;[m
+ import frc.robot.subsystems.AutoSelector.Control;[m
+[36m@@ -72,6 +73,16 @@[m [mpublic class SelectAuto extends CommandGroup {[m
+ [m
+           break;[m
+       }[m
+[32m+[m[32m      addSequential(new Command() {[m
+[32m+[m[32m        @Override[m
+[32m+[m[32m        protected void initialize() {[m
+[32m+[m[32m            Robot.switchAutoToTeleop();[m
+[32m+[m[32m        }[m
+[32m+[m[32m        @Override[m
+[32m+[m[32m        protected boolean isFinished() {[m
+[32m+[m[32m          return Robot.autoControl == false;[m
+[32m+[m[32m        }[m
+[32m+[m[32m      });[m
+     }[m
+   }[m
+ }[m
+[1mdiff --git a/src/main/java/frc/robot/subsystems/LiftSubsystem.java b/src/main/java/frc/robot/subsystems/LiftSubsystem.java[m
+[1mindex be3aaea..ef9c8ac 100644[m
+[1m--- a/src/main/java/frc/robot/subsystems/LiftSubsystem.java[m
+[1m+++ b/src/main/java/frc/robot/subsystems/LiftSubsystem.java[m
+[36m@@ -46,7 +46,7 @@[m [mpublic class LiftSubsystem extends Subsystem implements ILogger {[m
+   public static class LiftEncoderConstants {[m
+     public static final int CLIMB_HAB_TWO = 3300;[m
+     public static final int CLIMB_HAB_TWO_TOL = 5000;[m
+[31m-    public static final int CLIMB_HAB_THREE = 13600;[m
+[32m+[m[32m    public static final int CLIMB_HAB_THREE = 13500;[m
+     public static final int CLIMB_HAB_THREE_TOL = 15000;[m
+     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift[m
+     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;[m
+[36m@@ -82,8 +82,8 @@[m [mpublic class LiftSubsystem extends Subsystem implements ILogger {[m
+     public static double k_p = 0.5; //0.8[m
+     public static double k_i = 0.0;[m
+     public static double k_d = 15;[m
+[31m-    public static final int MAX_ACCELERATION = 18000; //measured 40000-70000[m
+[31m-    public static final int MAX_VELOCITY = 5000; // measured 4500[m
+[32m+[m[32m    public static final int MAX_ACCELERATION = 13000; //measured 40000-70000[m
+[32m+[m[32m    public static final int MAX_VELOCITY = 4250; // measured 4500[m
+   }[m
+ [m
+   private TalonSRX motor1;[m
