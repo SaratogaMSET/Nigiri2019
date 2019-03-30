@@ -25,6 +25,16 @@ public class SelectAuto extends CommandGroup {
 
     if(control == Control.TELEOP) {
       addSequential(new AutoIntakeHatch());
+      addSequential(new Command() {
+        @Override
+        protected void initialize() {
+            Robot.switchAutoToTeleop();
+        }
+        @Override
+        protected boolean isFinished() {
+          return Robot.autoControl == false;
+        }
+      });
     } else {
       addParallel(new AutoIntakeHatch());
       switch(autoNumber) {
@@ -58,10 +68,10 @@ public class SelectAuto extends CommandGroup {
           }
           break;
         case 6:
-
+          addSequential(Robot.testDTMaxVA);
           break;
         case 7:
-
+          addSequential(Robot.testTalonVel);
           break;
         case 8:
 

@@ -130,6 +130,10 @@ public class Robot extends TimedRobot {
   public static Command cargoShipAuto;
   public static Command secondLeg;
 
+  // TEST
+  public static Command testDTMaxVA = new TestDTMaxVA(20.0);
+  public static Command testTalonVel = new TestTalonVelocity(20.0);
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -355,11 +359,19 @@ public class Robot extends TimedRobot {
 
   public void stopAll() {
     // backRocketLeft.cancel();
+    // backRocketRight.cancel();
+    // nearRocketLeft.cancel();
+    // nearRocketRight.cancel();
+    // cargoSideRight.cancel();
+    // cargoSideLeft.cancel();
+    // closeCargoShip.cancel();
+    // cargoShipAuto.cancel();
+    
     /*autoCommandRight.cancel();
     autoCommandFwd.cancel();
     */
     isManualAuto = true;
-    for(Subsystem s : subsystems) {s.stopAll();}
+    // for(Subsystem s : subsystems) {s.stopAll();}
   }
 
   @Override
@@ -420,6 +432,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     teleopLoop();
+    
   }
 
   @Override
@@ -668,7 +681,7 @@ public class Robot extends TimedRobot {
       else {
         if(visionFixCommand != null) visionFixCommand.cancel();
         if(gholdTest != null) gholdTest.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 18.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }
@@ -683,6 +696,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
     SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
+    SmartDashboard.putNumber("Right Velocity", drive.getRightEncoderVelocity());
+    SmartDashboard.putNumber("Left Velocity", drive.getLeftEncoderVelocity());
 
     //***************************************************** LIFT */
     SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());

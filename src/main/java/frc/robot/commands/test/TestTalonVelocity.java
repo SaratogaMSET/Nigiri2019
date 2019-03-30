@@ -25,9 +25,11 @@ public class TestTalonVelocity extends FishyCommand {
   double prevRV = 0.0;
   double prevLV = 0.0;
 
+  public static double TARGET_VEL = 4.0;
+
   @Override
   protected String[] getLogFields() {
-      return new String[] {"Right Vel", "Left Vel"};
+      return new String[] {"Right Pos", "Left Pos", "Right Vel", "Left Vel"};
   }
 
   public TestTalonVelocity(double timeout) {
@@ -50,8 +52,11 @@ public class TestTalonVelocity extends FishyCommand {
     log("Right Vel", Robot.drive.getRightEncoderVelocity());
     log("Left Vel", Robot.drive.getLeftEncoderVelocity());
 
-    Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(4.0)));
-    Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(4.0)));
+    log("Right Pos", Robot.drive.getRightEncoderDistance());
+    log("Left Pos", Robot.drive.getLeftEncoderDistance());
+
+    Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(TARGET_VEL)));
+    Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(TARGET_VEL)));
 
     logger.write();
 

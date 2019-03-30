@@ -26,7 +26,7 @@ public class TestDTMaxVA extends FishyCommand {
 
   @Override
   protected String[] getLogFields() {
-      return new String[] {"Right Vel", "Left Vel", "Right A", "Left A", "NavX Accel"};
+      return new String[] {"Left Pos", "Right Pos", "Right Vel", "Left Vel", "Right A", "Left A", "NavX Accel"};
   }
 
   public TestDTMaxVA(double timeout) {
@@ -41,12 +41,15 @@ public class TestDTMaxVA extends FishyCommand {
   protected void initialize() {
     time.start();
     Robot.drive.changeBrakeCoast(false);
-    Robot.drive.rawDrive(1.0, 1.0);
+    Robot.drive.rawDrive(0.5, 0.5);
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    log("Left Pos", Robot.drive.getLeftEncoderDistance());
+    log("Right Pos", Robot.drive.getRightEncoderDistance());
+
     log("Right Vel", Robot.drive.getRightEncoderVelocity());
     log("Left Vel", Robot.drive.getLeftEncoderVelocity());
     log("Right A", (Robot.drive.getRightEncoderVelocity() - prevRV)/(time.get() - prevTime));
