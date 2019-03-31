@@ -122,6 +122,8 @@ public class Robot extends TimedRobot {
   public static SendableChooser<Command> autoChooser;
   public static Command backRocketLeft;
   public static Command backRocketRight;
+  public static Command backRocketLeftSlow;
+  public static Command backRocketRightSlow;
   public static Command nearRocketLeft;
   public static Command nearRocketRight;
   public static Command cargoSideRight;
@@ -184,8 +186,11 @@ public class Robot extends TimedRobot {
     // loopCount = 1;
     doneClimb = false;
 
-    backRocketLeft = new IanAssistedDrive(false);
-    backRocketRight = new IanAssistedDrive(true);
+    backRocketLeft = new IanAssistedDrive(false, false);
+    backRocketRight = new IanAssistedDrive(true, false);
+
+    backRocketLeftSlow = new IanAssistedDrive(false, true);
+    backRocketRightSlow = new IanAssistedDrive(true, true);
     
     nearRocketLeft = new NearRocket(false);
     nearRocketRight = new NearRocket(true);

@@ -49,6 +49,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 * @return the list of team paths to generate
 	 */
 	private List<FishyPath> generateTeamPaths() {
+		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
 
 		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), 
 		getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), 
@@ -98,9 +99,25 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 	private FishyPath getIanAssistPathRight() {
 		FishyPath ianAssistRight = new FishyPath(config, "IanAssistRocketRight", DrivetrainSubsystem.WHEELBASE_FEET);
-		ianAssistRight.addWaypoint(new Waypoint(5.5, 10.93750033, 0, 0, 0));
+		ianAssistRight.addWaypoint(new Waypoint(5.5, 27 - 17.354167, 0, 0, 0));
 		ianAssistRight.addWaypointRelative(4.5, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 11.4, true, true);
+		return ianAssistRight;
+	}
+
+	private FishyPath getSlowIanAssistPathLeft() {
+		FishyPath ianAssistLeft = new FishyPath(config, "SlowIanAssistRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
+		ianAssistLeft.addWaypointRelative(4.5, 0, 0, 4, 4, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistLeft.addWaypoint(25, 22.8, 0, 0, 4, true, true);
+		return ianAssistLeft;
+	}
+
+	private FishyPath getSlowIanAssistPathRight() {
+		FishyPath ianAssistRight = new FishyPath(config, "SlowIanAssistRocketRight", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistRight.addWaypoint(new Waypoint(5.5, 27 - 17.354167, 0, 0, 0));
+		ianAssistRight.addWaypointRelative(4.5, 0, 0, 4, 4, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 4, true, true);
 		return ianAssistRight;
 	}
 

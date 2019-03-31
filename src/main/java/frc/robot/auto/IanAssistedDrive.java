@@ -16,13 +16,24 @@ public class IanAssistedDrive extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public IanAssistedDrive(boolean isRightSide) {
-    if(isRightSide) {
-      addSequential(new MotionProfileCommand("IanAssistRocketRight", true));
+  public IanAssistedDrive(boolean isRightSide, boolean isSlow) {
+    if(isSlow) {
+      if(isRightSide) {
+        addSequential(new MotionProfileCommand("SlowIanAssistRocketRight", true));
+      }
+      else {
+        addSequential(new MotionProfileCommand("SlowIanAssistRocketLeft", true));
+      }
     }
     else {
-      addSequential(new MotionProfileCommand("IanAssistRocketLeft", true));
+      if(isRightSide) {
+        addSequential(new MotionProfileCommand("IanAssistRocketRight", true));
+      }
+      else {
+        addSequential(new MotionProfileCommand("IanAssistRocketLeft", true));
+      }
     }
+    
     addSequential(new Command() {
       @Override
       protected void initialize() {

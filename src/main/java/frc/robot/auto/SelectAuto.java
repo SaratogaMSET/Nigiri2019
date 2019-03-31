@@ -74,10 +74,13 @@ public class SelectAuto extends CommandGroup {
           addSequential(Robot.testTalonVel);
           break;
         case 8:
-
+          if(side == Side.LEFT) {
+            addSequential(Robot.backRocketLeftSlow);
+          } else {
+            addSequential(Robot.backRocketRightSlow);
+          }
           break;
         case 9:
-
           break;
         case 10:
 
