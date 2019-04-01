@@ -130,6 +130,7 @@ public class Robot extends TimedRobot {
   public static Command cargoSideLeft;
   public static Command closeCargoShip;
   public static Command cargoShipAuto;
+  public static Command cargoSideFarLeft;
   public static Command secondLeg;
 
   // TEST
@@ -200,6 +201,8 @@ public class Robot extends TimedRobot {
 
     cargoSideLeft = new CargoShipSide(false);
     cargoSideRight = new CargoShipSide(true);
+
+    cargoSideFarLeft = new CargoShipSideFar(false);
 
 
     Robot.gyro.resetGyro();

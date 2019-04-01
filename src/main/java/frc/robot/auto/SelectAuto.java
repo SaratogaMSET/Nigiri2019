@@ -81,6 +81,11 @@ public class SelectAuto extends CommandGroup {
           }
           break;
         case 9:
+          if(side == Side.LEFT) {
+            addSequential(Robot.cargoSideFarLeft);
+          } else {
+            addSequential(Robot.backRocketRightSlow);
+          }
           break;
         case 10:
 

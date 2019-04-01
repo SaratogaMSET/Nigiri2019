@@ -12,15 +12,15 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.MotionProfileCommand;
 import frc.robot.Robot;
 
-public class CargoShipSide extends CommandGroup {
+public class CargoShipSideFar extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public CargoShipSide(boolean isRight) {
+  public CargoShipSideFar(boolean isRight) {
     if(isRight) {
-      addSequential(new MotionProfileCommand("HAB1R-CR1", false));
+      addSequential(new MotionProfileCommand("HAB1R-CR2", false));
     } else {
-      addSequential(new MotionProfileCommand("HAB1L-CL1", false));
+      addSequential(new MotionProfileCommand("HAB1L-CL2", false));
     }
     addSequential(new Command() {
       @Override
