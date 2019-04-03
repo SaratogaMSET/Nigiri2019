@@ -51,10 +51,11 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private List<FishyPath> generateTeamPaths() {
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), 
-		getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), 
-		getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
-		getNearRocketRight(), getNearRocketToLoadingStation(), getFarCargoLeft()); // return asList(path1, path2, path3, ...);
+		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), 
+		getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getFarCargoLeft(), 
+		getFarCargoRight(), getNearCargoLeftToLoadingStation(), getNearCargoRightToLoadingStation(), 
+		getRocketToLoadingStationLeft(), getNearRocketLeft(), 
+		getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -164,6 +165,30 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		//rightNearCargoShip.addWaypoint(16.5, 9.25, 0, 6, 8.5, true, true);
 		rightNearCargoShip.addWaypoint(21.7, 7, 0, 0, 8.5);
 		return rightNearCargoShip;
+	}
+
+	private FishyPath getFarCargoRight() {
+		FishyPath rightNearCargoShip = new FishyPath(config, "HAB1R-CR2", DrivetrainSubsystem.WHEELBASE_FEET);
+		rightNearCargoShip.addWaypoint(5.5, 9.7, 0, 0, 0);
+		rightNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6);
+		//rightNearCargoShip.addWaypoint(16.5, 9.25, 0, 6, 8.5, true, true);
+		rightNearCargoShip.addWaypoint(24, 7, 0, 0, 8.5);
+		return rightNearCargoShip;
+	}
+
+	private FishyPath getNearCargoLeftToLoadingStation() {
+		FishyPath nearCargoLoadingStation = new FishyPath(config, "CL1-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
+		nearCargoLoadingStation.addWaypoint(21.7, 20, 0, 0, 0);
+		nearCargoLoadingStation.addWaypoint(4.5, 24.75, 0, 0, 8.5, false, false);
+		return nearCargoLoadingStation;
+	}
+
+	
+	private FishyPath getNearCargoRightToLoadingStation() {
+		FishyPath nearCargoLoadingStation = new FishyPath(config, "CR1-LSR", DrivetrainSubsystem.WHEELBASE_FEET);
+		nearCargoLoadingStation.addWaypoint(21.7, 7, 0, 0, 0);
+		nearCargoLoadingStation.addWaypoint(4.5, 2.25, 0, 0, 8.5, false, false);
+		return nearCargoLoadingStation;
 	}
 
 	private FishyPath getRocketToLoadingStationLeft() {
