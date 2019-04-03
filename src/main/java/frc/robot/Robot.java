@@ -358,7 +358,7 @@ public class Robot extends TimedRobot {
         autoControl = false;
         init(autoControl);
       } else {
-        // Put all reg auto periodic shit here
+        
       }
     } else {
       teleopLoop();
@@ -366,18 +366,6 @@ public class Robot extends TimedRobot {
   }
 
   public void stopAll() {
-    // backRocketLeft.cancel();
-    // backRocketRight.cancel();
-    // nearRocketLeft.cancel();
-    // nearRocketRight.cancel();
-    // cargoSideRight.cancel();
-    // cargoSideLeft.cancel();
-    // closeCargoShip.cancel();
-    // cargoShipAuto.cancel();
-    
-    /*autoCommandRight.cancel();
-    autoCommandFwd.cancel();
-    */
     isManualAuto = true;
     // for(Subsystem s : subsystems) {s.stopAll();}
   }
@@ -392,12 +380,6 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      // if(autoSelector.getSide() == AutoSelector.Side.RIGHT) {
-      //   autoCommandRight.start();
-      // }
-      // else {
-      //   autoCommandLeft.start();
-      // }
       // autoChooser.getSelected().start();
       new SelectAuto().start();
       // new NearRocketToLoadingStation().start();
@@ -460,10 +442,6 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     Scheduler.getInstance().run();
 
-    // gyro.gyroPIDController.enable();
-    // double pidOut = gyro.getGyroPIDOutput();
-    // drive.rawDrive(pidOut, -pidOut);
-
   }
 
   public static void switchAutoToTeleop() {
@@ -514,7 +492,6 @@ public class Robot extends TimedRobot {
         compressor.start();
       }
 
-      // Added stopping compressor to high heights(hatch mid and above)
       //****************************** LIFTING *************************************************/
       if(!doneClimb) { // Cannot move lift when we are done with the climb
         if (oi.gamePad.getButtonAPressed()) { // ****************** LIFT TO LOW**************/
@@ -616,9 +593,7 @@ public class Robot extends TimedRobot {
           isJackRunning = true;
           if(isLevel3){
             new ClimbThreeJack().start();
-            // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_3, LiftEncoderConstants.CLIMB_HAB_THREE, true, 100).start();
           }else{
-            // new JackMotionProfileAndLiftCommand(JackSubsystem.JackEncoderConstants.DOWN_STATE_LEVEL_2,true,3).start();
             new ClimbTwoJack().start();
           }
         }
@@ -689,7 +664,7 @@ public class Robot extends TimedRobot {
       else {
         if(visionFixCommand != null) visionFixCommand.cancel();
         if(gholdTest != null) gholdTest.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 18.0));
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }

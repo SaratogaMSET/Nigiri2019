@@ -82,8 +82,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     public static double k_p = 0.5; //0.8
     public static double k_i = 0.0;
     public static double k_d = 15;
-    public static final int MAX_ACCELERATION = 13000; //measured 40000-70000
-    public static final int MAX_VELOCITY = 4250; // measured 4500
+    public static final int MAX_ACCELERATION = 18000; //measured 40000-70000
+    public static final int MAX_VELOCITY = 5000; // measured 4500
   }
 
   private TalonSRX motor1;
