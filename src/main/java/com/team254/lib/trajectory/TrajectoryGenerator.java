@@ -19,7 +19,7 @@ public class TrajectoryGenerator {
 	}
 
 	public static Trajectory generate(Config config, double start_vel, double start_pos,
-			double goal_pos, double goal_vel, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+			double goal_pos, double goal_vel, double maxVelocity, boolean isReverse) {
 
 		start_vel = Math.abs(start_vel);
 
@@ -43,36 +43,32 @@ public class TrajectoryGenerator {
 
 		int time = (int) ((t_rampup + t_rampdown + t_cruise) / config.dt);
 		double impulse = (t_rampup + t_cruise) / config.dt;
-		traj = generateValues(config.dt, start_vel, start_pos, adjusted_max_vel, config.max_acc, impulse, time, goal_pos, goal_vel, isReverse, isFacingReverse);
+		traj = generateValues(config.dt, start_vel, start_pos, adjusted_max_vel, config.max_acc, impulse, time, goal_pos, goal_vel, isReverse);
 
 		return traj;
 	}
 
 	private static Trajectory generateValues(double dt, double start_vel, double start_pos,
-			double max_vel, double max_accel, double total_impulse, int time, double goalPosition, double goalVel, boolean isReverse, boolean isFacingReverse) {
+			double max_vel, double max_accel, double total_impulse, int time, double goalPosition, double goalVel, boolean isReverse) {
 		if (time <= 0) {
 			return null;
 		}
 
-		Trajectory traj;
-		if(goalVel == 0.0) {
-			traj = new Trajectory(time + 5);
-		}
-		else {
-			traj = new Trajectory(time);
-		}
+		Trajectory traj = new Trajectory(time + (goalVel == 0.0 ? 3 : 1));
+
 		double currentPosition = start_pos;
 		double currentVelocity = start_vel * ((isReverse) ? -1.0 : 1.0);
 		double currentAcceleration = 0;
+		System.out.println("Startvel: " + currentVelocity);
 
 		double seg_acceleration = 0.0;
-		for (int i = 0; i < time; i++) {
+		for (int i = 0; i <= time; i++) {
 			Trajectory.Segment current = new Trajectory.Segment();
 			current.pos = currentPosition;
 			current.vel = currentVelocity;
 			current.acc = currentAcceleration;
 			current.dt = dt;
-
+			current.isReverse = isReverse;
 			traj.setSegment(i, current);
 
 
@@ -116,17 +112,20 @@ public class TrajectoryGenerator {
 			currentPosition += empirical_velocity * dt;
 		}
 		if(goalVel == 0.0) {
-			for(int i = 0; i < 5; i++) {
+			for(int i = 1; i <= 2; i++) {
 				Trajectory.Segment current = new Trajectory.Segment();
 				current.pos = currentPosition;
 				current.vel = 0.0;
 				current.acc = 0.0;
 				current.dt = dt;
-
+				current.isReverse = isReverse;
 				traj.setSegment(time + i, current);
 			}
 		}
+		
 		System.out.println("Missing distance: " + (goalPosition - currentPosition));
+		System.out.println("Endvel: " + currentVelocity);
+
 		return traj;
 	}
 }

@@ -26,12 +26,6 @@ public class FishyPathGenerator extends PathGenerator {
 
 		p = PathGenerator.makePath(fishyPath.getWaypointSequence(), fishyPath.getConfig(),
 		fishyPath.getWheelbaseFeet(), fishyPath.getName());
-
-		if (!isDirectionValid(fishyPath)) {
-			p.offsetHeading(-Math.PI);
-		}
-
-
 		return p;
 	}
 
