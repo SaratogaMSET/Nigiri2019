@@ -22,11 +22,12 @@ public class Trajectory {
 	public static class Segment {
 
 		public double pos, vel, acc, jerk, heading, dt, x, y;
+		public boolean isReverse;
 
 		public Segment() {
 		}
 
-		public Segment(double pos, double vel, double acc, double jerk, double heading, double dt, double x, double y) {
+		public Segment(double pos, double vel, double acc, double jerk, double heading, double dt, double x, double y, boolean isReverse) {
 			this.pos = pos;
 			this.vel = vel;
 			this.acc = acc;
@@ -35,6 +36,7 @@ public class Trajectory {
 			this.dt = dt;
 			this.x = x;
 			this.y = y;
+			this.isReverse = isReverse;
 		}
 
 		public Segment(Segment to_copy) {
@@ -46,6 +48,7 @@ public class Trajectory {
 			dt = to_copy.dt;
 			x = to_copy.x;
 			y = to_copy.y;
+			isReverse = to_copy.isReverse;
 		}
 
 		public String toString() {
@@ -100,7 +103,7 @@ public class Trajectory {
 				return segment;
 			}
 		} else {
-			return new Segment();
+			return null;
 		}
 	}
 

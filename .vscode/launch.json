@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - FishyPathCreator",
+      "request": "launch",
+      "mainClass": "com.team319x649.FishyPathCreator",
+      "projectName": "Nigiri2019Real"
+    },
+    {
+      "type": "java",
       "name": "CodeLens (Launch) - PurePursuitVisualization",
       "request": "launch",
       "mainClass": "com.team649.PurePursuitVisualization",

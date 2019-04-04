@@ -46,15 +46,15 @@ public class TextFileSerializer {
       if(i > 2) {
         Segment prev = trajectory.getSegment(i-1);
         Segment prev_2 = trajectory.getSegment(i-2);
-        if(Math.abs(segment.vel - prev.vel) > 3 * FishyPathCreator.config.dt * FishyPathCreator.config.max_acc &&
-           Math.abs(segment.vel - prev_2.vel) > 5 * FishyPathCreator.config.dt * FishyPathCreator.config.max_acc) {
-          continue;
+        if(Math.abs(segment.vel - prev.vel) > 1.2 * FishyPathCreator.config.dt * FishyPathCreator.config.max_acc &&
+           Math.abs(segment.vel - prev_2.vel) > 2.4 * FishyPathCreator.config.dt * FishyPathCreator.config.max_acc) {
+          // System.out.println("ERROR: MAX ACCELERATION NOT OBSERVED.");
         }
       }
       content += String.format(
-              "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n",
+              "%.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %.5f, %b\n",
               segment.pos, segment.vel, segment.acc, segment.jerk,
-              segment.heading, segment.dt, segment.x, segment.y);
+              segment.heading, segment.dt, segment.x, segment.y, segment.isReverse);
     }
     return content;
   }

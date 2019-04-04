@@ -14,17 +14,16 @@ public class WaypointSequence {
 	public static class Waypoint {
 
 		public Waypoint(double x, double y, double theta, double endVelocity, double maxVelocity) {
-			this(x, y, theta, endVelocity, maxVelocity, false, false);
+			this(x, y, theta, endVelocity, maxVelocity, false);
 		}
 
-		public Waypoint(double x, double y, double theta, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+		public Waypoint(double x, double y, double theta, double endVelocity, double maxVelocity, boolean isReverse) {
 			this.x = x;
 			this.y = y;
 			this.theta = theta;
 			this.endVelocity = endVelocity;
 			this.maxVelocity = maxVelocity;
 			this.isReverse = isReverse;
-			this.isFacingReverse = isFacingReverse;
 		}
 
 		public Waypoint(Waypoint tocopy) {
@@ -34,21 +33,19 @@ public class WaypointSequence {
 			this.endVelocity = tocopy.endVelocity;
 			this.maxVelocity = tocopy.maxVelocity;
 			this.isReverse = tocopy.isReverse;
-			this.isFacingReverse = tocopy.isFacingReverse;
 		}
 
 		public Waypoint(Waypoint tocopy, double endVelocity, double maxVelocity) {
-			this(tocopy, endVelocity, maxVelocity, false, false);
+			this(tocopy, endVelocity, maxVelocity, false);
 		}
 
-		public Waypoint(Waypoint tocopy, double endVelocity, double maxVelocity, boolean isReverse, boolean isFacingReverse) {
+		public Waypoint(Waypoint tocopy, double endVelocity, double maxVelocity, boolean isReverse) {
 			this.x = tocopy.x;
 			this.y = tocopy.y;
 			this.theta = tocopy.theta;
 			this.endVelocity = endVelocity;
 			this.maxVelocity = maxVelocity;
 			this.isReverse = isReverse;
-			this.isFacingReverse = isFacingReverse;
 		}
 
 		public Waypoint(double x, double y, double theta) {
@@ -58,7 +55,6 @@ public class WaypointSequence {
 			this.endVelocity = 0;
 			this.maxVelocity = 0;
 			this.isReverse = false;
-			this.isFacingReverse = false;
 		}
 
 		public double x;
@@ -67,7 +63,6 @@ public class WaypointSequence {
 		public double endVelocity;
 		public double maxVelocity;
 		public boolean isReverse;
-		public boolean isFacingReverse;
 	}
 
 	Waypoint[] waypoints_;
