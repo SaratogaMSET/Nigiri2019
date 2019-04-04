@@ -50,11 +50,12 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
+		return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight(), 
-		getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), 
-		getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
-		getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
+		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(), 
+		// getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), 
+		// getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
+		// getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -69,21 +70,57 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 * the robot 6 feet to the left of it's starting position facing the oppostite direction.
 	 */
 	private List<FishyPath> getConfigArcs() {
-		FishyPath distanceScaling = new FishyPath(config, "DistanceScaling", 2.23);
-		distanceScaling.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		distanceScaling.addWaypointRelative(5, 0, 0, 0, 10);
+		FishyPath straightSlowShort = new FishyPath(config, "StrightSlowShort", 2.23);
+		straightSlowShort.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
+		straightSlowShort.addWaypointRelative(5, 0, 0, 0, 4);
+
+		FishyPath straightSlowLong = new FishyPath(config, "StrightSlowLong", 2.23);
+		straightSlowLong.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
+		straightSlowLong.addWaypointRelative(20, 0, 0, 0, 4);
+
+		FishyPath straightFastShort = new FishyPath(config, "StraightFastShort", 2.23);
+		straightFastShort.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
+		straightFastShort.addWaypointRelative(5, 0, 0, 0, 10);
+
+		FishyPath straightFastLong = new FishyPath(config, "StraightFastLong", 2.23);
+		straightFastLong.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
+		straightFastLong.addWaypointRelative(20, 0, 0, 0, 10);
+
+		FishyPath straightSlowShortRevese = new FishyPath(config, "StraightSlowShortRevese", 2.23);
+		straightSlowShortRevese.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
+		straightSlowShortRevese.addWaypointRelative(5, 0, 0, 0, 4, true);
+
+		FishyPath straightSlowLongReverse = new FishyPath(config, "StraightSlowLongReverse", 2.23);
+		straightSlowLongReverse.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
+		straightSlowLongReverse.addWaypointRelative(20, 0, 0, 0, 4, true);
+
+		FishyPath straightFastShortReverse = new FishyPath(config, "StraightFastShortReverse", 2.23);
+		straightFastShortReverse.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
+		straightFastShortReverse.addWaypointRelative(5, 0, 0, 0, 10, true);
+
+		FishyPath straightFastLongReverse = new FishyPath(config, "StraightFastLongReverse", 2.23);
+		straightFastLongReverse.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
+		straightFastLongReverse.addWaypointRelative(20, 0, 0, 0, 10, true);
+		
 
 		FishyPath turnScaling = new FishyPath(config, "TurnScaling", 2.23);
 		turnScaling.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		turnScaling.addWaypointRelative(10, -10, 89.99, 0, 8);
+		turnScaling.addWaypointRelative(10, -10, -89.99, 0, 8);
 
+		FishyPath turnScalingReverse = new FishyPath(config, "TurnScalingReverse", 2.23);
+		turnScalingReverse.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
+		turnScalingReverse.addWaypointRelative(10, -10, -89.99, 0, 8, true);
 
 		FishyPath speedTesting = new FishyPath(config, "SpeedTesting", 2.23);
 		speedTesting.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
 		speedTesting.addWaypointRelative(3, 3, 89.99, 1, 3);
 		speedTesting.addWaypointRelative(-3, 3, 89.99, 0, 1);
 
-		return asList(distanceScaling, turnScaling, speedTesting);
+		FishyPath headingTesting = new FishyPath(config, "HeadingTesting", 2.23);
+		headingTesting.addWaypoint(20.0, 20.0, -135);
+		headingTesting.addWaypoint(10.0, 10.0, -150, 0, 10);
+
+		return asList(straightSlowShort, straightSlowLong, straightFastShort, straightFastLong, straightSlowShortRevese, straightSlowLongReverse, straightFastShortReverse, straightFastLongReverse, turnScaling, turnScalingReverse, speedTesting, headingTesting);
 	}
 
 
@@ -92,32 +129,32 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getIanAssistPathLeft() {
 		FishyPath ianAssistLeft = new FishyPath(config, "IanAssistRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
-		ianAssistLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistLeft.addWaypoint(25, 22.8, 0, 0, 11.4, true, true);
+		ianAssistLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistLeft.addWaypoint(25, 22.8, 0, 0, 11.4, true);
 		return ianAssistLeft;
 	}
 
 	private FishyPath getIanAssistPathRight() {
 		FishyPath ianAssistRight = new FishyPath(config, "IanAssistRocketRight", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistRight.addWaypoint(new Waypoint(5.5, 27 - 17.354167, 0, 0, 0));
-		ianAssistRight.addWaypointRelative(4.5, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 11.4, true, true);
+		ianAssistRight.addWaypointRelative(4.5, 0, 0, 6, 6, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 11.4, true);
 		return ianAssistRight;
 	}
 
 	private FishyPath getSlowIanAssistPathLeft() {
 		FishyPath ianAssistLeft = new FishyPath(config, "SlowIanAssistRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
-		ianAssistLeft.addWaypointRelative(4.5, 0, 0, 4, 4, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistLeft.addWaypoint(25, 22.8, 0, 0, 4, true, true);
+		ianAssistLeft.addWaypointRelative(4.5, 0, 0, 4, 4, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistLeft.addWaypoint(25, 22.8, 0, 0, 4, true);
 		return ianAssistLeft;
 	}
 
 	private FishyPath getSlowIanAssistPathRight() {
 		FishyPath ianAssistRight = new FishyPath(config, "SlowIanAssistRocketRight", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistRight.addWaypoint(new Waypoint(5.5, 27 - 17.354167, 0, 0, 0));
-		ianAssistRight.addWaypointRelative(4.5, 0, 0, 4, 4, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 4, true, true);
+		ianAssistRight.addWaypointRelative(4.5, 0, 0, 4, 4, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 4, true);
 		return ianAssistRight;
 	}
 
@@ -158,8 +195,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 	private FishyPath getRocketToLoadingStationLeft() {
 		FishyPath rocketLSLeft = new FishyPath(config, "ROCKLF-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
-		rocketLSLeft.addWaypoint(new Waypoint(0.0, 0.0, 0, 0, 0));
-		rocketLSLeft.addWaypoint(19.0, -2.0, 0, 0, 6);
+		rocketLSLeft.addWaypoint(new Waypoint(20.0, 10.0, FishyMath.d2r(-29.5), 0, 0));
+		rocketLSLeft.addWaypointRelative(4.5, -1.5, 29.5+25, 0, 10, true);
+		rocketLSLeft.addWaypoint(3.0, 8.0, 0, 0.0, 12, false);
 		return rocketLSLeft;
 	}
 
@@ -167,7 +205,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath ianAssistLeft = new FishyPath(config, "NearRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
 		// ianAssistLeft.addWaypointRelative(2, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistLeft.addWaypoint(14, 23.8, 30, 0, 6, false, false);
+		ianAssistLeft.addWaypoint(14, 23.8, 30, 0, 6, false);
 		return ianAssistLeft;
 	}
 
@@ -175,14 +213,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath ianAssist = new FishyPath(config, "NearRocketRight", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssist.addWaypoint(new Waypoint(5.5, 10.93750033, 0, 0, 0));
 		// ianAssistLeft.addWaypointRelative(2, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssist.addWaypoint(14, 4.5, -30, 0, 6, false, false);
+		ianAssist.addWaypoint(14.0, 4.5, -30.0, 0.0, 6.0, false);
 		return ianAssist;
 	}
 
 	private FishyPath getNearRocketToLoadingStation() {
 		FishyPath ianAssist = new FishyPath(config, "NearRocketToLoadingStation", DrivetrainSubsystem.WHEELBASE_FEET);
-		ianAssist.addWaypoint(4, 7, 0, 0, 6, false, false);
-		ianAssist.addWaypoint(new Waypoint(14, 7, 0, 0, 0, false, false));
+		ianAssist.addWaypoint(4, 7, 0, 0, 6, false);
+		ianAssist.addWaypoint(new Waypoint(14, 7, 0, 0, 0, false));
 		return ianAssist;
 	}
 
@@ -201,11 +239,11 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// The robot is travelling backwards
 		// The robot is facing opposite positive X (reference frame)
 		// Relative coordinates
-		HAB1LxROCKLF.addWaypointRelative(4.5, 0, 0, 3, 3, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		HAB1LxROCKLF.addWaypointRelative(4.5, 0, 0, 3, 3, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		// Add the next point to be at global coordinates
-		HAB1LxROCKLF.addWaypoint(25, 23.8, 0, 0, 11.7, true, true);
+		HAB1LxROCKLF.addWaypoint(25, 23.8, 0, 0, 11.7, true);
 		// Relative coordinates
-		HAB1LxROCKLF.addWaypointRelative(-4.1, 1.0, -29.5, 4.0, 4.0, false, true);
+		HAB1LxROCKLF.addWaypointRelative(-4.1, 1.0, -29.5, 4.0, 4.0, false);
 
 		return HAB1LxROCKLF;
 	}
@@ -215,12 +253,12 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private FishyPath getHAB1LxROCKLFxLOADLxROCKLF() {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "HAB1LxROCKLFxLOADLxROCKLF", DrivetrainSubsystem.WHEELBASE_FEET);
-		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
-		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 3, 3, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		twoHatchRocketLeft.addWaypoint(25, 24.3, 0, 0, 11.7, true, true);
-		twoHatchRocketLeft.addWaypointRelative(-4.1, 1.0, -29.5, 4.0, 4.0, false, true);
-		twoHatchRocketLeft.addWaypointRelative(3, -0.2, 29.5 + 30, 0, 11.7, true, true);
-		twoHatchRocketLeft.addWaypoint(1.5, 24.8, 0, 0.0, 11.3, false, true);
+		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 3, 3, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		twoHatchRocketLeft.addWaypoint(25, 24.3, 180, 0, 11.7, true);
+		twoHatchRocketLeft.addWaypointRelative(-4.1, 1.0, -29.5, 0, 4.0, false);
+		twoHatchRocketLeft.addWaypointRelative(3, -0.2, 29.5 + 30, 0, 4.0, true);
+		twoHatchRocketLeft.addWaypoint(4, 24.8, 180, 0.0, 10.0, false);
 
 		return twoHatchRocketLeft;
 	}
