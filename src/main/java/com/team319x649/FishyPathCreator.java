@@ -143,6 +143,13 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		return ianAssistRight;
 	}
 
+	private FishyPath getBackRocketDriveIn() {
+		FishyPath ianAssistLeft = new FishyPath(config, "LeftRocketDriveIn", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistLeft.addWaypoint(new Waypoint(25, 22.8, 20, 0, 0));
+		ianAssistLeft.addWaypoint(20, 26, -30, 0, 4, false);
+		return ianAssistLeft;
+	}
+
 	private FishyPath getSlowIanAssistPathLeft() {
 		FishyPath ianAssistLeft = new FishyPath(config, "SlowIanAssistRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));

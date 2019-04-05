@@ -23,6 +23,7 @@ import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 public class RobotState {
 
     public static LiftPositions liftPosition;
+    public static LiftPositions lastLiftTarget;
     public static CargoIntakePositionState cargoIntakeState;
     public static CargoIntakeMotorState intakeMotorState;
     public static HatchPositionState hatchPositionState;
@@ -42,6 +43,7 @@ public class RobotState {
         cargoIntakeState = CargoIntakePositionState.IN;
         cargoDeployState = CargoDeployMotorState.NONE;
         cargoGamePiece = CargoGamePiece.NO_CARGO;
+        lastLiftTarget = liftPosition;
     }
 
     public static boolean canRunLift() {
