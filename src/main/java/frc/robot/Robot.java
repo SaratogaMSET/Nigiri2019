@@ -332,9 +332,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+
     autoControl = true; // autoSelector.getControl() == AutoSelector.Control.AUTO;
     isManualAuto = false;
-    init(autoControl);
+
+    new MotionProfileCommand("TurnScaling", false).start();
+
+    // init(autoControl);
+    // */
     // Stop putting all your code here and put it in the init() method–don't override this shit
   }
   /**
