@@ -18,9 +18,10 @@ public class CargoShipSide extends CommandGroup {
    */
   public CargoShipSide(boolean isRight) {
     if(isRight) {
-      addSequential(new MotionProfileCommand("HAB1R-CR1", false));
+      addSequential(new MotionProfileCommand("HAB1R-CR1", true));
     } else {
-      addSequential(new MotionProfileCommand("HAB1L-CL1", false));
+      addSequential(new MotionProfileCommand("HAB1L-CL1", true));
+      //addSequential(new MotionProfileCommand("CL1-LSL", false));
     }
     addSequential(new Command() {
       @Override
