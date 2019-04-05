@@ -54,6 +54,12 @@ public class MoveLiftCommand extends Command {
   protected void initialize() {
     SmartDashboard.putBoolean("isFInishedLIFT",false);
 
+    RobotState.lastLiftTarget = target;
+
+    if(RobotState.liftPosition != LiftPositions.LOW && target != LiftPositions.LOW) {
+      Robot.compressor.stop();
+    }
+
     current = RobotState.liftPosition;
     isFinished = false;
     onTarget = false;
@@ -143,6 +149,10 @@ public class MoveLiftCommand extends Command {
       if(target == LiftPositions.CARGO_LOADING_STATION || target == LiftPositions.CARGO_SHIP) {
         new ChangeIntakeState(CargoIntakePositionState.IN).start();
       }
+    }
+
+    if(RobotState.liftPosition == LiftPositions.LOW) {
+      Robot.compressor.start();
     }
 
     // if(RobotState.liftPosition == LiftPositions.CLIMB_HAB_THREE_TOL || RobotState.liftPosition == LiftPositions.CLIMB_HAB_TWO_TOL) {

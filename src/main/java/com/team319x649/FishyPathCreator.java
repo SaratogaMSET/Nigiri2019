@@ -56,7 +56,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getFarCargoLeft(), getFarCargoRight(), 
 		getNearCargoLeftToLoadingStation(), getNearCargoRightToLoadingStation(), getFarCargoLeftToLoadingStation(), 
 		getFarCargoRightToLoadingStation(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
-		getNearRocketRight(), getNearRocketToLoadingStation(), getLoadingStationToNearCargoLeft()); // return asList(path1, path2, path3, ...);
+		getNearRocketRight(), getNearRocketToLoadingStation(), getLoadingStationToNearCargoLeft(),
+		getBackRocketDriveIn()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -95,7 +96,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath ianAssistLeft = new FishyPath(config, "IanAssistRocketLeft", DrivetrainSubsystem.WHEELBASE_FEET);
 		ianAssistLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
 		ianAssistLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		ianAssistLeft.addWaypoint(25, 22.8, 0, 0, 11.4, true, true);
+		ianAssistLeft.addWaypointRelative(3, 0, 0, 6, 6, true, true); 
+		ianAssistLeft.addWaypoint(25, 22.8, -20, 0, 8, true, true);
 		return ianAssistLeft;
 	}
 
@@ -105,6 +107,13 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		ianAssistRight.addWaypointRelative(4.5, 0, 0, 6, 6, true, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		ianAssistRight.addWaypoint(25, 27 - 22.8, 0, 0, 11.4, true, true);
 		return ianAssistRight;
+	}
+
+	private FishyPath getBackRocketDriveIn() {
+		FishyPath ianAssistLeft = new FishyPath(config, "LeftRocketDriveIn", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistLeft.addWaypoint(new Waypoint(25, 22.8, 20, 0, 0));
+		ianAssistLeft.addWaypoint(20, 26, -30, 0, 4, false, true);
+		return ianAssistLeft;
 	}
 
 	private FishyPath getSlowIanAssistPathLeft() {
@@ -156,6 +165,12 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// leftNearCargoShip.addWaypointRelative(7, 0.65, 15, 6, 8.5, true, true);
 		// leftNearCargoShip.addWaypoint(21.7, 22, 89.99, 0, 6, true, true);
 		leftNearCargoShip.addWaypoint(24, 20, 0, 0, 8.5, true, true);
+
+
+		// leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0, true, true));
+		// leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true, true);
+		// leftNearCargoShip.addWaypoint(17, 20, 0, 0, 8, true, true);
+		// leftNearCargoShip.addWaypoint(24, 25, 89, 0, 6, true, true);
 		return leftNearCargoShip;
 	}
 
