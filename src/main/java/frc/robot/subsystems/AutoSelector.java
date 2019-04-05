@@ -46,11 +46,11 @@ public class AutoSelector extends Subsystem {
     }
 
     public Control getControl() {
-        return !control.get() ? Control.AUTO : Control.TELEOP; //T-Auto, F-Teleop
+        return control.get() ? Control.AUTO : Control.TELEOP; //T-Auto, F-Teleop
     }
 
     public Side getSide() {
-        return !side.get() ? Side.LEFT : Side.RIGHT; // T-Left, F-Right
+        return side.get() ? Side.LEFT : Side.RIGHT; // T-Left, F-Right
     }
 
     // public String getAuto() {

@@ -332,7 +332,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    autoControl = true; // autoSelector.getControl() == AutoSelector.Control.AUTO;
+    // new MotionProfileCommand("pathName", robotStartedBackwards)
+
+    autoControl = true;
     isManualAuto = false;
     init(autoControl);
     // Stop putting all your code here and put it in the init() method–don't override this shit

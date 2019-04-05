@@ -78,18 +78,18 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     }
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[0].config_kF(0, 0.3);
-    motors[0].config_kP(0, 0.68);
-    motors[0].config_kI(0, 0.00);
-    motors[0].config_kD(0, 6.0);
+    motors[0].config_kF(0, 0.24);
+    motors[0].config_kP(0, 2.5);
+    motors[0].config_kI(0, 0.0);
+    motors[0].config_kD(0, 65.0);
     motors[0].selectProfileSlot(0, 0);
 
 
     motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[3].config_kF(0, 0.3);
-    motors[3].config_kP(0, 0.68);
-    motors[3].config_kI(0, 0.00);
-    motors[3].config_kD(0, 6.0);
+    motors[3].config_kF(0, 0.24);
+    motors[3].config_kP(0, 2.5);
+    motors[3].config_kI(0, 0.0);
+    motors[3].config_kD(0, 65.0);
     motors[3].selectProfileSlot(0, 0);
 
     // follow right master
