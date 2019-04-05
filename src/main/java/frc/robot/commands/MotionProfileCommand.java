@@ -35,11 +35,11 @@ public class MotionProfileCommand extends FishyCommand {
 
   double previous_heading = 0.0;
 
-  public static final double kP_gyro_doubletraction = -22.0;
-  public static final double kP_gyro_omnitraction = -12.0;
+  // public static final double kP_gyro_doubletraction = -22.0;
+  // public static final double kP_gyro_omnitraction = -12.0;
 
-  // public static final double kP_gyro_doubletraction = 0.0;
-  // public static final double kP_gyro_omnitraction = 0.0;
+  public static final double kP_gyro_doubletraction = -10.0;
+  public static final double kP_gyro_omnitraction = -10.0;
 
   double heading_offset = 0.0;
 
@@ -96,8 +96,8 @@ public class MotionProfileCommand extends FishyCommand {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.drive.motors[0].set(ControlMode.Velocity, 0.0);
-    Robot.drive.motors[3].set(ControlMode.Velocity, 0.0);
+    Robot.drive.motors[0].set(ControlMode.PercentOutput, 0.0);
+    Robot.drive.motors[3].set(ControlMode.PercentOutput, 0.0);
     logger.drain();
     logger.flush();
     if(followerNotifier != null) {
@@ -116,8 +116,8 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    leftFollower.configure(140.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(190.0, 0.0, Robot.drive.getRightEncoderDistance());
+    leftFollower.configure(50.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(50.0, 0.0, Robot.drive.getRightEncoderDistance());
 
     Robot.gyro.resetGyro();
     Robot.gyro.gyro.setAngleAdjustment(heading_offset);
