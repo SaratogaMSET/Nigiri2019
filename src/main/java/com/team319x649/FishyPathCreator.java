@@ -11,6 +11,7 @@ import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.WaypointSequence.Waypoint;
 import com.team319x649.trajectory.*;
 
+import frc.robot.Robot;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.util.FishyMath;
 
@@ -55,7 +56,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getFarCargoLeft(), 
 		getFarCargoRight(), getNearCargoLeftToLoadingStation(), getNearCargoRightToLoadingStation(), 
 		getRocketToLoadingStationLeft(), getNearRocketLeft(), 
-		getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
+		getNearRocketRight(), getNearRocketToLoadingStation(), getLoadingStationToNearCargoLeft()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -219,6 +220,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		ianAssist.addWaypoint(4, 7, 0, 0, 6, false, false);
 		ianAssist.addWaypoint(new Waypoint(14, 7, 0, 0, 0, false, false));
 		return ianAssist;
+	}
+
+	private FishyPath getLoadingStationToNearCargoLeft() {
+		FishyPath loadingStationNearCargo = new FishyPath(config, "LSL-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
+		//Robot.gyro.gyro.setAngleAdjustment(0);
+		loadingStationNearCargo.addWaypoint(4.5, 24.75, 0, 7, 0);
+		loadingStationNearCargo.addWaypoint(24, 19, 0, 0, 7, true, true);
+		return loadingStationNearCargo;
 	}
 
 	/**

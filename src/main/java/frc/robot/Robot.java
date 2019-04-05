@@ -381,7 +381,8 @@ public class Robot extends TimedRobot {
       gyro.resetGyro();
       drive.resetEncoders();
       // autoChooser.getSelected().start();
-      new SelectAuto().start();
+      //new SelectAuto().start();
+      new MotionProfileCommand("LSL-CL1", true, 0).start();
       // new NearRocketToLoadingStation().start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
