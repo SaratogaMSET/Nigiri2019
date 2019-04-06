@@ -243,7 +243,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 		leftNearCargoShip.addWaypoint(20, 20, -180, 8, 10, true);
 		leftNearCargoShip.addWaypoint(23, 23, -91, 0, 6, true);
-		leftNearCargoShip.addWaypoint(22, 18, -91, 0, 4, false);
+		leftNearCargoShip.addWaypoint(22, 19, -91, 0, 4, false);
 
 		return leftNearCargoShip;
 	}

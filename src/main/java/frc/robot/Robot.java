@@ -388,7 +388,7 @@ public class Robot extends TimedRobot {
       drive.resetEncoders();
       // autoChooser.getSelected().start();
       // new SelectAuto().start();
-      new MotionProfileCommand("HAB1L-CL3", true, 180).start();
+      new MotionProfileCommand("HAB1L-CL3-Slow", true, 180).start();
       // new MotionProfileCommand("CL3-LSL", true, 89).start();
       // new MotionProfileCommand("LSL-CL2", true).start();
     } else {
