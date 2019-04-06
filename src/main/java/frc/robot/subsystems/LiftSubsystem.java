@@ -46,7 +46,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public static class LiftEncoderConstants {
     public static final int CLIMB_HAB_TWO = 3300;
     public static final int CLIMB_HAB_TWO_TOL = 5000;
-    public static final int CLIMB_HAB_THREE = 13750;
+    public static final int CLIMB_HAB_THREE = 13250;
     public static final int CLIMB_HAB_THREE_TOL = 15000;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;

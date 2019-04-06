@@ -53,7 +53,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
 		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 
-		return asList(getFarCargoLeftSlow());
+		return asList(getFarCargoLeftSlow(), getFarCargoLeft());
 		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), 
 		// getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getMidCargoLeft(), getFarCargoRight(), 
 		// getNearCargoLeftToLoadingStation(), getNearCargoRightToLoadingStation(), getFarCargoLeftToLoadingStation(), 

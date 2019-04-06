@@ -609,8 +609,8 @@ public class Robot extends TimedRobot {
         
       } else if(oi.gamePad.getPOVUp()) {
         doneClimb = true;
-        new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
-        new ChangeIntakeState(CargoIntakePositionState.OUT).start();
+        // new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+        // new ChangeIntakeState(CargoIntakePositionState.OUT).start();
         jack.setJackMPVals(false);
         new MoveJackCommand(0,3).start();
         isClimb = false;
