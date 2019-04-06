@@ -187,22 +187,22 @@ public class Robot extends TimedRobot {
     // loopCount = 1;
     doneClimb = false;
 
-    backRocketLeft = new IanAssistedDrive(false, false);
-    backRocketRight = new IanAssistedDrive(true, false);
+    // backRocketLeft = new IanAssistedDrive(false, false);
+    // backRocketRight = new IanAssistedDrive(true, false);
 
-    backRocketLeftSlow = new IanAssistedDrive(false, true);
-    backRocketRightSlow = new IanAssistedDrive(true, true);
+    // backRocketLeftSlow = new IanAssistedDrive(false, true);
+    // backRocketRightSlow = new IanAssistedDrive(true, true);
     
-    nearRocketLeft = new NearRocket(false);
-    nearRocketRight = new NearRocket(true);
+    // nearRocketLeft = new NearRocket(false);
+    // nearRocketRight = new NearRocket(true);
 
-    closeCargoShip = new ForwardAuto(true);
-    cargoShipAuto = new ForwardAuto(false);
+    // closeCargoShip = new ForwardAuto(true);
+    // cargoShipAuto = new ForwardAuto(false);
 
-    cargoSideLeft = new CargoShipSide(false);
-    cargoSideRight = new CargoShipSide(true);
+    // cargoSideLeft = new CargoShipSide(false);
+    // cargoSideRight = new CargoShipSide(true);
 
-    cargoSideFarLeft = new CargoShipSideFar(false);
+    // cargoSideFarLeft = new CargoShipSideMid(false);
 
 
     Robot.gyro.resetGyro();
@@ -337,7 +337,6 @@ public class Robot extends TimedRobot {
     autoControl = true;
     isManualAuto = false;
     init(autoControl);
-    // Stop putting all your code here and put it in the init() method–don't override this shit
   }
   /**
    * This function is called periodically during autonomous.
@@ -362,6 +361,12 @@ public class Robot extends TimedRobot {
       } else {
         
       }
+
+    } else if(oi.driver.getDriverButton3Pressed()) {
+      if(secondLeg != null) {
+        autoControl = true;
+        secondLeg.start();
+      }
     } else {
       teleopLoop();
     }
@@ -369,7 +374,7 @@ public class Robot extends TimedRobot {
 
   public void stopAll() {
     isManualAuto = true;
-    // for(Subsystem s : subsystems) {s.stopAll();}
+    for(Subsystem s : subsystems) {s.stopAll();}
   }
 
   @Override
@@ -383,9 +388,10 @@ public class Robot extends TimedRobot {
       gyro.resetGyro();
       drive.resetEncoders();
       // autoChooser.getSelected().start();
-      //new SelectAuto().start();
-      new MotionProfileCommand("LSL-CL1", true, 0).start();
-      // new NearRocketToLoadingStation().start();
+      // new SelectAuto().start();
+      new MotionProfileCommand("HAB1L-CL3", true).start();
+      // new MotionProfileCommand("CL3-LSL", true, 89).start();
+      // new MotionProfileCommand("LSL-CL2", true).start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);
@@ -451,7 +457,7 @@ public class Robot extends TimedRobot {
     if(autoControl) {
       Scheduler.getInstance().removeAll();
       // The error should be fixed, if ur using the robot test the stopAll() method
-      //stopAll();
+      // stopAll();
       autoControl = false;
       init(autoControl);
     }

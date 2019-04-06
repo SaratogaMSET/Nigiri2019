@@ -83,6 +83,10 @@ public class OI {
       return driverVertical.getRawButton(3) || driverHorizontal.getRawButton(3);
     }
 
+    public boolean getDriverButton3Pressed() {
+      return driverVertical.getRawButtonPressed(3) || driverHorizontal.getRawButtonPressed(3);
+    }
+
     public boolean getDriverButton4() {
       return driverVertical.getRawButton(4) || driverHorizontal.getRawButton(4);
     }

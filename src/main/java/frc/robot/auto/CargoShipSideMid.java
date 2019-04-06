@@ -13,18 +13,15 @@ import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.GyroPIDCommand;
 import frc.robot.Robot;
 
-public class CargoShipSideFar extends CommandGroup {
+public class CargoShipSideMid extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public CargoShipSideFar(boolean isRight) {
+  public CargoShipSideMid(boolean isRight) {
     if(isRight) {
       addSequential(new MotionProfileCommand("HAB1R-CR2", true));
     } else {
       addSequential(new MotionProfileCommand("HAB1L-CL2", true));
-      addSequential(new GyroPIDCommand(-90, 2));
-      addSequential(new GyroPIDCommand(0, 2));
-      addSequential(new MotionProfileCommand("CL2-LSL", false));
     }
     addSequential(new Command() {
       @Override
