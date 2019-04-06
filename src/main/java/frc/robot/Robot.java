@@ -73,6 +73,8 @@ public class Robot extends TimedRobot {
   public static boolean isManualMode = false;
   public static boolean isLogging = false;
 
+  // public static ArrayList
+
 
   // Subsystems
   public static CargoDeploySubsystem cargoDeploy;
@@ -336,7 +338,8 @@ public class Robot extends TimedRobot {
     autoControl = true; // autoSelector.getControl() == AutoSelector.Control.AUTO;
     isManualAuto = false;
 
-    new MotionProfileCommand("TurnScaling", false).start();
+    Robot.gyro.resetGyro();
+    new MotionProfileCommand("HAB1LxROCKLFxLOADLxROCKLF", 180.0).start();
 
     // init(autoControl);
     // */
