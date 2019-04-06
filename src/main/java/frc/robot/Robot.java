@@ -57,6 +57,7 @@ import frc.robot.RobotState;
 import frc.robot.commands.semiauto.climb.MoveJackCommand;
 
 
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -247,6 +248,7 @@ public class Robot extends TimedRobot {
 
     // DEBUG
     SmartDashboard.putNumber("GYRO", Robot.gyro.getGyroAngle());
+    SmartDashboard.putNumber("LEFT ENCODER", Robot.drive.getLeftEncoderDistance());
 
     // lift.smartdashCurrent();
     // jack.smartdas                                                hCurrent();
@@ -332,6 +334,8 @@ public class Robot extends TimedRobot {
    * the switch structure below with additional strings. If using the
    * SendableChooser make sure to add them to the chooser code above as well.
    */
+
+   
   @Override
   public void autonomousInit() {
 
@@ -339,7 +343,11 @@ public class Robot extends TimedRobot {
     isManualAuto = false;
 
     Robot.gyro.resetGyro();
-    new MotionProfileCommand("HAB1LxROCKLFxLOADLxROCKLF", 180.0).start();
+    Robot.drive.resetEncoders();
+
+    // new MotionProfileCommand("HAB1LxROCKLFxLOADLxROCKLF", 180.0).start();
+    new DoubleRocket(true).start();
+    
 
     // init(autoControl);
     // */
@@ -408,6 +416,7 @@ public class Robot extends TimedRobot {
       isLevel3 = false;
       isJackRunning = false;
       jack.setJackMPVals(true);
+      autoControl = false;
       // new ChangeIntakeState(CargoIntakePositionState.MID).start();
       // new DiagnosticsCommand().start();
       // new LiftTest().start();
