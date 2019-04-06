@@ -180,7 +180,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getNearCargoLeftToLoadingStation() {
 		FishyPath nearCargoLoadingStation = new FishyPath(config, "CL1-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
 		nearCargoLoadingStation.addWaypoint(21.7, 20, 0, 0, 0);
-		nearCargoLoadingStation.addWaypoint(4.5, 24.75, 0, 0, 8.5, false, false);
+		nearCargoLoadingStation.addWaypoint(4.5, 25, 0, 0, 8.5, false, false);
 		return nearCargoLoadingStation;
 	}
 
@@ -195,7 +195,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getFarCargoLeftToLoadingStation() {
 		FishyPath farCargoLoadingStation = new FishyPath(config, "CL2-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
 		farCargoLoadingStation.addWaypoint(24, 20, 0, 0, 0);
-		farCargoLoadingStation.addWaypoint(4.5, 24.75, 0, 0, 8.5, false, false);
+		farCargoLoadingStation.addWaypoint(4.5, 25, 0, 0, 8.5, false, false);
 		return farCargoLoadingStation;
 	}
 	

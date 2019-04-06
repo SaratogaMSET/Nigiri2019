@@ -10,6 +10,7 @@ package frc.robot.auto;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.MotionProfileCommand;
+import frc.robot.commands.GyroPIDCommand;
 import frc.robot.Robot;
 
 public class CargoShipSide extends CommandGroup {
@@ -21,7 +22,9 @@ public class CargoShipSide extends CommandGroup {
       addSequential(new MotionProfileCommand("HAB1R-CR1", true));
     } else {
       addSequential(new MotionProfileCommand("HAB1L-CL1", true));
-      //addSequential(new MotionProfileCommand("CL1-LSL", false));
+      addSequential(new GyroPIDCommand(-90, 2));
+      addSequential(new GyroPIDCommand(0, 2));
+      addSequential(new MotionProfileCommand("CL1-LSL", false));
     }
     addSequential(new Command() {
       @Override
