@@ -30,7 +30,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 	private FishyPathCreator() {
 		// DO NOT TOUCH
-		config.dt = 0.02;
+		config.dt = 0.05;
 		config.max_acc = 8.0; // Robot max acceleration in FPS^2
 		config.max_vel = 12.0; // Robot max velocity in FPS
 		config.max_jerk = 0.0;
@@ -39,7 +39,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
     @Override
     protected List<FishyPath> getPaths() {
 		List<FishyPath> paths = new ArrayList<>();
-		// paths.addAll(getConfigArcs());
+		paths.addAll(getConfigArcs());
 		paths.addAll(generateTeamPaths());
         return paths;
 	}
@@ -51,19 +51,12 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
-		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
+		return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 
-		return asList(getFarCargoLeftSlow(), getFarCargoLeft());
-		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
-
-		// return asList(getFarCargoLeft(), getFarCargoLeftToLSL(), getLSLToCargoMid());
-		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), 
-		// getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getMidCargoLeft(), getFarCargoRight(), 
-		// getNearCargoLeftToLoadingStation(), getNearCargoRightToLoadingStation(), getFarCargoLeftToLoadingStation(), 
-		// getFarCargoRightToLoadingStation(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
-		// getNearRocketRight(), getNearRocketToLoadingStation(), getLoadingStationToNearCargoLeft(),
-		// getBackRocketDriveInLeft(), getIanAssistPathRightTurn(), getBackRocketDriveInRight(),
-		// getFarCargoLeft(), getFarCargoLeftToLSL(), getLSLToCargoMid()); // return asList(path1, path2, path3, ...);
+		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(),
+		// getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(),
+		// getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(),
+		// getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -109,7 +102,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath straightFastLongReverse = new FishyPath(config, "StraightFastLongReverse", 2.23);
 		straightFastLongReverse.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
 		straightFastLongReverse.addWaypointRelative(20, 0, 0, 0, 10, true);
-		
+
 
 		FishyPath turnScaling = new FishyPath(config, "TurnScaling", 2.23);
 		turnScaling.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
@@ -316,7 +309,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		return nearCargoLoadingStation;
 	}
 
-	
+
 	private FishyPath getNearCargoRightToLoadingStation() {
 		FishyPath nearCargoLoadingStation = new FishyPath(config, "CR1-LSR", DrivetrainSubsystem.WHEELBASE_FEET);
 		nearCargoLoadingStation.addWaypoint(21.7, 7, 0, 0, 0);
@@ -330,7 +323,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		farCargoLoadingStation.addWaypoint(4.5, 24.75, 0, 0, 8.5, false);
 		return farCargoLoadingStation;
 	}
-	
+
 	private FishyPath getFarCargoRightToLoadingStation() {
 		FishyPath nearCargoLoadingStation = new FishyPath(config, "CR2-LSR", DrivetrainSubsystem.WHEELBASE_FEET);
 		nearCargoLoadingStation.addWaypoint(24, 7, 0, 0, 0);
@@ -408,10 +401,14 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "HAB1LxROCKLFxLOADLxROCKLF", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
 		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 3, 3, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		twoHatchRocketLeft.addWaypoint(25, 24.3, 180, 0, 11.7, true);
-		twoHatchRocketLeft.addWaypointRelative(-4.1, 1.0, -29.5, 0, 4.0, false);
-		twoHatchRocketLeft.addWaypointRelative(3, -0.2, 29.5 + 30, 0, 4.0, true);
-		twoHatchRocketLeft.addWaypoint(4, 24.8, 180, 0.0, 10.0, false);
+		twoHatchRocketLeft.addWaypoint(25, 21.6, 180 - 15, 0, 6, true);
+		twoHatchRocketLeft.addWaypoint(22.2, 24.2, 180 - 30, 0, 2, false);
+		// 21.5, 24.35
+		twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 2.0, true);
+		twoHatchRocketLeft.addWaypoint(4, 24.2, 180, 3.0, 6, false);
+		twoHatchRocketLeft.addWaypoint(4-2.2, 24.2, 180, 0.0, 3.0, false);
+		twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 4.0, 6.0, true);
+		twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5 + 6.0, 23.4, 180-10, 0.0, 4.0, true);
 
 		return twoHatchRocketLeft;
 	}

@@ -57,6 +57,7 @@ import frc.robot.RobotState;
 import frc.robot.commands.semiauto.climb.MoveJackCommand;
 
 
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -72,6 +73,8 @@ public class Robot extends TimedRobot {
   public static boolean autoControl = true;
   public static boolean isManualMode = false;
   public static boolean isLogging = false;
+
+  // public static ArrayList
 
 
   // Subsystems
@@ -192,7 +195,7 @@ public class Robot extends TimedRobot {
 
     // backRocketLeftSlow = new IanAssistedDrive(false, true);
     // backRocketRightSlow = new IanAssistedDrive(true, true);
-    
+
     // nearRocketLeft = new NearRocket(false);
     // nearRocketRight = new NearRocket(true);
 
@@ -245,6 +248,7 @@ public class Robot extends TimedRobot {
 
     // DEBUG
     SmartDashboard.putNumber("GYRO", Robot.gyro.getGyroAngle());
+    SmartDashboard.putNumber("LEFT ENCODER", Robot.drive.getLeftEncoderDistance());
 
     // lift.smartdashCurrent();
     // jack.smartdas                                                hCurrent();
@@ -257,14 +261,14 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putBoolean("Is Hatch Aquired", hatch.getHatchAcquired());
 
     // SmartDashboard.putString("Auto", autoSelector.getAuto());
- 
+
     String side = autoSelector.getSide() == AutoSelector.Side.LEFT ? "Left" : "Right";
-    String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto"; 
+    String control = autoSelector.getControl() == AutoSelector.Control.TELEOP ? "Teleop" : "Auto";
     SmartDashboard.putString("Side", side);
     SmartDashboard.putString("Control", control);
     SmartDashboard.putNumber("Auto Rotary", autoSelector.getPotVoltage());
     SmartDashboard.putNumber("Auto Rotary Number", autoSelector.getAutoPotNumber());
-    
+
     // Important Front Page DS Stuff
     SmartDashboard.putString("Auto", autoControl ? side + " Rocket Auto" : "Teleop");
     SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
@@ -277,12 +281,12 @@ public class Robot extends TimedRobot {
       }
     }
 
-    
+
     // SmartDashboard.putNumber("Right Encoder", Robot.drive.getRightEncoderDistance());
     // SmartDashboard.putNumber("Raw Right Encoder", Robot.drive.getRawRightEncoder());
     // SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoderDistance());
     // SmartDashboard.putNumber("Raw Left Encoder", Robot.drive.getRawLeftEncoder());
-    
+
     // SmartDashboard.putNumber("Gyro Angle", Robot.gyro.getGyroAngle());
 
     SmartDashboard.putNumber("ZZ ROBOT X", RobotPose.getX());
@@ -330,6 +334,8 @@ public class Robot extends TimedRobot {
    * the switch structure below with additional strings. If using the
    * SendableChooser make sure to add them to the chooser code above as well.
    */
+
+
   @Override
   public void autonomousInit() {
 
@@ -358,7 +364,7 @@ public class Robot extends TimedRobot {
         autoControl = false;
         init(autoControl);
       } else {
-        
+
       }
 
     } else if(oi.driver.getDriverButton3Pressed()) {
@@ -408,6 +414,7 @@ public class Robot extends TimedRobot {
       isLevel3 = false;
       isJackRunning = false;
       jack.setJackMPVals(true);
+      autoControl = false;
       // new ChangeIntakeState(CargoIntakePositionState.MID).start();
       // new DiagnosticsCommand().start();
       // new LiftTest().start();
@@ -430,7 +437,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
     teleopLoop();
-    
+
   }
 
   @Override
@@ -479,7 +486,7 @@ public class Robot extends TimedRobot {
     if(isLogging) {
       Logging.closeWriter();
     }
-    
+
   }
 
   public void teleopLoop() {
@@ -605,7 +612,7 @@ public class Robot extends TimedRobot {
             new ClimbTwoJack().start();
           }
         }
-        
+
       } else if(oi.gamePad.getPOVUp()) {
         doneClimb = true;
         // new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
