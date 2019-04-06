@@ -271,6 +271,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 2.0, true);
 		twoHatchRocketLeft.addWaypoint(4, 24.2, 180, 3.0, 6, false);
 		twoHatchRocketLeft.addWaypoint(4-2.2, 24.2, 180, 0.0, 3.0, false);
+		twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 4.0, 6.0, true);
+		twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5 + 6.0, 23.4, 180-10, 0.0, 4.0, true);
 
 		return twoHatchRocketLeft;
 	}
