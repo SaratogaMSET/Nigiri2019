@@ -54,6 +54,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 
 		return asList(getFarCargoLeftSlow(), getFarCargoLeft());
+		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
+
+		// return asList(getFarCargoLeft(), getFarCargoLeftToLSL(), getLSLToCargoMid());
 		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(), getFrontCargoPath(), 
 		// getCloseFrontPath(), getNearCargoLeft(), getNearCargoRight(), getMidCargoLeft(), getFarCargoRight(), 
 		// getNearCargoLeftToLoadingStation(), getNearCargoRightToLoadingStation(), getFarCargoLeftToLoadingStation(), 
@@ -61,10 +64,6 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// getNearRocketRight(), getNearRocketToLoadingStation(), getLoadingStationToNearCargoLeft(),
 		// getBackRocketDriveInLeft(), getIanAssistPathRightTurn(), getBackRocketDriveInRight(),
 		// getFarCargoLeft(), getFarCargoLeftToLSL(), getLSLToCargoMid()); // return asList(path1, path2, path3, ...);
-		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(), 
-		// getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(), 
-		// getNearCargoRight(), getRocketToLoadingStationLeft(), getNearRocketLeft(), 
-		// getNearRocketRight(), getNearRocketToLoadingStation()); // return asList(path1, path2, path3, ...);
 	}
 
 
@@ -157,6 +156,20 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		ianAssistRight.addWaypointRelative(4.5, 0, 0, 6, 6, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		ianAssistRight.addWaypoint(25, 27 - 22.8, 20, 0, 8, true);
 		return ianAssistRight;
+	}
+
+	private FishyPath getBackRocketDriveInLeft() {
+		FishyPath ianAssistLeft = new FishyPath(config, "LeftRocketDriveIn", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistLeft.addWaypoint(new Waypoint(25, 22.8, -20, 0, 0));
+		ianAssistLeft.addWaypoint(20, 26, -30, 0, 4, false);
+		return ianAssistLeft;
+	}
+
+	private FishyPath getBackRocketDriveInRight() {
+		FishyPath ianAssistLeft = new FishyPath(config, "LeftRocketDriveIn", DrivetrainSubsystem.WHEELBASE_FEET);
+		ianAssistLeft.addWaypoint(new Waypoint(25, 27-22.8, 20, 0, 0));
+		ianAssistLeft.addWaypoint(20, 2, 30, 0, 4, false);
+		return ianAssistLeft;
 	}
 
 	private FishyPath getSlowIanAssistPathLeft() {
