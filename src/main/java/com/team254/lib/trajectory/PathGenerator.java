@@ -2,6 +2,8 @@ package com.team254.lib.trajectory;
 
 import com.team254.lib.trajectory.Trajectory.Segment;
 
+import frc.robot.util.FishyMath;
+
 /**
  * Generate a smooth Trajectory from a Path.
  *
@@ -59,8 +61,7 @@ public class PathGenerator {
 				spline_lengths[0],
 				path.getWaypoint(1).endVelocity,
 				path.getWaypoint(1).maxVelocity,
-				path.getWaypoint(1).isReverse,
-				path.getWaypoint(1).isFacingReverse);
+				path.getWaypoint(1).isReverse);
 		double distance = spline_lengths[0];
 		for (int i = 2; i < path.num_waypoints_; ++i) {
 			distance += spline_lengths[i - 1];
@@ -72,8 +73,7 @@ public class PathGenerator {
 							distance,
 							path.getWaypoint(i).endVelocity,
 							path.getWaypoint(i).maxVelocity,
-							path.getWaypoint(i).isReverse,
-							path.getWaypoint(i).isFacingReverse));
+							path.getWaypoint(i).isReverse));
 							// System.out.println(traj);
 		}
 
@@ -109,6 +109,7 @@ public class PathGenerator {
 		}
 
 		// Fix headings so they are continuously additive
+		
 		double lastUncorrectedHeading = traj.getSegment(0).heading;
 		double lastCorrectedHeading = traj.getSegment(0).heading;
 		for (int i = 1; i < traj.getNumSegments(); ++i) {
@@ -130,6 +131,22 @@ public class PathGenerator {
 			lastUncorrectedHeading = uncorrectedHeading;
 			lastCorrectedHeading = correctedHeading;
 		}
+
+		// Reverse headings
+		for(Segment s : traj.segments_) {
+			s.heading = FishyMath.boundThetaNegPiToPi(s.heading + (s.isReverse ? Math.PI : 0.0));
+		}
+
+		for(int i = 1; i < traj.getNumSegments(); i++) {
+			Segment currentSegment = traj.getSegment(i);
+			Segment previousSegment = traj.getSegment(i - 1);
+			
+			if(Math.abs(FishyMath.boundThetaNegPiToPi(previousSegment.heading - currentSegment.heading)) >= 0.5 * Math.PI) {
+				currentSegment.heading = FishyMath.boundThetaNegPiToPi(currentSegment.heading + Math.PI);
+			}
+		}
+
+
 		return traj;
 	}
 
@@ -146,6 +163,7 @@ public class PathGenerator {
 	  Trajectory[] output = new Trajectory[2];
 	  output[0] = input.copy();
 	  output[1] = input.copy();
+	  System.out.println(input);
 	  Trajectory left = output[0];
 	  Trajectory right = output[1];
 
@@ -184,22 +202,10 @@ public class PathGenerator {
 		  s_right.jerk = (s_right.acc - right.getSegment(i - 1).acc) / s_right.dt;
 		}
 	  }
-
-	  for (int i = 0; i < input.getNumSegments(); ++i) {
-		Trajectory.Segment current = input.getSegment(i);
-		Trajectory.Segment s_right = right.getSegment(i);
-		Trajectory.Segment s_left = left.getSegment(i);
-
-		// Flip r & l trajectories if reverse path
-		if(current.vel < 0.0) {
-			Trajectory.Segment left_copy = new Trajectory.Segment(s_left);
-			Trajectory.Segment right_copy = new Trajectory.Segment(s_right);
-
-			left.setSegment(i, right_copy);
-			right.setSegment(i, left_copy);
-		}
-	  }
-
 	  return new Trajectory.Pair(output[0], input, output[1]);
+	}
+
+	private static boolean almostEqual(double x, double y) {
+		return Math.abs(x - y) < 1E-6;
 	}
   }
