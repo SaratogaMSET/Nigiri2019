@@ -196,8 +196,8 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    leftFollower.configure(25.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(25.0, 0.0, Robot.drive.getRightEncoderDistance());
+    leftFollower.configure(80.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(80.0, 0.0, Robot.drive.getRightEncoderDistance());
 
     Robot.gyro.gyro.setAngleAdjustment(heading_offset);
 

@@ -7,19 +7,27 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.util.FishyMath;
 
-public class EncoderTrigger extends Command {
-  double encoderVal;
+public class PathTrigger extends Command {
+  double leftDistanceTarget;
+  double rightDistanceTarget;
+  double gyroHeadingTarget;
+  double timeTarget;
+
   Command com;
   boolean isTriggered = false;
   
-  public EncoderTrigger(double encoderVal, Command com) {
-    this.encoderVal = encoderVal;
-    this.com = com;
-    // Use requires() here to declare subsystem dependencies
-    // eg. requires(chassis);
+  public PathTrigger(double matchTimeTarget, double leftEncoderDistance, double rightEncoderDistance, double gyroHeadingTarget, Command command) {
+    // this.encoderVal = encoderVal;
+    this.com = command;
+    this.leftDistanceTarget = leftEncoderDistance;
+    this.rightDistanceTarget = rightEncoderDistance;
+    this.gyroHeadingTarget = gyroHeadingTarget;
+    this.timeTarget = matchTimeTarget;
   }
 
   // Called just before this Command runs the first time
@@ -30,9 +38,16 @@ public class EncoderTrigger extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    if(!isTriggered && Math.abs(Robot.drive.getLeftEncoderDistance() - encoderVal) <= 0.5){
+    if(!isTriggered && 
+      Math.abs(Robot.drive.getLeftEncoderDistance() - leftDistanceTarget) <= 0.5 &&
+      Math.abs(Robot.drive.getRightEncoderDistance() - rightDistanceTarget) <= 0.5 &&
+      Math.abs(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() - gyroHeadingTarget)) <= 10.0 &&
+      Math.abs(Timer.getMatchTime() - timeTarget) < 15.0
+      ){
+
       com.start();
       isTriggered = true;
+
     }
   }
 

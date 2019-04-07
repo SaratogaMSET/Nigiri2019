@@ -13,6 +13,7 @@ import com.team319x649.trajectory.*;
 
 import frc.robot.Robot;
 import frc.robot.subsystems.DrivetrainSubsystem;
+
 import frc.robot.util.FishyMath;
 
 public class FishyPathCreator extends AbstractFishyPathCreator {
@@ -31,7 +32,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPathCreator() {
 		// DO NOT TOUCH
 		config.dt = 0.05;
-		config.max_acc = 8.0; // Robot max acceleration in FPS^2
+		config.max_acc = 6.0; // Robot max acceleration in FPS^2
 		config.max_vel = 12.0; // Robot max velocity in FPS
 		config.max_jerk = 0.0;
 	}
@@ -39,7 +40,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
     @Override
     protected List<FishyPath> getPaths() {
 		List<FishyPath> paths = new ArrayList<>();
-		paths.addAll(getConfigArcs());
+		// paths.addAll(getConfigArcs());
 		paths.addAll(generateTeamPaths());
         return paths;
 	}
@@ -400,15 +401,20 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getHAB1LxROCKLFxLOADLxROCKLF() {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "HAB1LxROCKLFxLOADLxROCKLF", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 3, 3, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
-		twoHatchRocketLeft.addWaypoint(25, 21.6, 180 - 15, 0, 6, true);
-		twoHatchRocketLeft.addWaypoint(22.2, 24.2, 180 - 30, 0, 2, false);
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 5, 5, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 5.0, 10.0, true);
+		twoHatchRocketLeft.addWaypoint(26, 24.5, -150, 0, 8, true);
+
+		twoHatchRocketLeft.addWaypoint(22, 24.3, 180 - 30, 0, 2, false);
+		
 		// 21.5, 24.35
-		twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 2.0, true);
-		twoHatchRocketLeft.addWaypoint(4, 24.2, 180, 3.0, 6, false);
-		twoHatchRocketLeft.addWaypoint(4-2.2, 24.2, 180, 0.0, 3.0, false);
-		twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 4.0, 6.0, true);
-		twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5 + 6.0, 23.4, 180-10, 0.0, 4.0, true);
+		twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 4.0, true);
+		
+		twoHatchRocketLeft.addWaypoint(7, 25.6, 180, 2.0, 10, false);
+		twoHatchRocketLeft.addWaypoint(4.5-3.2, 25.6, 180, 0.0, 2.0, false);
+		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 4.0, 10.0, true);
+		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5 + 6.0, 23.4, 180-10, 0.0, 4.0, true);
+		// */
 
 		return twoHatchRocketLeft;
 	}

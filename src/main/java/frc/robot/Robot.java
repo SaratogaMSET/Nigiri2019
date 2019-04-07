@@ -136,6 +136,8 @@ public class Robot extends TimedRobot {
   public static Command cargoSideFarLeft;
   public static Command secondLeg;
 
+  public static Command doubleRocket;
+
   // TEST
   public static Command testDTMaxVA = new TestDTMaxVA(20.0);
   public static Command testTalonVel = new TestTalonVelocity(20.0);
@@ -215,6 +217,8 @@ public class Robot extends TimedRobot {
     // visionSplineCommand = new VisionSplineCommand();
     visionFixCommand = new VisionFixCommand();
     gholdTest = new GyroRotationalHoldCommand();
+
+    doubleRocket = new DoubleRocket(true);
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -338,8 +342,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-
-    autoControl = true; // autoSelector.getControl() == AutoSelector.Control.AUTO;
+    autoControl = true;
     isManualAuto = false;
     init(autoControl);
   }
@@ -349,7 +352,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-
+    compressor.stop();
     if(autoControl) {
       if(oi.driver.getDriverButton8()) {
         // Auto Kill Switch and Start Teleop
@@ -392,11 +395,9 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      // autoChooser.getSelected().start();
+      doubleRocket.start();
       // new SelectAuto().start();
-      new MotionProfileCommand("HAB1L-CL3-Slow", true, 180).start();
-      // new MotionProfileCommand("CL3-LSL", true, 89).start();
-      // new MotionProfileCommand("LSL-CL2", true).start();
+      // new TestTalonVelocity(10.0).start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);
@@ -423,10 +424,6 @@ public class Robot extends TimedRobot {
       // new HatchTest().start();
       // new LedTest().start();
       // new CargoDeployTest().start();
-
-    //   Spline test = new Spline();
-    //   Spline.reticulateSplines(new WaypointSequence.Waypoint(0, 0, FishyMath.d2r(30)), new WaypointSequence.Waypoint(13, -2.833333333333, FishyMath.d2r(0)), test, Spline.QuinticHermite);
-    //   (new PurePursuitCommand(test)).start();
     }
   }
 
@@ -689,6 +686,7 @@ public class Robot extends TimedRobot {
 
 
   public void smartdashboardTesting() {
+    SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
     //***************************************************** DRIVE */
     SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
