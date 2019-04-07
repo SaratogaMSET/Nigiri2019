@@ -40,7 +40,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     PREP_CLIMB_1,
     PREP_CLIMB_2,
     CLIMB_HAB_TWO_TOL,
-    CLIMB_HAB_THREE_TOL
+    CLIMB_HAB_THREE_TOL,
+    AUTO_CARGO_SHIP_HATCH
   }
 
   public static class LiftEncoderConstants {
@@ -57,6 +58,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class LiftDistanceConstants {
     public static final double TRUE_BOTTOM = -0.25;
+    public static final double AUTO_CARGO_SHIP_HATCH = 9;
     public static final double INTAKE = 0;
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
