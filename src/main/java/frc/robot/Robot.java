@@ -211,7 +211,9 @@ public class Robot extends TimedRobot {
 
 
     Robot.gyro.resetGyro();
-    //Robot.gyro.gyro.setAngleAdjustment(180.0);
+    //*********TAKE OUT LATER!!!!!!!! TAKE OUT LATER!!!!!!!!!!! */
+    Robot.gyro.gyro.setAngleAdjustment(180.0);
+
     // Robot.gyro.gyro.zeroYaw();
     // (new Thread(RobotPose.getRunnable())).start();
     // visionSplineCommand = new VisionSplineCommand();
@@ -395,8 +397,9 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      doubleRocket.start();
+      // doubleRocket.start();
       // new SelectAuto().start();
+      new DoubleCargoShip(false).start();
       // new TestTalonVelocity(10.0).start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
