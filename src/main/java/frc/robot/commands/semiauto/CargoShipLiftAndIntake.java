@@ -18,7 +18,7 @@ public class CargoShipLiftAndIntake extends CommandGroup {
    * Add your docs here.
    */
   public CargoShipLiftAndIntake() {
-    addParallel(new ChangeIntakeState(CargoIntakePositionState.OUT));
+    // addParallel(new ChangeIntakeState(CargoIntakePositionState.OUT));
     addSequential(new MoveLiftCommand(LiftPositions.CARGO_SHIP, 1.2));
     // Add Commands here:
     // e.g. addSequential(new Command1());

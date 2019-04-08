@@ -106,6 +106,12 @@ public class MoveLiftCommand extends Command {
           }
         }
       }
+      if(target == LiftPositions.CARGO_SHIP) {
+        if(Robot.lift.getRawEncoder() > Robot.lift.getLiftPositionEncoders(LiftPositions.CARGO_ROCKET_LEVEL_ONE) &&
+        (RobotState.cargoIntakeState != CargoIntakePositionState.MOVING)) {
+          new ChangeIntakeState(CargoIntakePositionState.IN).start();
+        }
+      }
     } else {
       if(!RobotState.canRunLift()) {
         Robot.lift.setManualLift(0);
@@ -147,7 +153,9 @@ public class MoveLiftCommand extends Command {
 
     if(onTarget) {
       if(target == LiftPositions.CARGO_LOADING_STATION || target == LiftPositions.CARGO_SHIP) {
-        new ChangeIntakeState(CargoIntakePositionState.IN).start();
+        if(RobotState.cargoIntakeState != CargoIntakePositionState.IN) {
+          new ChangeIntakeState(CargoIntakePositionState.IN).start();
+        }
       }
     }
 

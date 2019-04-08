@@ -53,7 +53,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private List<FishyPath> generateTeamPaths() {
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
 		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
-		return asList(getFarCargoLeft(), getFarCargoLeftSlow(), getLSLToCargoNear(), getLSLToCargoNearSlow());
+		return asList(getFarCargoLeft());
 
 		// return asList(getIanAssistPathLeft(), getIanAssistPathRight(),
 		// getFrontCargoPath(), getCloseFrontPath(), getNearCargoLeft(),
@@ -224,13 +224,13 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
 		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
-		leftNearCargoShip.addWaypoint(17, 17.354, -180, 8, 11.8, true);
-		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 8, true);
-		leftNearCargoShip.addWaypoint(23.6, 18.5, -91, 0, 4, false);
+		leftNearCargoShip.addWaypoint(17, 17.354, -180, 10, 11.8, true);
+		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 10, true);
+		leftNearCargoShip.addWaypoint(23.6, 19, -91, 0, 3, false);
 
-		leftNearCargoShip.addWaypoint(25.5, 22.5, -170, 0, 3, true);
-		leftNearCargoShip.addWaypoint(12, 24, -200, 4, 7, false);
-		leftNearCargoShip.addWaypoint(2.5, 26.5, -180, 0, 4, false);
+		leftNearCargoShip.addWaypoint(25.5, 21.5, -170, 0, 5, true);
+		leftNearCargoShip.addWaypoint(12, 24, -200, 10, 11.8, false);
+		leftNearCargoShip.addWaypoint(2.5, 26.5, -180, 0, 10, false);
 
 		return leftNearCargoShip;
 	}
@@ -244,7 +244,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
 		leftNearCargoShip.addWaypoint(17, 17.354, -180, 4, 4, true);
 		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 4, true);
-		leftNearCargoShip.addWaypoint(23.6, 18.5, -91, 0, 4, false);
+		leftNearCargoShip.addWaypoint(23.6, 19, -91, 0, 3, false);
 
 		leftNearCargoShip.addWaypoint(24.5, 22.5, -135, 0, 4, true);
 		leftNearCargoShip.addWaypoint(12, 22, -210, 4, 4, false);

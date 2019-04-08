@@ -48,14 +48,14 @@ public class LiftWhenSafe extends Command {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return RobotState.cargoIntakeState == CargoIntakePositionState.MID ||
+    return RobotState.canRunLift() ||
       timer.get() > timeout;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    if(RobotState.cargoIntakeState == CargoIntakePositionState.MID) {
+    if(RobotState.canRunLift()) {
       new MoveLiftCommand(target, 1.2).start();
     }
   }
