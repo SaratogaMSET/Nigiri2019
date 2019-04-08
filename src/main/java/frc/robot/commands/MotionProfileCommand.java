@@ -16,6 +16,7 @@ import com.team319x649.trajectory.FishyPath;
 import com.team319x649.trajectory.FishyPathGenerator;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -98,8 +99,10 @@ public class MotionProfileCommand extends FishyCommand {
         double left = leftSpeedRPM + turn;
         double right = rightSpeedRPM - turn;
 
+        double canTimeStart = Timer.getFPGATimestamp();
         Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right));
         Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left));
+        double canTimeEnd = Timer.getFPGATimestamp();
 
         log("Left Setpoint", left);
         log("Right Setpoint", right);
@@ -109,6 +112,7 @@ public class MotionProfileCommand extends FishyCommand {
         log("T %", turn/left);
         log("Left APos", Robot.drive.getLeftEncoderDistance());
         log("Right APos", Robot.drive.getRightEncoderDistance());
+        log("CAN Time(ms)", (canTimeEnd - canTimeStart)*1000.0);
 
         logger.write();
 
@@ -143,7 +147,7 @@ public class MotionProfileCommand extends FishyCommand {
   // The command MUST implement this method - the fields which you want to log
   protected String[] getLogFields() {
     // velocities for MP
-    return new String[] {"dt", "Left TPos", "Right TPos", "Left APos", "Right APos", "Right Target", "Left Target", "Left Actual", "Right Actual", "Left Setpoint", "Right Setpoint", "Heading Diff", "Target Heading", "Acutal Heading", "T %", "LX", "LY", "RX", "RY"};
+    return new String[] {"dt", "CAN Time(ms)", "Left TPos", "Right TPos", "Left APos", "Right APos", "Right Target", "Left Target", "Left Actual", "Right Actual", "Left Setpoint", "Right Setpoint", "Heading Diff", "Target Heading", "Acutal Heading", "T %", "LX", "LY", "RX", "RY"};
   }
 
   // Called just before this Command runs the first time

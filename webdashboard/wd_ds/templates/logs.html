@@ -1,0 +1,38 @@
+<html>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+    <body>
+        <h1>Logfiles</h1>
+        <table>
+            <tr>
+                <th>Filename</th>
+                <th>Last Modified</th>
+                <th>Filesize</th>
+            </tr>
+
+            {% for file in files %}
+            <tr>
+                {% for attr in file %}
+                <td><a href="/logs/{{ file[0] }}">{{ attr }}</a></td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+
+        </table>
+    </body>
+</html>
