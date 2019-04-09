@@ -25,7 +25,7 @@ public class TestTalonVelocity extends FishyCommand {
   double prevRV = 0.0;
   double prevLV = 0.0;
 
-  public static double TARGET_VEL = 10.0;
+  public static double TARGET_VEL = 6.0;
 
   @Override
   protected String[] getLogFields() {

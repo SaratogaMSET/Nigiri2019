@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import render_template
+from flask import send_from_directory
 #import logs
 import pysftp
 from datetime import datetime
@@ -11,6 +12,9 @@ cnopts.hostkeys = None
 fileDownloaded = False
 
 app = Flask(__name__)
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -57,16 +61,22 @@ def reconnect():
     sftp = pysftp.Connection('10.6.49.2', port=22, username='lvuser', password='', cnopts=cnopts)
 
 @app.route("/logs/<string:filename>")
-def logfile(filename):
+def view_logfile(filename):
     global fileDownloaded
     fileDownloaded = False
     global sftp
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    sftp.get(filename, dir_path + "/logfiles/"+filename, preserve_mtime=True)
-    while True:
+    sftp.get(filename, dir_path + "/logfiles/"+filename, preserve_mtime=True, callback=getfilecallback)
+    while not fileDownloaded:
         continue
-    filepath = "../logfiles/"+filename
-    return render_template('logfile.html', filename=filename, filepath=filepath)
+    filepath = dir_path + '/logfiles/' + filename
+    print filepath
+    with open(filepath, 'r') as csvFile:
+        csvData = csvFile.read()
+    return render_template('logfile.html', filename=filename, dataString=csvData)
+
+def getfilecallback(a, b):
+    global fileDownloaded
+    fileDownloaded = (a == b)
 
 def main():
     app.run(host='localhost', port=8000, debug=True)

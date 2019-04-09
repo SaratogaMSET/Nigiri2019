@@ -196,6 +196,7 @@ public class MotionProfileCommand extends FishyCommand {
   protected void interrupted() {
     end();
   }
+  // i think we should run a pure pursuit
 
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);

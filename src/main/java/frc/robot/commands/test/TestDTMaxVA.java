@@ -41,7 +41,7 @@ public class TestDTMaxVA extends FishyCommand {
   protected void initialize() {
     time.start();
     Robot.drive.changeBrakeCoast(false);
-    Robot.drive.rawDrive(0.5, 0.5);
+    Robot.drive.rawDrive(1.0, 1.0);
   }
 
   // Called repeatedly when this Command is scheduled to run

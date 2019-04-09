@@ -34,6 +34,7 @@ public class DoubleRocket extends CommandGroup {
         Robot.hatch.hatchDeployIn();
       }
       @Override
+      // i think we should run a pure pursuit
       protected boolean isFinished() {
         return true;
       }
