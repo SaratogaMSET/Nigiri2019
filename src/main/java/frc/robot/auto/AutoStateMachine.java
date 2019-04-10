@@ -8,10 +8,12 @@
 package frc.robot.auto;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CloseHatchCommand;
 import frc.robot.commands.DeployHatchCommand;
 import frc.robot.commands.MoveLiftCommand;
+import frc.robot.commands.semiauto.AutoIntakeHatch;
 import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 
 public class AutoStateMachine extends Command {
@@ -44,6 +46,9 @@ public class AutoStateMachine extends Command {
         actions[index].getCommand().start();
         index++;
       }
+      SmartDashboard.putNumber("State Machine Index", index);
+      SmartDashboard.putBoolean("Is Going Forward", actions[index].isGoingForward());
+      SmartDashboard.putString("next Command", actions[index].getCommand().getName());
     } catch (ArrayIndexOutOfBoundsException e) {
       isFinished = true;
     }
@@ -69,12 +74,13 @@ public class AutoStateMachine extends Command {
 
   public void setUpDoubleCargo() {
     Action[] actions = {
-      new Action(new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 0.6), -22.5, true), // move lift up
-      new Action(new DeployHatchCommand(), -22, true), // deploy first hatch
+      new Action(new AutoIntakeHatch(), -5, false),
+      new Action(new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 0.6), -13, false), // move lift up
+      new Action(new DeployHatchCommand(), -20, true), // deploy first hatch
       new Action(new MoveLiftCommand(LiftPositions.LOW, 0.6), -22, false), // move lift down
       new Action(new CloseHatchCommand(), -15, true), // close hatch mech
-      new Action(new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 0.6), -23, true), // move lift up
-      new Action(new DeployHatchCommand(), -22, true) // deploy hatch
+      new Action(new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 0.6), -15, false), // move lift up
+      new Action(new DeployHatchCommand(), -20, true) // deploy hatch
     };
 
     this.actions = actions;
@@ -89,7 +95,9 @@ public class AutoStateMachine extends Command {
       new Action(new DeployHatchCommand(), -3, false),
       new Action(new CloseHatchCommand(), 0, true)
     };
+    this.actions = actions;
   }
+
   public static class Action {
     private Command command;
     private double encoderTick;

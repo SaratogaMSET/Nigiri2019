@@ -88,6 +88,10 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[0].config_kP(0, 1.4);
     motors[0].config_kI(0, 0.00);
     motors[0].config_kD(0, 10.0);
+    // motors[0].config_kF(0, 0.23);
+    // motors[0].config_kP(0, 2.2);
+    // motors[0].config_kI(0, 0.00);
+    // motors[0].config_kD(0, 45.0);
 
 
     motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
@@ -96,6 +100,10 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     motors[3].config_kP(0, 1.2);
     motors[3].config_kI(0, 0.00);
     motors[3].config_kD(0, 10.0);
+    // motors[3].config_kF(0, 0.23);
+    // motors[3].config_kP(0, 2.2);
+    // motors[3].config_kI(0, 0.00);
+    // motors[3].config_kD(0, 40.0);
 
     // follow right master
     motors[1].set(ControlMode.Follower, motors[0].getDeviceID());

@@ -181,6 +181,7 @@ public class OI {
   }
 
   public class Gamepad {
+    private JoystickFilter manualLiftFilter = new JoystickFilter(0.0, 0.0, 1.0, Mode.SQUARED);
     public boolean getButtonA() {
       return gamepad.getRawButton(1);
     }
@@ -315,6 +316,10 @@ public class OI {
 
     public double getLeftJoystickY() {
       return -gamepad.getRawAxis(1);
+    }
+
+    public double getManualLift() {
+      return manualLiftFilter.filter(getLeftJoystickY()/3);
     }
 
     public boolean getRightTrigger() {

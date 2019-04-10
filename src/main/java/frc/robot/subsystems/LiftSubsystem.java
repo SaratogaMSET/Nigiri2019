@@ -206,6 +206,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case LOW:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
         break;
+      case AUTO_CARGO_SHIP_HATCH:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.AUTO_CARGO_SHIP_HATCH));
+        break;
       case CARGO_SHIP:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP));
         break;
@@ -296,6 +299,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         return getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP);
       case CARGO_ROCKET_LEVEL_ONE:
         return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE);
+      case AUTO_CARGO_SHIP_HATCH:
+        return getTicksFromDistance(LiftDistanceConstants.AUTO_CARGO_SHIP_HATCH);
       case CARGO_ROCKET_LEVEL_TWO:
         return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_TWO);
       case CARGO_ROCKET_LEVEL_THREE:
@@ -372,6 +377,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public LiftPositions updateLiftPosition() {
     if(withinStateTolerance(LiftPositions.LOW)) {
       return LiftPositions.LOW;
+    } else if(withinStateTolerance(LiftPositions.AUTO_CARGO_SHIP_HATCH)) {
+      return LiftPositions.AUTO_CARGO_SHIP_HATCH;
     } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_ONE)) {
       return LiftPositions.CARGO_ROCKET_LEVEL_ONE;
     } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_TWO)) {

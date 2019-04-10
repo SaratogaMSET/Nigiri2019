@@ -19,8 +19,8 @@ public class DoubleCargoShip extends CommandGroup {
   public DoubleCargoShip(boolean slow) {
     // addParallel(new AutoIntakeHatch());
     if(slow) {
+      addParallel(new AutoStateMachine("DoubleHatchCargoShip"));
       addSequential(new MotionProfileCommand("HAB1L-CL3-Slow", true, 180));
-      addSequential(new ResetEncoders());
       addSequential(new MotionProfileCommand("LSL-CL1-Slow", true, 180));
     } else {
       addSequential(new MotionProfileCommand("HAB1L-CL3", true, 180));

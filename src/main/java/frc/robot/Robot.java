@@ -211,6 +211,7 @@ public class Robot extends TimedRobot {
 
 
     Robot.gyro.resetGyro();
+
     //*********TAKE OUT LATER!!!!!!!! TAKE OUT LATER!!!!!!!!!!! */
     Robot.gyro.gyro.setAngleAdjustment(180.0);
 
@@ -399,7 +400,7 @@ public class Robot extends TimedRobot {
       drive.resetEncoders();
       doubleRocket.start();
       // new SelectAuto().start();
-      // new DoubleCargoShip(false).start();
+      // new DoubleCargoShip(true).start();
       // new TestTalonVelocity(10.0).start();
       // new TestDTMaxVA(20.0).start();
     } else {
@@ -419,9 +420,8 @@ public class Robot extends TimedRobot {
       isLevel3 = false;
       isJackRunning = false;
       jack.setJackMPVals(true);
-      autoControl = false;
+      autoControl = false; 
 
-      
       // new ChangeIntakeState(CargoIntakePositionState.MID).start();
       // new DiagnosticsCommand().start();
       // new LiftTest().start();
@@ -652,7 +652,9 @@ public class Robot extends TimedRobot {
 
     // ****************** MANUAL MODE *************************************************
     if(oi.gamePad.getStartButton()) {
-      double pow = oi.gamePad.getLeftJoystickY()/2;
+      int sign = oi.gamePad.getLeftJoystickY() > 0 ? 1 : -1;
+      double pow = Math.pow(oi.gamePad.getLeftJoystickY()/3, 2) * sign;
+      SmartDashboard.putNumber("Manual Lift Power", pow);
       if(lift.getBottomHal() && pow < 0){
         pow = 0;
       }
