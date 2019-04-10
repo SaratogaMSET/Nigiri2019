@@ -75,6 +75,11 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       motors[i].configNominalOutputReverse(-0.08, 200);
       motors[i].configPeakOutputForward(1, 200);
       motors[i].configPeakOutputReverse(-1, 200);
+
+      motors[i].configPeakCurrentDuration(300);
+      motors[i].configPeakCurrentLimit(65, 20);
+      motors[i].configContinuousCurrentLimit(40, 20);
+      motors[i].enableCurrentLimit(true);
     }
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);

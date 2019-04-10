@@ -25,6 +25,7 @@ public class RobotState {
     public static LiftPositions liftPosition;
     public static LiftPositions lastLiftTarget;
     public static CargoIntakePositionState cargoIntakeState;
+    public static CargoIntakePositionState cargoIntakeTargetState;
     public static CargoIntakeMotorState intakeMotorState;
     public static HatchPositionState hatchPositionState;
     public static HatchDeployState hatchDeployState;
@@ -41,12 +42,16 @@ public class RobotState {
         hatchGamePiece = HatchGamePiece.NO_HATCH;
         intakeMotorState = CargoIntakeMotorState.NONE;
         cargoIntakeState = CargoIntakePositionState.IN;
+        cargoIntakeTargetState = CargoIntakePositionState.IN;
         cargoDeployState = CargoDeployMotorState.NONE;
         cargoGamePiece = CargoGamePiece.NO_CARGO;
         lastLiftTarget = liftPosition;
     }
 
     public static boolean canRunLift() {
+        if(lastLiftTarget == LiftPositions.CARGO_SHIP && Robot.lift.getRawEncoder() > Robot.lift.getLiftPositionEncoders(LiftPositions.CARGO_ROCKET_LEVEL_ONE)) {
+            return true;
+        }
         if (cargoIntakeState == CargoIntakePositionState.MID || cargoIntakeState == CargoIntakePositionState.OUT || 
         (cargoIntakeState == CargoIntakePositionState.MOVING && Robot.cargoIntake.getMidStateSolState())) {
             return true;

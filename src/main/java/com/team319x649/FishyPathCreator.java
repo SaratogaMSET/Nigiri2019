@@ -224,13 +224,13 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
 		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
-		leftNearCargoShip.addWaypoint(17, 17.354, -180, 8, 11.8, true);
-		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 8, true);
-		leftNearCargoShip.addWaypoint(23.6, 18.5, -91, 0, 4, false);
+		leftNearCargoShip.addWaypoint(17, 17.354, -180, 10, 11.8, true);
+		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 10, true);
+		leftNearCargoShip.addWaypoint(23.6, 19, -91, 0, 3, false);
 
-		leftNearCargoShip.addWaypoint(25.5, 22.5, -170, 0, 3, true);
-		leftNearCargoShip.addWaypoint(12, 24, -200, 4, 7, false);
-		leftNearCargoShip.addWaypoint(2.5, 26.5, -180, 0, 4, false);
+		leftNearCargoShip.addWaypoint(25.5, 21.5, -170, 0, 5, true);
+		leftNearCargoShip.addWaypoint(12, 24, -200, 10, 11.8, false);
+		leftNearCargoShip.addWaypoint(2.5, 26.5, -180, 0, 10, false);
 
 		return leftNearCargoShip;
 	}
@@ -244,11 +244,11 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
 		leftNearCargoShip.addWaypoint(17, 17.354, -180, 4, 4, true);
 		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 4, true);
-		leftNearCargoShip.addWaypoint(23.6, 18.5, -91, 0, 4, false);
+		leftNearCargoShip.addWaypoint(23.6, 19, -91, 0, 3, false);
 
 		leftNearCargoShip.addWaypoint(24.5, 22.5, -135, 0, 4, true);
 		leftNearCargoShip.addWaypoint(12, 22, -210, 4, 4, false);
-		
+
 		leftNearCargoShip.addWaypoint(2.5, 26.2, -180, 0, 4, false);
 
 		return leftNearCargoShip;
@@ -413,10 +413,10 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 5.0, 10.0, true);
 		twoHatchRocketLeft.addWaypoint(26, 24.5, -150, 0, 5, true);
 
-		twoHatchRocketLeft.addWaypoint(22.26, 24.42, 180 - 31, 0, 2, false);		
+		twoHatchRocketLeft.addWaypoint(22.26, 24.42, 180 - 31, 0, 2, false);
 		// 21.5, 24.35
 		// twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 3.0, true);
-		
+
 		// twoHatchRocketLeft.addWaypoint(6, 25.3, 180, 2.0, 6.0, false);
 		// twoHatchRocketLeft.addWaypoint(4.5-3.2, 25.3, 180, 0.0, 2.0, false);
 

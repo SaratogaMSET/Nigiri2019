@@ -420,6 +420,8 @@ public class Robot extends TimedRobot {
       isJackRunning = false;
       jack.setJackMPVals(true);
       autoControl = false;
+
+      
       // new ChangeIntakeState(CargoIntakePositionState.MID).start();
       // new DiagnosticsCommand().start();
       // new LiftTest().start();

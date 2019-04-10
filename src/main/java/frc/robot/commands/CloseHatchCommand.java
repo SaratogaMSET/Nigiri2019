@@ -8,56 +8,34 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.commands.intake.ChangeIntakeState;
-import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
-import frc.robot.subsystems.LiftSubsystem.LiftPositions;
-import frc.robot.RobotState;
+import frc.robot.Robot;
 
-public class LiftWhenSafe extends Command {
-
-  LiftPositions target;
-  double timeout;
-  Timer timer;
-
-  public LiftWhenSafe(LiftPositions target, double timeout) {
+public class CloseHatchCommand extends Command {
+  public CloseHatchCommand() {
     // Use requires() here to declare subsystem dependencies
     // eg. requires(chassis);
-    this.target = target;
-    this.timeout = timeout;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    timer = new Timer();
-    timer.reset();
-    timer.start();
-
-    if(RobotState.cargoIntakeState != CargoIntakePositionState.MID) {
-      new ChangeIntakeState(CargoIntakePositionState.MID).start();
-    }
+    Robot.hatch.hatchDeployIn();
   }
 
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
-    
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return RobotState.canRunLift() ||
-      timer.get() > timeout;
+    return true;
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    if(RobotState.canRunLift()) {
-      new MoveLiftCommand(target, 1.2).start();
-    }
   }
 
   // Called when another command which requires one or more of the same

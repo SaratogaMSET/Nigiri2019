@@ -67,7 +67,8 @@ public class ChangeIntakeState extends Command {
       String string = String.format("%.4f, ChangeIntakeState, Current: %s, Target: %s", Robot.time.get(), currentState.toString(), targetState.toString());
       Logging.print(string);
     }
-
+    // RobotState.cargoIntakeTargetState = targetState;
+    
     if(targetState == currentState) {
       // it be done;
     } else if(targetState == CargoIntakePositionState.IN && RobotState.canBringIntakeIn()) {
@@ -101,5 +102,6 @@ public class ChangeIntakeState extends Command {
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    end();
   }
 }

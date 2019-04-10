@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.RobotState;
 
 /**
  * Add your docs here.
@@ -279,7 +280,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public boolean isMoving() {
-    if(Math.abs(motor1.getSelectedSensorVelocity(0)) > LiftEncoderConstants.VELOCITY_THRESH) {
+    if(Math.abs(motor1.getSelectedSensorVelocity(0)) > LiftEncoderConstants.VELOCITY_THRESH || 
+    RobotState.liftPosition != RobotState.lastLiftTarget) {
       // SmartDashboard.putNumber("Lift Velocity", motor1.getSelectedSensorVelocity(0));
       return true;
     }
