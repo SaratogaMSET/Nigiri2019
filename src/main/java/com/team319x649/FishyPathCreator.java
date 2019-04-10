@@ -32,7 +32,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPathCreator() {
 		// DO NOT TOUCH
 		config.dt = 0.05;
-		config.max_acc = 6.0; // Robot max acceleration in FPS^2
+		config.max_acc = 8.0; // Robot max acceleration in FPS^2
 		config.max_vel = 12.0; // Robot max velocity in FPS
 		config.max_jerk = 0.0;
 	}
@@ -409,16 +409,16 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getHAB1LxROCKLFxLOADLxROCKLF() {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "HAB1LxROCKLFxLOADLxROCKLF", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 3, 3, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 5.0, 10.0, true);
-		twoHatchRocketLeft.addWaypoint(26, 24.5, -150, 0, 5, true);
+		twoHatchRocketLeft.addWaypoint(26, 24.5, -150, 0, 8, true);
 
-		twoHatchRocketLeft.addWaypoint(22.26, 24.42, 180 - 31, 0, 2, false);
+		twoHatchRocketLeft.addWaypoint(21.877, 24.257, 180 - 31, 0, 2, false);
 		// 21.5, 24.35
-		// twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 3.0, true);
+		twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 3.0, true);
 
-		// twoHatchRocketLeft.addWaypoint(6, 25.3, 180, 2.0, 6.0, false);
-		// twoHatchRocketLeft.addWaypoint(4.5-3.2, 25.3, 180, 0.0, 2.0, false);
+		twoHatchRocketLeft.addWaypoint(6, 24.833, 180, 2.0, 6.0, false);
+		twoHatchRocketLeft.addWaypoint(4.5-3.2, 24.833, 180, 0.0, 2.0, false);
 
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 4.0, 10.0, true);
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5 + 6.0, 23.7, 180 - 10, 0.0, 4.0, true);
