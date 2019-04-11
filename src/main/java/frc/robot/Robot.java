@@ -500,13 +500,21 @@ public class Robot extends TimedRobot {
           && !lift.isMoving())  {
           new SetIntakeRollers(true, 0, 0, 1).start(); // only carriage
         } else {
-          new ChangeIntakeState(CargoIntakePositionState.OUT).start();
-          new WaitUntilLiftDownIntake(true, 1, 1, 1, 3).start();
+          if(oi.gamePad.getStartButton()) {
+            cargoIntake.switchSol(true);
+          } else {
+            new ChangeIntakeState(CargoIntakePositionState.OUT).start();
+            new WaitUntilLiftDownIntake(true, 1, 1, 1, 3).start();
+          }
         }
         compressor.stop();
       } else if(oi.gamePad.getLeftButtonReleased()) { // *******STOP AND STORE********* */
-        new ChangeIntakeState(CargoIntakePositionState.MID).start();
-        new SetIntakeRollers(false, 0, 0, 0).start();
+        if(oi.gamePad.getStartButton()) {
+          cargoIntake.switchSol(false);
+        } else {
+          new ChangeIntakeState(CargoIntakePositionState.MID).start();
+          new SetIntakeRollers(false, 0, 0, 0).start();
+        }
         compressor.start();
       }
 
@@ -525,7 +533,8 @@ public class Robot extends TimedRobot {
             new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_ONE, 1.2).start();
             new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
           } else { // ***********************************************LIFT TO MID HATCH****** */
-            new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
+            // new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
+            new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 1.2).start();
             new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
           }
         } else if (oi.gamePad.getButtonYPressed()) {
@@ -533,31 +542,38 @@ public class Robot extends TimedRobot {
             new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_TWO, 1.2).start();
             new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
           } else { // ***********************************************LIFT TO HIGH HATCH***** */
+            // new MoveLiftCommand(LiftPositions.HATCH_HIGH, 1.2).start();
+            new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+          }
+        } else if (oi.gamePad.getButtonBPressed()) { // **** LIFT TO HIGH ROCKET
+          if(oi.gamePad.getLeftTrigger()) {
+            new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 1.2).start();
+            new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
+          } else {
             new MoveLiftCommand(LiftPositions.HATCH_HIGH, 1.2).start();
             new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
           }
-        } else if (oi.gamePad.getButtonBPressed() && oi.gamePad.getLeftTrigger()) { // **** LIFT TO HIGH ROCKET
-          new MoveLiftCommand(LiftPositions.CARGO_ROCKET_LEVEL_THREE, 1.2).start();
-          new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         } else if (oi.gamePad.getRightButtonPressed()) { // ******************* LIFT TO CARGO SHIP
           new CargoShipLiftAndIntake().start();
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
         } else if (oi.gamePad.getRightTrigger() && oi.gamePad.getLeftTrigger()) { // ****** LIFT LOADING STATION
           new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
           new MoveLiftCommand(LiftPositions.CARGO_LOADING_STATION, 1.2).start();
-        } else if (!RobotState.isRunningLiftCommand) {
+        } else if (!RobotState.isRunningLiftCommand && !RobotState.isManualLift) {
           lift.stallLift(RobotState.liftPosition);
         }
       }
 
       // *************************** DEPLOY ********************************************/
       if(oi.gamePad.getBackButtonPressed()) { //*********GUNNER DEPLOY********** */
-        new DeployCommand(RobotState.liftPosition, 1).start();
+        new SetIntakeRollers(false, 0, 0, 1).start();
+        new DeployHatchCommand().start();
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
       } else if(oi.driver.driverDeployPressed()) {
-        new DeployCommand(RobotState.liftPosition, 1).start();
+        new DeployCommand(RobotState.lastLiftTarget, 1).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
@@ -586,7 +602,8 @@ public class Robot extends TimedRobot {
       compressor.stop();
       // *************************** DEPLOY ********************************************/
       if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
-        new DeployCommand(RobotState.liftPosition, 1).start();
+        new SetIntakeRollers(false, 0, 0, 1).start();
+        new DeployHatchCommand().start();
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
@@ -596,6 +613,16 @@ public class Robot extends TimedRobot {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
       }
+      if(oi.gamePad.getLeftButtonPressed()) { //****************INTAKES OUT*********** */
+        if(oi.gamePad.getStartButton()) {
+          cargoIntake.switchSol(true);
+        }
+      } else if(oi.gamePad.getLeftButtonReleased()) { // *******INTAKES STORE********* */
+        if(oi.gamePad.getStartButton()) {
+          cargoIntake.switchSol(false);
+        } 
+      }
+
       if(isClimbPrepared) {
         if(oi.gamePad.getPOVLeft()) {
           new MoveLiftCommand(LiftPositions.CLIMB_HAB_TWO_TOL, 1.2).start();
@@ -652,8 +679,9 @@ public class Robot extends TimedRobot {
 
     // ****************** MANUAL MODE *************************************************
     if(oi.gamePad.getStartButton()) {
+      RobotState.isManualLift = true;
       int sign = oi.gamePad.getLeftJoystickY() > 0 ? 1 : -1;
-      double pow = Math.pow(oi.gamePad.getLeftJoystickY()/3, 2) * sign;
+      double pow = Math.pow(oi.gamePad.getLeftJoystickY()/2, 2) * sign;
       SmartDashboard.putNumber("Manual Lift Power", pow);
       if(lift.getBottomHal() && pow < 0){
         pow = 0;
@@ -663,13 +691,15 @@ public class Robot extends TimedRobot {
       if(lift.getBottomHal()) {
         lift.resetEncoder();
       }
+    } else if(RobotState.isManualLift) {
+      lift.setManualLift(0);
     }
 
 
 
     //******************************* DRIVE ****************************************/
     if(isJackRunning){
-      drive.driveFwdRotate(oi.driver.getDriverVertical()/3, 0);
+      drive.driveFwdRotate(oi.driver.getDriverVertical()/2, 0);
       jack.setJackDriveMotor(oi.driver.getDriverVertical());
     }else{
       if(vision != null && visionFixCommand != null && oi.visionFixButton.get()) {
