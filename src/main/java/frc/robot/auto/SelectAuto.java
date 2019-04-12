@@ -8,6 +8,7 @@
 package frc.robot.auto;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.semiauto.AutoIntakeHatch;
@@ -19,89 +20,84 @@ public class SelectAuto extends CommandGroup {
    * Add your docs here.
    */
   public SelectAuto() {
-    int autoNumber = Robot.autoSelector.getAutoPotNumber();
-    Side side = Robot.autoSelector.getSide();
+    
     Control control = Robot.autoSelector.getControl();
 
     if(control == Control.TELEOP) {
       addSequential(new AutoIntakeHatch());
-      addSequential(new Command() {
-        @Override
-        protected void initialize() {
-            Robot.switchAutoToTeleop();
-        }
-        @Override
-        protected boolean isFinished() {
-          return Robot.autoControl == false;
-        }
-      });
     } else {
       addParallel(new AutoIntakeHatch());
-      switch(autoNumber) {
-        case 1:
-          if(side == Side.LEFT) {
-            addSequential(Robot.backRocketLeft);
-          } else {
-            addSequential(Robot.backRocketRight);
-          }
-          
-          break;
-        case 2:
-          if(side == Side.LEFT) {
-            addSequential(Robot.nearRocketLeft);
-          } else {
-            addSequential(Robot.nearRocketRight);
-          }
-          Robot.secondLeg = new NearRocketToLoadingStation();
-          break;
-        case 3:
-          addSequential(Robot.closeCargoShip);
-          break;
-        case 4:
-          addSequential(Robot.cargoShipAuto);
-          break;
-        case 5:
-          if(side == Side.LEFT) {
-            addSequential(Robot.cargoSideLeft);
-          } else {
-            addSequential(Robot.cargoSideRight);
-          }
-          break;
-        case 6:
-          addSequential(Robot.testDTMaxVA);
-          break;
-        case 7:
-          addSequential(Robot.testTalonVel);
-          break;
-        case 8:
-          if(side == Side.LEFT) {
-            addSequential(Robot.backRocketLeftSlow);
-          } else {
-            addSequential(Robot.backRocketRightSlow);
-          }
-          break;
-        case 9:
-          if(side == Side.LEFT) {
-            addSequential(Robot.cargoSideFarLeft);
-            Robot.secondLeg = new CL2xLSL();
-          } else {
-            // addSequential(Robot.backRocketRightSlow);
-          }
-          break;
-        case 10:
-
-          break;
+      addSequential(Robot.autoCommand);
+    }
+    addSequential(new Command() {
+      @Override
+      protected void initialize() {
+          Robot.switchAutoToTeleop();
       }
-      addSequential(new Command() {
-        @Override
-        protected void initialize() {
-            Robot.switchAutoToTeleop();
+      @Override
+      protected boolean isFinished() {
+        return Robot.autoControl == false;
+      }
+    });
+  }
+
+  public static void chooseAuto(int autoNumber, Side side) {
+    switch(autoNumber) {
+      case 1:
+        if(side == Side.LEFT) {
+          Robot.autoCommand = new DoubleRocket(true);
+          SmartDashboard.putString("current Auto", "double rocket Left");
+        } else {
+          Robot.autoCommand = new DoubleRocket(false);
+          SmartDashboard.putString("current Auto", "double rocket Right");
         }
-        @Override
-        protected boolean isFinished() {
-          return Robot.autoControl == false;
+        break;
+      case 2:
+        if(side == Side.LEFT) {
+          Robot.autoCommand = new NearRocket(false);
+          SmartDashboard.putString("current Auto", "near rocket Left");
+        } else {
+          Robot.autoCommand = new NearRocket(true);
+          SmartDashboard.putString("current Auto", "double rocket Right");
         }
-      });
+        break;
+      case 3:
+        // addSequential(Robot.closeCargoShip);
+        break;
+      case 4:
+        // addSequential(Robot.cargoShipAuto);
+        break;
+      case 5:
+        if(side == Side.LEFT) {
+          // addSequential(Robot.cargoSideLeft);
+        } else {
+          // addSequential(Robot.cargoSideRight);
+        }
+        break;
+      case 6:
+        // addSequential(Robot.testDTMaxVA);
+        break;
+      case 7:
+        // addSequential(Robot.testTalonVel);
+        break;
+      case 8:
+        if(side == Side.LEFT) {
+          // addSequential(Robot.backRocketLeftSlow);
+        } else {
+          // addSequential(Robot.backRocketRightSlow);
+        }
+        break;
+      case 9:
+        if(side == Side.LEFT) {
+          // addSequential(Robot.cargoSideFarLeft);
+          Robot.secondLeg = new CL2xLSL();
+        } else {
+          // addSequential(Robot.backRocketRightSlow);
+        }
+        break;
+      case 10:
+        SmartDashboard.putString("current Auto", "10");
+        break;
     }
   }
 }

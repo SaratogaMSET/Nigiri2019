@@ -45,6 +45,9 @@ import frc.robot.commands.test.TestDTMaxVA;
 import frc.robot.commands.test.TestTalonVelocity;
 import frc.robot.commands.vision.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.AutoSelector.AutoSelectorValue;
+import frc.robot.subsystems.AutoSelector.Control;
+import frc.robot.subsystems.AutoSelector.Side;
 import frc.robot.subsystems.CargoIntakeSubsystem.CargoIntakePositionState;
 import frc.robot.subsystems.HatchSubsystem.HatchPositionState;
 import frc.robot.subsystems.LiftSubsystem.LiftEncoderConstants;
@@ -138,6 +141,14 @@ public class Robot extends TimedRobot {
 
   public static Command doubleRocket;
 
+  public static Command autoCommand;
+
+  public static AutoSelectorValue currentAuto;
+  public static AutoSelectorValue changedAuto;
+  public static Side autoSide;
+  public static int autoNumber;
+  public Timer autoTime;
+
   // TEST
   public static Command testDTMaxVA = new TestDTMaxVA(20.0);
   public static Command testTalonVel = new TestTalonVelocity(20.0);
@@ -222,6 +233,10 @@ public class Robot extends TimedRobot {
     gholdTest = new GyroRotationalHoldCommand();
 
     doubleRocket = new DoubleRocket(true);
+
+    autoTime = new Timer();
+    currentAuto = new AutoSelectorValue(autoSelector.getSide(), autoSelector.getAutoPotNumber());
+    changedAuto = currentAuto;
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -346,6 +361,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     autoControl = true;
+    autoTime.stop();
+
     isManualAuto = false;
     init(autoControl);
   }
@@ -390,6 +407,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    autoTime.stop();
     init(false);
   }
 
@@ -490,6 +508,29 @@ public class Robot extends TimedRobot {
       Logging.closeWriter();
     }
 
+    if(autoSelector.getControl() == Control.AUTO) {
+      SmartDashboard.putBoolean("In the Selector", true);
+      autoSide = autoSelector.getSide();
+      autoNumber = autoSelector.getAutoPotNumber();
+      if(!currentAuto.equals(autoSide, autoNumber)) {
+        if(!changedAuto.equals(autoSide, autoNumber)) {
+          changedAuto = new AutoSelectorValue(autoSide, autoNumber);
+          autoTime.reset();
+          autoTime.start();
+        } else {
+          if(autoTime.get() > 2) {
+            SelectAuto.chooseAuto(autoNumber, autoSide);
+            currentAuto = new AutoSelectorValue(autoSide, autoNumber);
+            autoTime.stop();
+            autoTime.reset();
+          }
+        }
+      } else {
+        autoTime.stop();
+        autoTime.reset();
+      }
+    }
+    SmartDashboard.putNumber("AutoTimer", autoTime.get());
   }
 
   public void teleopLoop() {

@@ -30,6 +30,39 @@ public class AutoSelector extends Subsystem {
         public static final double[] range9 = {4.1, 4.4};
         public static final double[] range10 = {4.7, 5};
     }
+
+    public static class AutoSelectorValue {
+        private Side autoSide;
+        private int autoNumber;
+
+        public AutoSelectorValue(Side side, int autoNumber) {
+            this.autoSide = side;
+            this.autoNumber = autoNumber;
+        }
+
+        public Side getSide() {
+            return autoSide;
+        }
+
+        public int getAutoNumber() {
+            return autoNumber;
+        }
+
+        public boolean equals(AutoSelectorValue val) {
+            if(getAutoNumber() == val.getAutoNumber() && getSide() == val.getSide()) {
+                return true;
+            }
+            return false;
+        }
+
+        public boolean equals(Side side, int num) {
+            if(getAutoNumber() ==num && getSide() == side) {
+                return true;
+            }
+            return false;
+        }
+    }
+
     private DigitalInput side;
     private DigitalInput control;
     private AnalogInput rotary;
@@ -121,4 +154,6 @@ public class AutoSelector extends Subsystem {
         ShuffleboardTab tab = Shuffleboard.getTab("Drive");
         tab.add("Auto", autos_readable[chosenAuto]);
     }
+
+    
 }
