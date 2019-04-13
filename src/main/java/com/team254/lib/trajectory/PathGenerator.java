@@ -61,6 +61,7 @@ public class PathGenerator {
 				spline_lengths[0],
 				path.getWaypoint(1).endVelocity,
 				path.getWaypoint(1).maxVelocity,
+				path.getWaypoint(1).maxAccel,
 				path.getWaypoint(1).isReverse);
 		double distance = spline_lengths[0];
 		for (int i = 2; i < path.num_waypoints_; ++i) {
@@ -69,10 +70,11 @@ public class PathGenerator {
 					TrajectoryGenerator.generate(
 							config,
 							traj.getSegment(traj.getNumSegments() - 1).vel,
-							traj.getSegment(traj.getNumSegments() - 1).pos,
+							traj.getSegment(traj.getNumSegments() - 1).pos + traj.getSegment(traj.getNumSegments() - 1).vel * config.dt,
 							distance,
 							path.getWaypoint(i).endVelocity,
 							path.getWaypoint(i).maxVelocity,
+							path.getWaypoint(i).maxAccel,
 							path.getWaypoint(i).isReverse));
 							// System.out.println(traj);
 		}

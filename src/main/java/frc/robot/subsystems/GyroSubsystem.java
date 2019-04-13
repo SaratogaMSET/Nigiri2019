@@ -53,7 +53,7 @@ public class GyroSubsystem extends Subsystem implements ILogger {
     lastAccelY = getLinearAccelY();
     collision = false;
 
-    gyroPIDController = new PIDController(0.05, 0.0, 0.65, new PIDSource(){
+    gyroPIDController = new PIDController(0.05, 0.0, 0.6, new PIDSource(){
       @Override
       public void setPIDSourceType(PIDSourceType pidSource) {}
       @Override

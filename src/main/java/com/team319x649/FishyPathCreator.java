@@ -32,8 +32,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPathCreator() {
 		// DO NOT TOUCH
 		config.dt = 0.05;
-		config.max_acc = 8.0; // Robot max acceleration in FPS^2
-		config.max_vel = 12.0; // Robot max velocity in FPS
+		config.max_acc = 12.0; // Robot max acceleration in FPS^2
+		config.max_vel = 14.0; // Robot max velocity in FPS
 		config.max_jerk = 0.0;
 	}
 
@@ -52,7 +52,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 */
 	private List<FishyPath> generateTeamPaths() {
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
-		return asList(getHAB1LxROCKLFxLOADLxROCKLF());
+		return asList(getDoubleRocketFast(), getDoubleRocketFast2(), getDoubleRocketFast3());
 		// return asList(getFarCargoLeft(), getFarCargoLeftSlow(), getLSLToCargoNear(), getLSLToCargoNearSlow());
 		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 		// return asList(getFarCargoLeft(), getLSLToCargoNear());
@@ -88,9 +88,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		straightFastShort.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
 		straightFastShort.addWaypointRelative(5, 0, 0, 0, 10);
 
-		FishyPath straightFastLong = new FishyPath(config, "StraightFastLong", 2.23);
+		FishyPath straightFastLong = new FishyPath(config, "StraightFastLong", DrivetrainSubsystem.WHEELBASE_FEET);
 		straightFastLong.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		straightFastLong.addWaypointRelative(20, 0, 0, 0, 10);
+		straightFastLong.addWaypointRelative(20, 0, 0, 0, 12, 12, false);
 
 		FishyPath straightSlowShortRevese = new FishyPath(config, "StraightSlowShortRevese", 2.23);
 		straightSlowShortRevese.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));
@@ -412,16 +412,16 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getHAB1LxROCKLFxLOADLxROCKLF() {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "HAB1LxROCKLFxLOADLxROCKLF", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 6, 6, 12, true); // go off HAB1 with max speed of 3 ft/s. waiting on specs from HW team for max speed off HAB2.
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 5.0, 10.0, true);
-		twoHatchRocketLeft.addWaypoint(26, 24.5, -150, 0, 8, true);
+		twoHatchRocketLeft.addWaypoint(26, 24.5, -150, 0, 12, 8, true);
 
-		twoHatchRocketLeft.addWaypoint(21.877, 24.257, 180 - 31, 0, 2, false);
+		twoHatchRocketLeft.addWaypoint(21.627, 23.9, 180 - 31, 0, 4, 8, false);
 		// 21.5, 24.35
-		twoHatchRocketLeft.addWaypointRelative(4, -0.7, 30.0 + 30, 0, 3.0, true);
+		twoHatchRocketLeft.addWaypointRelative(4, 0.0, 30.0 + 30, 0, 4.0, 8, true);
 
-		twoHatchRocketLeft.addWaypoint(6, 24.833, 180, 2.0, 6.0, false);
-		twoHatchRocketLeft.addWaypoint(4.5-3.2, 24.833, 180, 0.0, 2.0, false);
+		twoHatchRocketLeft.addWaypoint(6, 25.433, 180, 2.0, 11.0, 10, false);
+		twoHatchRocketLeft.addWaypoint(4.5-3.2, 25.433, 180, 0.0, 2.0, false);
 
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5, 24.2 - 3.2, 180, 4.0, 10.0, true);
 		// twoHatchRocketLeft.addWaypoint(4 - 2.2 + 17.5 + 6.0, 23.7, 180 - 10, 0.0, 4.0, true);
@@ -430,6 +430,34 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// */
 
 		return twoHatchRocketLeft;
+	}
+
+	private FishyPath getDoubleRocketFast() {
+		FishyPath twoHatchRocketLeft = new FishyPath(config, "DoubleRocketFast", DrivetrainSubsystem.WHEELBASE_FEET);
+		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true);
+		twoHatchRocketLeft.addWaypoint(23.5, 24.0, -180 + 60, 0, 10, 8, true);
+
+		return twoHatchRocketLeft;
+	}
+
+	private FishyPath getDoubleRocketFast2() {
+		FishyPath path = new FishyPath(config, "DoubleRocketFast2", DrivetrainSubsystem.WHEELBASE_FEET);
+		path.addWaypoint(new Waypoint(10, 10, FishyMath.d2r(150), 0, 0));
+		path.addWaypointRelative(-1.3, 0.75, 0, 0, 3, 8, false);
+		path.addWaypoint(10, 10, 150, 0, 3, 8, true);
+
+		return path;
+	}
+
+	private FishyPath getDoubleRocketFast3() {
+		FishyPath path = new FishyPath(config, "DoubleRocketFast3", DrivetrainSubsystem.WHEELBASE_FEET);
+		path.addWaypoint(new Waypoint(20, 15, FishyMath.d2r(-150), 0, 0));
+		path.addWaypoint(3, 16.5, 180, 2, 8, 10, false);
+		path.addWaypoint(-1.5, 16.5, 180, 0, 2, 10, false);
+		path.addWaypoint(20, 12, 180, 0, 10, 10, true);
+
+		return path;
 	}
 }
 

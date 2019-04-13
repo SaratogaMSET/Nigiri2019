@@ -36,8 +36,11 @@ public class MotionProfileCommand extends FishyCommand {
 
   double previous_heading = 0.0;
 
-  public static final double kP_gyro_doubletraction = -10.0;
-  public static final double kP_gyro_omnitraction = -10.0;
+  public static final double CONST_kP_gyro_doubletraction = -0.035;
+  public static final double CONST_kP_gyro_omnitraction = -0.035;
+
+  public static double kP_gyro_doubletraction;
+  public static double kP_gyro_omnitraction;
 
   double heading_offset = 0.0;
 
@@ -91,7 +94,9 @@ public class MotionProfileCommand extends FishyCommand {
         else {
           gyroConstant = kP_gyro_doubletraction;
         }
-        double turn = gyroConstant * headingDiff;
+
+        double avgSpeed = Math.abs((leftSpeedRPM + rightSpeedRPM)/2.0);
+        double turn = gyroConstant * headingDiff * avgSpeed;
 
         log("Right Actual", Robot.drive.getRightEncoderVelocity());
         log("Left Actual", Robot.drive.getLeftEncoderVelocity());
@@ -130,6 +135,14 @@ public class MotionProfileCommand extends FishyCommand {
 
   public MotionProfileCommand(String pathName, double heading_offset) {
     this(pathName, false, heading_offset);
+    kP_gyro_doubletraction = CONST_kP_gyro_doubletraction;
+    kP_gyro_omnitraction = CONST_kP_gyro_omnitraction;
+  }
+
+  public MotionProfileCommand(String pathName, double heading_offset, double gyro_kp) {
+    this(pathName, false, heading_offset);
+    kP_gyro_doubletraction = gyro_kp;
+    kP_gyro_omnitraction = gyro_kp;
   }
 
   public MotionProfileCommand(String pathName, boolean robotStartedBackwards, double heading_offset) {
@@ -201,8 +214,8 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    leftFollower.configure(80.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(80.0, 0.0, Robot.drive.getRightEncoderDistance());
+    leftFollower.configure(100.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(100.0, 0.0, Robot.drive.getRightEncoderDistance());
 
     Robot.gyro.gyro.setAngleAdjustment(heading_offset);
 

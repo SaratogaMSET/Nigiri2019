@@ -1,6 +1,7 @@
 package com.team254.lib.trajectory;
 
 import com.team254.lib.util.ChezyMath;
+import com.team319x649.FishyPathCreator;
 
 /**
  * A WaypointSequence is a sequence of Waypoints. #whatdidyouexpect
@@ -26,6 +27,16 @@ public class WaypointSequence {
 			this.isReverse = isReverse;
 		}
 
+		public Waypoint(double x, double y, double theta, double endVelocity, double maxVelocity, double maxAcceleration, boolean isReverse) {
+			this.x = x;
+			this.y = y;
+			this.theta = theta;
+			this.endVelocity = endVelocity;
+			this.maxVelocity = maxVelocity;
+			this.maxAccel = maxAcceleration;
+			this.isReverse = isReverse;
+		}
+
 		public Waypoint(Waypoint tocopy) {
 			this.x = tocopy.x;
 			this.y = tocopy.y;
@@ -45,6 +56,17 @@ public class WaypointSequence {
 			this.theta = tocopy.theta;
 			this.endVelocity = endVelocity;
 			this.maxVelocity = maxVelocity;
+			this.maxAccel = FishyPathCreator.config.max_acc;
+			this.isReverse = isReverse;
+		}
+
+		public Waypoint(Waypoint tocopy, double endVelocity, double maxVelocity, double maxAccel, boolean isReverse) {
+			this.x = tocopy.x;
+			this.y = tocopy.y;
+			this.theta = tocopy.theta;
+			this.endVelocity = endVelocity;
+			this.maxVelocity = maxVelocity;
+			this.maxAccel = maxAccel;
 			this.isReverse = isReverse;
 		}
 
@@ -54,6 +76,7 @@ public class WaypointSequence {
 			this.theta = theta;
 			this.endVelocity = 0;
 			this.maxVelocity = 0;
+			this.maxAccel = FishyPathCreator.config.max_acc;
 			this.isReverse = false;
 		}
 
@@ -62,6 +85,7 @@ public class WaypointSequence {
 		public double theta;
 		public double endVelocity;
 		public double maxVelocity;
+		public double maxAccel;
 		public boolean isReverse;
 	}
 

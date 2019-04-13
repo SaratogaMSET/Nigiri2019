@@ -27,8 +27,7 @@ public class GyroRotationalHoldCommand extends FishyCommand {
   Timer time;
   double targetAngle;
 
-  public 
-  GyroRotationalHoldCommand() {
+  public GyroRotationalHoldCommand() {
     time = new Timer();
   }
 

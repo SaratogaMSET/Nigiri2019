@@ -18,8 +18,9 @@ public class AutoIntakeHatch extends CommandGroup {
    * Add your docs here.
    */
   public AutoIntakeHatch() {
-    addSequential(new MoveHatchCommand(HatchPositionState.HATCH_OUT));
     addSequential(new ChangeIntakeState(CargoIntakePositionState.MID));
+    addSequential(new MoveHatchCommand(HatchPositionState.HATCH_OUT));
+
     // Add Commands here:
     // e.g. addSequential(new Command1());
     // addSequential(new Command2());

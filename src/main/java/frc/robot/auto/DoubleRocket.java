@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.commands.DeployHatchCommand;
+import frc.robot.commands.GyroPIDCommand;
 import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.MoveLiftCommand;
 import frc.robot.commands.PathTrigger;
@@ -24,10 +25,21 @@ public class DoubleRocket extends CommandGroup {
    * Double hatch rocket auto.
    */
   public DoubleRocket(boolean isLeft) {
-    addParallel(new PathTrigger(0.0, -22.98, -21.78, 150, new HatchMid()));
-    addParallel(new PathTrigger(0.0, -17.83, -18.95, -180+30, new DeployHatchCommand()));
-    addParallel(new PathTrigger(0.0, -4, -4, 179, new AutoIntakeHatch()));
-    addParallel(new PathTrigger(0.0, -15.12, -15.79, 180, new Command(){
+    
+    addParallel(new PathTrigger(0.0, -1, -1, 179, new AutoIntakeHatch()));
+    
+
+
+    // -20.65
+    // right -21.30
+    // gyro 13.12
+    addSequential(new MotionProfileCommand("DoubleRocketFast", 180.0));
+    addSequential(new GyroPIDCommand(30, 10.0));
+    addSequential(new HatchMid());
+    addParallel(new DeployHatchCommand());
+    addSequential(new MotionProfileCommand("DoubleRocketFast2", 180.0));
+    addSequential(new GyroPIDCommand(-30, 10.0));
+    addParallel(new Command(){
       @Override
       protected void initialize() {
         super.initialize();
@@ -38,13 +50,10 @@ public class DoubleRocket extends CommandGroup {
       protected boolean isFinished() {
         return true;
       }
-    }));
-    addParallel(new PathTrigger(0.0, -15.12, -15.79, 180.0, new MoveLiftCommand(LiftPositions.LOW, 1.2)));
+    });
+    addParallel(new MoveLiftCommand(LiftPositions.LOW, 1.2));
+    addParallel(new PathTrigger(0, -3.0, -3.0, 180, new GyroPIDCommand(180, 10.0)));
+    addSequential(new MotionProfileCommand("DoubleRocketFast3", 180.0, -0.04));
 
-
-    // -20.65
-    // right -21.30
-    // gyro 13.12
-    addSequential(new MotionProfileCommand("HAB1LxROCKLFxLOADLxROCKLF", 180.0));
   }
 }

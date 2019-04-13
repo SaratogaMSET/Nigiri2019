@@ -19,31 +19,31 @@ public class TrajectoryGenerator {
 	}
 
 	public static Trajectory generate(Config config, double start_vel, double start_pos,
-			double goal_pos, double goal_vel, double maxVelocity, boolean isReverse) {
+			double goal_pos, double goal_vel, double maxVelocity, double segment_max_accel, boolean isReverse) {
 
 		start_vel = Math.abs(start_vel);
 
 		Trajectory traj;
 //		double adjusted_max_vel = maxVelocity;
 		double distanceAtMaxVelocity = ((goal_vel * goal_vel) - (start_vel * start_vel)) /
-				(2 * config.max_acc * config.max_acc)  + (goal_pos - start_pos) / 2;
+				(2 * segment_max_accel * segment_max_accel)  + (goal_pos - start_pos) / 2;
 //		double maxPossibleVelocity = config.max_acc / 2 * Math.sqrt(distanceAtMaxVelocity + (start_vel * start_vel) / (config.max_acc * config.max_acc));
-		double maxPossibleVelocity = start_vel + Math.sqrt(2 * config.max_acc * distanceAtMaxVelocity);
+		double maxPossibleVelocity = start_vel + Math.sqrt(2 * segment_max_accel * distanceAtMaxVelocity);
 		double adjusted_max_vel = Math.min(maxVelocity, maxPossibleVelocity);
 		//		}
-		double t_rampup = (adjusted_max_vel - start_vel) / config.max_acc;
+		double t_rampup = (adjusted_max_vel - start_vel) / segment_max_accel;
 		double x_rampup = (adjusted_max_vel + start_vel) / 2.0 * t_rampup;
 		if (x_rampup > goal_pos - start_pos) {
 			System.out.println("CAN'T REACH FINAL VELOCITY");
 		}
-		double t_rampdown = (adjusted_max_vel - goal_vel) / config.max_acc;
+		double t_rampdown = (adjusted_max_vel - goal_vel) / segment_max_accel;
 		double x_rampdown = (adjusted_max_vel + goal_vel) / 2.0 * t_rampdown;
 		double x_cruise = goal_pos - start_pos - x_rampdown - x_rampup;
 		double t_cruise = x_cruise / adjusted_max_vel;
 
 		int time = (int) ((t_rampup + t_rampdown + t_cruise) / config.dt);
 		double impulse = (t_rampup + t_cruise) / config.dt;
-		traj = generateValues(config.dt, start_vel, start_pos, adjusted_max_vel, config.max_acc, impulse, time, goal_pos, goal_vel, isReverse);
+		traj = generateValues(config.dt, start_vel, start_pos, adjusted_max_vel, segment_max_accel, impulse, time, goal_pos, goal_vel, isReverse);
 
 		return traj;
 	}
@@ -60,6 +60,7 @@ public class TrajectoryGenerator {
 		double currentVelocity = start_vel * ((isReverse) ? -1.0 : 1.0);
 		double currentAcceleration = 0;
 		System.out.println("Startvel: " + currentVelocity);
+		System.out.println("Goalvel: " + goalVel);
 
 		double seg_acceleration = 0.0;
 		for (int i = 0; i <= time; i++) {
