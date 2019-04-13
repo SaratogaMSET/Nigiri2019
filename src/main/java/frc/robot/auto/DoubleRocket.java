@@ -33,8 +33,8 @@ public class DoubleRocket extends CommandGroup {
     // -20.65
     // right -21.30
     // gyro 13.12
-    addParallel(new PathTrigger(0, -20.44, -17.84, 120, new HatchMid()));
     addSequential(new MotionProfileCommand("DoubleRocketFast", 180.0));
+    addParallel(new HatchMid());
     addSequential(new GyroPIDCommand(30, 10.0));
     addParallel(new DeployHatchCommand());
     addSequential(new MotionProfileCommand("DoubleRocketFast2", 180.0));
@@ -52,8 +52,9 @@ public class DoubleRocket extends CommandGroup {
       }
     });
     addParallel(new MoveLiftCommand(LiftPositions.LOW, 1.2));
-    addParallel(new PathTrigger(0, -3.0, -3.0, 180, new GyroPIDCommand(180, 10.0)));
     addSequential(new MotionProfileCommand("DoubleRocketFast3", 180.0, -0.04));
+    addSequential(new GyroPIDCommand(64.0, 10.0));
+
 
   }
 }

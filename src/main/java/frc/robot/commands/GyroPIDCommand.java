@@ -59,7 +59,7 @@ public class GyroPIDCommand extends Command {
       public void pidWrite(double output) {
         // IZone implementation
         if(Math.abs(pidController.getError()) < 15) {
-          pidController.setI(0.0002);
+          pidController.setI(0.00025);
         }
         else {
           pidController.setI(0.0);
@@ -96,7 +96,7 @@ public class GyroPIDCommand extends Command {
       if(onTargetTime == null) {
         onTargetTime = time.get();
       }
-      else if (time.get() > onTargetTime + 0.1) {
+      else if (time.get() > onTargetTime + 0.2) {
         return true;
       }
     }

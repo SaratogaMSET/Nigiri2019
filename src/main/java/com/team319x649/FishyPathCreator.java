@@ -453,8 +453,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getDoubleRocketFast3() {
 		FishyPath path = new FishyPath(config, "DoubleRocketFast3", DrivetrainSubsystem.WHEELBASE_FEET);
 		path.addWaypoint(new Waypoint(20, 15, FishyMath.d2r(-150), 0, 0));
-		path.addWaypoint(3, 16.5, 180, 4, 10, 11, false);
-		path.addWaypoint(-1.5, 16.5, 180, 0, 4, 10, false);
+		path.addWaypoint(3, 16.3, 180, 4, 10, 11, false);
+		path.addWaypoint(-1.5, 16.3, 180, 0, 4, 10, false);
 		path.addWaypoint(20, 13.5, 180, 0, 11, 11, true);
 
 		return path;
