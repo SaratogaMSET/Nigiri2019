@@ -435,8 +435,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getDoubleRocketFast() {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "DoubleRocketFast", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 6, 6, true);
-		twoHatchRocketLeft.addWaypoint(23.5, 24.0, -180 + 60, 0, 10, 8, true);
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 8, 8, true);
+		twoHatchRocketLeft.addWaypoint(23.5, 24.0, -180 + 60, 0, 11, 8, true);
 
 		return twoHatchRocketLeft;
 	}
@@ -453,9 +453,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPath getDoubleRocketFast3() {
 		FishyPath path = new FishyPath(config, "DoubleRocketFast3", DrivetrainSubsystem.WHEELBASE_FEET);
 		path.addWaypoint(new Waypoint(20, 15, FishyMath.d2r(-150), 0, 0));
-		path.addWaypoint(3, 16.5, 180, 2, 8, 10, false);
-		path.addWaypoint(-1.5, 16.5, 180, 0, 2, 10, false);
-		path.addWaypoint(20, 12, 180, 0, 10, 10, true);
+		path.addWaypoint(3, 16.5, 180, 4, 10, 11, false);
+		path.addWaypoint(-1.5, 16.5, 180, 0, 4, 10, false);
+		path.addWaypoint(20, 13.5, 180, 0, 11, 11, true);
 
 		return path;
 	}

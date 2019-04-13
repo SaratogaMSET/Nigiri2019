@@ -44,7 +44,7 @@ public class GyroPIDCommand extends Command {
 
     onTargetTime = null;
 
-    pidController = new PIDController(0.015, 0.0, 0.2, new PIDSource() {
+    pidController = new PIDController(0.015, 0.0, 0.22, new PIDSource() {
       @Override
       public void setPIDSourceType(PIDSourceType pidSource) {}
       @Override
@@ -59,7 +59,7 @@ public class GyroPIDCommand extends Command {
       public void pidWrite(double output) {
         // IZone implementation
         if(Math.abs(pidController.getError()) < 15) {
-          pidController.setI(0.0004);
+          pidController.setI(0.0002);
         }
         else {
           pidController.setI(0.0);
@@ -96,7 +96,7 @@ public class GyroPIDCommand extends Command {
       if(onTargetTime == null) {
         onTargetTime = time.get();
       }
-      else if (time.get() > onTargetTime + 0.2) {
+      else if (time.get() > onTargetTime + 0.1) {
         return true;
       }
     }
