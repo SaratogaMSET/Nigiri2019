@@ -35,8 +35,8 @@ public class DoubleRocket extends CommandGroup {
     // gyro 13.12
     addSequential(new MotionProfileCommand("DoubleRocketFast", 180.0));
     addParallel(new HatchMid());
-    addSequential(new GyroPIDCommand(30, 10.0));
-    addParallel(new DeployHatchCommand());
+    addSequential(new GyroPIDCommand(33, 10.0));
+    addParallel(new PathTrigger(0, -18.77, -19.81, -150, new DeployHatchCommand()));
     addSequential(new MotionProfileCommand("DoubleRocketFast2", 180.0));
     addSequential(new GyroPIDCommand(-30, 10.0));
     addParallel(new Command(){

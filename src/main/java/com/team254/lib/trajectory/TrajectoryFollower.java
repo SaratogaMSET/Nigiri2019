@@ -46,7 +46,7 @@ public class TrajectoryFollower {
 			Trajectory.Segment segment = profile_.getSegment(current_segment);
 			double errorFeet = segment.pos - trajectory_pos;
 			double errorRotations = errorFeet / (Math.PI * DrivetrainSubsystem.WHEEL_DIAMETER);
-			double targetRPM = kp_ * errorRotations + kd_ * ((errorRotations - last_error_) / segment.dt - FishyMath.fps2rpm(segment.vel)) + FishyMath.fps2rpm(segment.vel);
+			double targetRPM = FishyMath.fps2rpm(kp_ * errorFeet) + kd_ * ((errorRotations - last_error_) / segment.dt - FishyMath.fps2rpm(segment.vel)) + FishyMath.fps2rpm(segment.vel);
 
 			last_error_ = errorRotations;
 			current_heading = segment.heading;

@@ -32,7 +32,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	private FishyPathCreator() {
 		// DO NOT TOUCH
 		config.dt = 0.05;
-		config.max_acc = 12.0; // Robot max acceleration in FPS^2
+		config.max_acc = 10.0; // Robot max acceleration in FPS^2
 		config.max_vel = 14.0; // Robot max velocity in FPS
 		config.max_jerk = 0.0;
 	}
@@ -436,7 +436,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "DoubleRocketFast", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
 		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 8, 8, true);
-		twoHatchRocketLeft.addWaypoint(23.5, 24.0, -180 + 60, 0, 11, 8, true);
+		twoHatchRocketLeft.addWaypoint(22.87, 23.78, -180 + 60, 0, 11, 8, true);
 
 		return twoHatchRocketLeft;
 	}

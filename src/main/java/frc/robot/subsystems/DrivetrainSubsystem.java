@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -75,19 +76,19 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
       motors[i].configNominalOutputReverse(-0.08, 200);
       motors[i].configPeakOutputForward(1, 200);
       motors[i].configPeakOutputReverse(-1, 200);
-
-      motors[i].configPeakCurrentDuration(300);
-      motors[i].configPeakCurrentLimit(65, 20);
-      motors[i].configContinuousCurrentLimit(40, 20);
-      motors[i].enableCurrentLimit(true);
     }
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+    motors[0].config_kF(0, 0.22, 200);
+    motors[0].config_kP(0, 0.5, 200);
+    motors[0].config_kI(0, 0.006, 200);
+    motors[0].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))), 200);
+    motors[0].config_kD(0, 5.0, 200);
+    motors[0].configAllowableClosedloopError(0, 0, 200);
+    motors[0].configClosedLoopPeriod(0, 1, 200);
+    motors[0].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
+    motors[0].configVelocityMeasurementWindow(16, 200);
     motors[0].selectProfileSlot(0, 0);
-    motors[0].config_kF(0, 0.21);
-    motors[0].config_kP(0, 1.4);
-    motors[0].config_kI(0, 0.00);
-    motors[0].config_kD(0, 10.0);
     // motors[0].config_kF(0, 0.23);
     // motors[0].config_kP(0, 2.2);
     // motors[0].config_kI(0, 0.00);
@@ -95,15 +96,17 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
 
     motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+    motors[3].config_kF(0, 0.22);
+    motors[3].config_kP(0, 0.5);
+    motors[3].config_kI(0, 0.006);
+    motors[3].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))));
+    motors[3].config_kD(0, 5.0);
+    motors[3].configAllowableClosedloopError(0, 0, 200);
+    motors[3].configClosedLoopPeriod(0, 1, 200);
+    motors[3].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
+    motors[3].configVelocityMeasurementWindow(16, 200);
     motors[3].selectProfileSlot(0, 0);
-    motors[3].config_kF(0, 0.21);
-    motors[3].config_kP(0, 1.2);
-    motors[3].config_kI(0, 0.00);
-    motors[3].config_kD(0, 10.0);
-    // motors[3].config_kF(0, 0.23);
-    // motors[3].config_kP(0, 2.2);
-    // motors[3].config_kI(0, 0.00);
-    // motors[3].config_kD(0, 40.0);
+
 
     // follow right master
     motors[1].set(ControlMode.Follower, motors[0].getDeviceID());

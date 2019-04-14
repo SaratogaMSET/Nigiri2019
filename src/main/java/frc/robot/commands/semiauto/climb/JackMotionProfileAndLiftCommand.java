@@ -27,6 +27,9 @@ public class JackMotionProfileAndLiftCommand extends FishyCommand {
   int initialLiftVal;
   int maxLiftVal;
 
+  public static int DOUBLE_CLIMB_JACK_TICK_OFFSET = 10; 
+
+
   // public static int JACK_AND_LIFT_OFFSET = 
 
   public JackMotionProfileAndLiftCommand(int jackHeight, int liftHeightEncoder, boolean isDown, double timeout) {
@@ -50,7 +53,6 @@ public class JackMotionProfileAndLiftCommand extends FishyCommand {
     time.start();
     Robot.lift.setLiftMPHang();
     Robot.jack.setJackMPVals(isDown);
-    Robot.jack.setJackMotorMP(jackHeight);
     initialLiftVal = Robot.lift.getRawEncoder();
     maxLiftVal = 0;
   }
@@ -58,6 +60,12 @@ public class JackMotionProfileAndLiftCommand extends FishyCommand {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+    if(Robot.isDoubleClimb) {
+      Robot.jack.setJackMotorMP(jackHeight + DOUBLE_CLIMB_JACK_TICK_OFFSET);
+    }
+    else {
+      Robot.jack.setJackMotorMP(jackHeight);
+    }
     moveLiftVal = (int)(liftHeightEncoder - (Robot.jack.getJackEncoder()) * LiftSubsystem.LiftEncoderConstants.LIFT_TICKS_PER_JACK_TICK);
     SmartDashboard.putNumber("LIFT SETPOINT", moveLiftVal);
    

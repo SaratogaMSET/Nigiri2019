@@ -29,6 +29,7 @@ import frc.robot.commands.semiauto.CargoShipLiftAndIntake;
 import frc.robot.commands.semiauto.DefenseModeCommand;
 import frc.robot.commands.semiauto.climb.ClimbThreeJack;
 import frc.robot.commands.semiauto.climb.ClimbTwoJack;
+import frc.robot.commands.semiauto.climb.DeployBuddyClimbFork;
 import frc.robot.commands.semiauto.climb.DeployClimbForks;
 import frc.robot.commands.semiauto.climb.JackMotionProfileAndLiftCommand;
 import frc.robot.commands.semiauto.climb.PrepareClimb2;
@@ -123,7 +124,8 @@ public class Robot extends TimedRobot {
   public static boolean isLevel3;
   public static boolean isJackRunning;
   public static boolean doneClimb;
-  public static boolean isClimbPrepared = false;
+  public static boolean isClimbPrepared = false; // NOT CONSTANT, DONT TOUCH
+  public static boolean isDoubleClimb = false; // NOT CONSTANT, DONT TOUCH
 
   public static SendableChooser<Command> autoChooser;
   public static Command backRocketLeft;
@@ -418,7 +420,7 @@ public class Robot extends TimedRobot {
       // new DoubleCargoShip(true).start();
       // new TestTalonVelocity(10.0).start();
       // new TestDTMaxVA(20.0).start();
-      // new MotionProfileCommand("StraightFastLong", 0.0).start();
+      // new MotionProfileCommand("TurnScaling", 0.0).start();
       // new GyroPIDCommand(90.0, 10.0).start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
@@ -671,25 +673,38 @@ public class Robot extends TimedRobot {
           new MoveLiftCommand(LiftPositions.CLIMB_HAB_THREE, 1.2).start();
           isLevel3 = true;
         }
-      }
-      if(oi.gamePad.getPOVDown()) {
-        // push down jack
-        if(!isJackRunning){
-          isJackRunning = true;
-          if(isLevel3){
-            new ClimbThreeJack().start();
-          }else{
-            new ClimbTwoJack().start();
+        if(Robot.isJackRunning) {
+          if(oi.gamePad.getRightTrigger() && !Robot.isDoubleClimb) {
+            Robot.isDoubleClimb = true;
+            new DeployBuddyClimbFork().start();
           }
         }
+        if(oi.gamePad.getPOVDown()) {
+          // push down jack
+          if(!isJackRunning){
+            isJackRunning = true;
+            if(isLevel3){
+              new ClimbThreeJack().start();
+            }else{
+              new ClimbTwoJack().start();
+            }
+          }
+  
+        } else if(oi.gamePad.getPOVUp()) {
+          doneClimb = true;
+          // new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
+          // new ChangeIntakeState(CargoIntakePositionState.OUT).start();
+          jack.setJackMPVals(false);
+          if(Robot.isDoubleClimb) {
+            new MoveJackCommand(Robot.jack.getJackEncoder() - 2200, 3).start();
+          }
+          else {
+            new MoveJackCommand(JackSubsystem.JackEncoderConstants.UP_STATE,3).start();
+          }
+          isClimb = false;
+        }
 
-      } else if(oi.gamePad.getPOVUp()) {
-        doneClimb = true;
-        // new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
-        // new ChangeIntakeState(CargoIntakePositionState.OUT).start();
-        jack.setJackMPVals(false);
-        new MoveJackCommand(0,3).start();
-        isClimb = false;
+
       }
     } else if(isDefenseMode) { //*********************************DEFENSE****************** */
       if(oi.gamePad.getLeftButtonPressed()) {

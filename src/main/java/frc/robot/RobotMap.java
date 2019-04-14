@@ -48,6 +48,7 @@ public class RobotMap {
     public static final int DOWN_HAL = 4;
     public static final int UP_HAL = 6;
     public static final int FORK_DEPLOY = 7;
+    public static final int BUDDY_CLIMB_DEPLOY_SOLENOID = 6;
   }
 
   public static class CargoIntake {

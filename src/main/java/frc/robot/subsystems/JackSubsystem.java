@@ -39,7 +39,7 @@ public class JackSubsystem extends Subsystem {
   public static class JackEncoderConstants{
     public static int UP_STATE = 0;
     public static int DOWN_STATE_LEVEL_3 = 21740;
-    public static int DOWN_STATE_LEVEL_2 =  (int)(6.0/(1.2*Math.PI/4096) + 605);
+    public static int DOWN_STATE_LEVEL_2 = 8220;
     public static int ABS_TOL = 50;
     public static double DRIVETRAIN_RATIO = 0.4;
   }
@@ -65,6 +65,7 @@ public class JackSubsystem extends Subsystem {
   private DigitalInput botHal;
   private DigitalInput topHal;
   public Solenoid forkDeploy;
+  public Solenoid buddyClimbForkDeploy;
 
   public JackSubsystem(){
     jackMotor = new TalonSRX(RobotMap.Jacks.JACK_MOTOR);
@@ -78,6 +79,7 @@ public class JackSubsystem extends Subsystem {
     jackMotor.enableCurrentLimit(true);
     jackMotor.selectProfileSlot(0, 0);
     forkDeploy = new Solenoid(4, RobotMap.Jacks.FORK_DEPLOY);
+    buddyClimbForkDeploy = new Solenoid(4, RobotMap.Jacks.BUDDY_CLIMB_DEPLOY_SOLENOID);
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);
     botHal = new DigitalInput(RobotMap.Jacks.DOWN_HAL);
     topHal = new DigitalInput(RobotMap.Jacks.UP_HAL);
@@ -89,6 +91,9 @@ public class JackSubsystem extends Subsystem {
   }
   public void releaseForks(boolean isOut){
     forkDeploy.set(isOut);
+  }
+  public void releaseBuddyForks(boolean isOut){
+    buddyClimbForkDeploy.set(isOut);
   }
   public void setJackMotor(double pow){
     jackMotor.set(ControlMode.PercentOutput, pow);

@@ -27,7 +27,7 @@ public class MoveJackCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-   Robot.jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
+   Robot.jack.setJackMotorMP(position);
    timer.start();
   }
 
