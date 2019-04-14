@@ -42,6 +42,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     PREP_CLIMB_2,
     CLIMB_HAB_TWO_TOL,
     CLIMB_HAB_THREE_TOL,
+    LOW_HATCH,
     AUTO_CARGO_SHIP_HATCH
   }
 
@@ -59,17 +60,18 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class LiftDistanceConstants {
     public static final double TRUE_BOTTOM = -0.25;
-    public static final double AUTO_CARGO_SHIP_HATCH = 5;
+    public static final double LOW_HATCH = 5;
     public static final double INTAKE = 0;
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
     public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
     public static final double CARGO_ROCKET_LEVEL_THREE = 67.5;
     public static final double CARGO_LOADING_STATION = 32.5;
-    public static final double HATCH_MID = 27.88 + 3;
-    public static final double HATCH_HIGH = 54.4 + 3;
+    public static final double HATCH_MID = 27.88 + 4;
+    public static final double HATCH_HIGH = 54.4 + 4;
     public static final double PREP_CLIMB_1 = 31.7;
     public static final double PREP_CLIMB_2 = 28.23;
+    public static final double AUTO_CARGO_SHIP_HATCH = 9;
   }
 
   public static class LiftPidConstants {
@@ -206,8 +208,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       case LOW:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.INTAKE));
         break;
-      case AUTO_CARGO_SHIP_HATCH:
-        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.AUTO_CARGO_SHIP_HATCH));
+      case LOW_HATCH:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.LOW_HATCH));
         break;
       case CARGO_SHIP:
         motionMagicLift(getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP));
@@ -247,6 +249,9 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         break;
       case CLIMB_HAB_THREE_TOL:
         motionMagicLift(LiftEncoderConstants.CLIMB_HAB_THREE_TOL);
+        break;
+      case AUTO_CARGO_SHIP_HATCH:
+        motionMagicLift(getTicksFromDistance(LiftDistanceConstants.AUTO_CARGO_SHIP_HATCH));
         break;
       case MANUAL:
         // nothing
@@ -299,8 +304,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         return getTicksFromDistance(LiftDistanceConstants.CARGO_SHIP);
       case CARGO_ROCKET_LEVEL_ONE:
         return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_ONE);
-      case AUTO_CARGO_SHIP_HATCH:
-        return getTicksFromDistance(LiftDistanceConstants.AUTO_CARGO_SHIP_HATCH);
+      case LOW_HATCH:
+        return getTicksFromDistance(LiftDistanceConstants.LOW_HATCH);
       case CARGO_ROCKET_LEVEL_TWO:
         return getTicksFromDistance(LiftDistanceConstants.CARGO_ROCKET_LEVEL_TWO);
       case CARGO_ROCKET_LEVEL_THREE:
@@ -323,6 +328,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
         return LiftEncoderConstants.CLIMB_HAB_TWO_TOL;
       case CLIMB_HAB_THREE_TOL:
         return LiftEncoderConstants.CLIMB_HAB_THREE_TOL;
+      case AUTO_CARGO_SHIP_HATCH:
+        return getTicksFromDistance(LiftDistanceConstants.AUTO_CARGO_SHIP_HATCH);
       case MANUAL:
         return getRawEncoder();
     }
@@ -377,8 +384,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public LiftPositions updateLiftPosition() {
     if(withinStateTolerance(LiftPositions.LOW)) {
       return LiftPositions.LOW;
-    } else if(withinStateTolerance(LiftPositions.AUTO_CARGO_SHIP_HATCH)) {
-      return LiftPositions.AUTO_CARGO_SHIP_HATCH;
+    } else if(withinStateTolerance(LiftPositions.LOW_HATCH)) {
+      return LiftPositions.LOW_HATCH;
     } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_ONE)) {
       return LiftPositions.CARGO_ROCKET_LEVEL_ONE;
     } else if(withinStateTolerance(LiftPositions.CARGO_ROCKET_LEVEL_TWO)) {
@@ -393,6 +400,8 @@ public class LiftSubsystem extends Subsystem implements ILogger {
       return LiftPositions.HATCH_MID;
     } else if(withinStateTolerance(LiftPositions.HATCH_HIGH)) {
       return LiftPositions.HATCH_HIGH;
+    } else if(withinStateTolerance(LiftPositions.AUTO_CARGO_SHIP_HATCH)) {
+      return LiftPositions.AUTO_CARGO_SHIP_HATCH;
     }
     return LiftPositions.MANUAL;
   }

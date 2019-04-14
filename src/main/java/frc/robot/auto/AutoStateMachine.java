@@ -46,9 +46,9 @@ public class AutoStateMachine extends Command {
         actions[index].getCommand().start();
         index++;
       }
-      SmartDashboard.putNumber("State Machine Index", index);
-      SmartDashboard.putBoolean("Is Going Forward", actions[index].isGoingForward());
-      SmartDashboard.putString("next Command", actions[index].getCommand().getName());
+      // SmartDashboard.putNumber("State Machine Index", index);
+      // SmartDashboard.putBoolean("Is Going Forward", actions[index].isGoingForward());
+      // SmartDashboard.putString("next Command", actions[index].getCommand().getName());
     } catch (ArrayIndexOutOfBoundsException e) {
       isFinished = true;
     }
@@ -76,11 +76,11 @@ public class AutoStateMachine extends Command {
     Action[] actions = {
       new Action(new AutoIntakeHatch(), -5, false),
       new Action(new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 0.6), -13, false), // move lift up
-      new Action(new DeployHatchCommand(), -20, true), // deploy first hatch
-      new Action(new MoveLiftCommand(LiftPositions.LOW, 0.6), -22, false), // move lift down
+      new Action(new DeployHatchCommand(), -21, true), // deploy first hatch
+      new Action(new MoveLiftCommand(LiftPositions.LOW, 0.6), -16, true), // move lift down
       new Action(new CloseHatchCommand(), -15, true), // close hatch mech
       new Action(new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 0.6), -15, false), // move lift up
-      new Action(new DeployHatchCommand(), -20, true) // deploy hatch
+      // new Action(new DeployHatchCommand(), -19, true) // deploy hatch
     };
 
     this.actions = actions;

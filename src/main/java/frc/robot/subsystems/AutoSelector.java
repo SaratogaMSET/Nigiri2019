@@ -149,11 +149,10 @@ public class AutoSelector extends Subsystem {
         tab.add("Sandstorm Control", getControl() == Control.TELEOP ? "Teleop" : "Auto");
         tab.add("Auto", autos[chosenAuto]);
     }
+    
     @Override
     public void diagnosticShuffleboard() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drive");
         tab.add("Auto", autos_readable[chosenAuto]);
     }
-
-    
 }

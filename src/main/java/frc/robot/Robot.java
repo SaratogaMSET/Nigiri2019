@@ -231,7 +231,7 @@ public class Robot extends TimedRobot {
     visionFixCommand = new VisionFixCommand();
     gholdTest = new GyroRotationalHoldCommand();
 
-    doubleRocket = new DoubleRocket(true);
+    // doubleRocket = new DoubleRocket(true);
 
     autoTime = new Timer();
     currentAuto = new AutoSelectorValue(autoSelector.getSide(), autoSelector.getAutoPotNumber());
@@ -415,9 +415,9 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      doubleRocket.start();
+      // doubleRocket.start();
       // new SelectAuto().start();
-      // new DoubleCargoShip(true).start();
+      new DoubleCargoShip(false).start();
       // new TestTalonVelocity(10.0).start();
       // new TestDTMaxVA(20.0).start();
       // new MotionProfileCommand("TurnScaling", 0.0).start();
@@ -540,7 +540,12 @@ public class Robot extends TimedRobot {
       if(oi.gamePad.getLeftButtonPressed()) { //****************RUN INTAKES*********** */
         if(RobotState.liftPosition != LiftPositions.LOW
           && !lift.isMoving())  {
-          new SetIntakeRollers(true, 0, 0, 1).start(); // only carriage
+
+          if(oi.gamePad.getStartButton()) {
+            cargoIntake.switchSol(true);
+          } else {
+            new SetIntakeRollers(true, 0, 0, 1).start(); // only carriage
+          }
         } else {
           if(oi.gamePad.getStartButton()) {
             cargoIntake.switchSol(true);
@@ -576,7 +581,7 @@ public class Robot extends TimedRobot {
             new MoveHatchCommand(HatchPositionState.HATCH_IN).start();
           } else { // ***********************************************LIFT TO MID HATCH****** */
             // new MoveLiftCommand(LiftPositions.HATCH_MID, 1.2).start();
-            new MoveLiftCommand(LiftPositions.AUTO_CARGO_SHIP_HATCH, 1.2).start();
+            new MoveLiftCommand(LiftPositions.LOW_HATCH, 1.2).start();
             new MoveHatchCommand(HatchPositionState.HATCH_OUT).start();
           }
         } else if (oi.gamePad.getButtonYPressed()) {
@@ -643,14 +648,14 @@ public class Robot extends TimedRobot {
     } else if(isClimb){ // ****************************************** CLIMBING ************/
       compressor.stop();
       // *************************** DEPLOY ********************************************/
-      if(oi.gamePad.getBackButtonPressed() || oi.driver.driverDeployPressed()) { //*********GUNNER DEPLOY********** */
+      if(oi.gamePad.getBackButtonPressed()) { //*********GUNNER DEPLOY********** */
         new SetIntakeRollers(false, 0, 0, 1).start();
         new DeployHatchCommand().start();
       } else if(oi.gamePad.getBackButtonReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();
-      } if(oi.driver.driverDeployPressed()) {
-        new DeployCommand(RobotState.liftPosition, 1).start();
+      } else if(oi.driver.driverDeployPressed()) {
+        new DeployCommand(RobotState.lastLiftTarget, 1).start();
       } else if(oi.driver.driverDeployReleased()) {
         new SetIntakeRollers(false, 0, 0, 0).start();
         hatch.hatchDeployIn();

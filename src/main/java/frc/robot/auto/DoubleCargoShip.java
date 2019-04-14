@@ -7,7 +7,9 @@
 
 package frc.robot.auto;
 
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.Robot;
 import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.ResetEncoders;
 import frc.robot.commands.semiauto.AutoIntakeHatch;
@@ -18,15 +20,28 @@ public class DoubleCargoShip extends CommandGroup {
    */
   public DoubleCargoShip(boolean slow) {
     // addParallel(new AutoIntakeHatch());
+    addParallel(new AutoStateMachine("DoubleHatchCargoShip"));
+
     if(slow) {
-      addParallel(new AutoStateMachine("DoubleHatchCargoShip"));
-      addSequential(new MotionProfileCommand("HAB1L-CL3-Slow", true, 180));
+      addSequential(new MotionProfileCommand("HAB1L-CL2-Slow", true, 180));
+      addSequential(new MotionProfileCommand("CL2-LSL-Slow", true, 180));
       addSequential(new MotionProfileCommand("LSL-CL1-Slow", true, 180));
     } else {
-      addSequential(new MotionProfileCommand("HAB1L-CL3", true, 180));
-      addSequential(new ResetEncoders());
+      addSequential(new MotionProfileCommand("HAB1L-CL2", true, 180));
+      addSequential(new MotionProfileCommand("CL2-LSL", true, 180));
       addSequential(new MotionProfileCommand("LSL-CL1", true, 180));
     }
+
+    addSequential(new Command() {
+      @Override
+      protected void initialize() {
+          Robot.switchAutoToTeleop();
+      }
+      @Override
+      protected boolean isFinished() {
+        return Robot.autoControl == false;
+      }
+    });
 
     // Add Commands here:
     // e.g. addSequential(new Command1());

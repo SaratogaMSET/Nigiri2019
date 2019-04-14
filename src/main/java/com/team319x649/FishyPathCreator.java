@@ -57,10 +57,13 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		getNearCargoRightToLoadingStationSlow(), getLSRToCargoMid(), getLSRToCargoMidSlow(),
 		getFarCargoLeft(), getFarCargoRight());
 		*/
-		return asList(getCloseFrontPath(), getLeftFrontCargoToLSLSlow(), getLSLToCargoNearSlow(),
-		getRightFrontCargoToLSRSlow(), getLSRToCargoNearSlow());
 		// return asList(getSlowIanAssistPathLeft(), getSlowIanAssistPathRight());
-		// return asList(getDoubleRocketFast(), getDoubleRocketFast2(), getDoubleRocketFast3());
+		return asList(getDoubleRocketFast(), getDoubleRocketFast2(), getDoubleRocketFast3());
+		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
+		// return asList(getMidCargoLeft(), getMidCargoToLSL(), getLSLToCargoNear());
+		// return asList(getMidCargoLeftSlow(), getMidCargoToLSLSlow(), getLSLToCargoNearSlow(), 
+		// getMidCargoLeft(), getMidCargoToLSL(), getLSLToCargoNear());
+
 		// return asList(getFarCargoLeft(), getFarCargoLeftSlow(), getLSLToCargoNear(), getLSLToCargoNearSlow());
 		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 		// return asList(getFarCargoLeft(), getLSLToCargoNear());
@@ -228,70 +231,83 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		return leftNearCargoShip;
 	}
 
+	// private FishyPath getMidCargoLeft() {
+	// 	FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL2", DrivetrainSubsystem.WHEELBASE_FEET);
+	// 	leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
+	// 	leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true);
+	// 	// leftNearCargoShip.addWaypointRelative(7, 0.65, 15, 6, 8.5, true, true);
+	// 	// leftNearCargoShip.addWaypoint(21.7, 22, 89.99, 0, 6, true, true);
+	// 	leftNearCargoShip.addWaypoint(24, 20, 0, 0, 8.5, true);
+	// 	return leftNearCargoShip;
+	// }
+
+	
 	private FishyPath getMidCargoLeft() {
 		FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL2", DrivetrainSubsystem.WHEELBASE_FEET);
-		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
-		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 6, 6, true);
-		// leftNearCargoShip.addWaypointRelative(7, 0.65, 15, 6, 8.5, true, true);
-		// leftNearCargoShip.addWaypoint(21.7, 22, 89.99, 0, 6, true, true);
-		leftNearCargoShip.addWaypoint(24, 20, 0, 0, 6, true);
-		return leftNearCargoShip;
-	}
-
-	private FishyPath getFarCargoLeft() {
-		FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL3", DrivetrainSubsystem.WHEELBASE_FEET);
 
 		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
 		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
-		leftNearCargoShip.addWaypoint(17, 17.354, -180, 10, 11.8, true);
-		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 10, true);
-		leftNearCargoShip.addWaypoint(23.6, 18.5, -91, 0, 3, false);
-
-		leftNearCargoShip.addWaypoint(25.5, 21.5, -170, 0, 5, true);
-		leftNearCargoShip.addWaypoint(12, 24, -200, 10, 11.8, false);
-		leftNearCargoShip.addWaypoint(2.5, 26.5, -180, 0, 10, false);
+		leftNearCargoShip.addWaypoint(17, 18, -170, 7, 7, true);
+		leftNearCargoShip.addWaypoint(24.5, 22, -120, 0, 7, true);
+		leftNearCargoShip.addWaypoint(23, 17.5, -91, 0, 3, false);
 
 		return leftNearCargoShip;
 	}
 
-	private FishyPath getFarCargoLeftSlow() {
-		FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL3-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
-		// twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		// twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 3, 3, true);
+	private FishyPath getMidCargoToLSL() {
+		FishyPath leftNearCargoShip = new FishyPath(config, "CL2-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
+		leftNearCargoShip.addWaypoint(23, 17.5, -91, 0, 0);
 
-		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
-		leftNearCargoShip.addWaypoint(17, 17.354, -180, 6, 6, true);
-		leftNearCargoShip.addWaypoint(24, 22, -100, 0, 6, true);
-		leftNearCargoShip.addWaypoint(23.6, 17.2, -91, 0, 3, false);
-
-		leftNearCargoShip.addWaypoint(24.5, 22.5, -135, 0, 4, true);
-		leftNearCargoShip.addWaypoint(12, 22, -210, 6, 6, false);
-		
-		leftNearCargoShip.addWaypoint(2, 25.2, -180, 0, 6, false);
+		leftNearCargoShip.addWaypoint(25.5, 22.5, -150, 0, 4, true);
+		leftNearCargoShip.addWaypoint(6, 25.5, -180, 4, 7, false);
+		leftNearCargoShip.addWaypoint(1, 25.5, -180, 0, 4, false);
 
 		return leftNearCargoShip;
 	}
 
 	private FishyPath getLSLToCargoNear() {
 		FishyPath leftNearCargoShip = new FishyPath(config, "LSL-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
-		leftNearCargoShip.addWaypoint(2.5, 25.5, -180, 0, 0, false);
+		leftNearCargoShip.addWaypoint(1, 25.5, -180, 0, 0);
+		leftNearCargoShip.addWaypoint(8, 25.5, -180, 6, 6, true);
+		// leftNearCargoShip.addWaypoint(17, 20, -180, 8, 9, true);
+		leftNearCargoShip.addWaypoint(23.5, 23.5, -150, 0, 6, true);
+		leftNearCargoShip.addWaypoint(20.3, 17.5, -91, 0, 4, false);
+		return leftNearCargoShip;
+	}
 
-		leftNearCargoShip.addWaypoint(17, 20, -180, 8, 9, true);
-		leftNearCargoShip.addWaypoint(23, 23, -120, 0, 8, true);
-		leftNearCargoShip.addWaypoint(22, 19, -91, 0, 4, false);
+	private FishyPath getMidCargoLeftSlow() {
+		FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL2-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
+
+		leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
+		leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
+		leftNearCargoShip.addWaypoint(17, 17.5, -180, 4, 4, true);
+		leftNearCargoShip.addWaypoint(24, 21, -100, 0, 4, true);
+		leftNearCargoShip.addWaypoint(23.2, 17.5, -91, 0, 3, false);
+
+		return leftNearCargoShip;
+	}
+
+	private FishyPath getMidCargoToLSLSlow() {
+		FishyPath leftNearCargoShip = new FishyPath(config, "CL2-LSL-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
+		leftNearCargoShip.addWaypoint(23.2, 17.5, -91, 0, 0);
+
+		leftNearCargoShip.addWaypoint(25.5, 22.5, -150, 0, 4, true);
+		leftNearCargoShip.addWaypoint(6, 25.5, -180, 4, 4, false);
+		leftNearCargoShip.addWaypoint(2, 25.5, -180, 0, 4, false);
+
 		return leftNearCargoShip;
 	}
 
 	private FishyPath getLSLToCargoNearSlow() {
 		FishyPath leftNearCargoShip = new FishyPath(config, "LSL-CL1-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
-		leftNearCargoShip.addWaypoint(2.5, 24.75, -180, 0, 0, false);
-
-		leftNearCargoShip.addWaypoint(17, 20, -180, 4, 4, true);
-		leftNearCargoShip.addWaypoint(23, 23, -120, 0, 4, true);
-		leftNearCargoShip.addWaypoint(21.7, 18, -91, 0, 4, false);
+		leftNearCargoShip.addWaypoint(2, 25.5, -180, 0, 0);
+		leftNearCargoShip.addWaypoint(8, 25.5, -180, 4, 4, true);
+		leftNearCargoShip.addWaypoint(23.5, 23.5, -150, 0, 4, true);
+		leftNearCargoShip.addWaypoint(21, 17.5, -91, 0, 4, false);
 		return leftNearCargoShip;
 	}
+
+	
 
 	private FishyPath getFarCargoLeftToLSL() {
 		FishyPath leftCargoToLSL = new FishyPath(config, "CL3-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
@@ -371,55 +387,6 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		nearCargoLoadingStation.addWaypoint(23, 4, 180-30, 0, 8.5, true);
 		nearCargoLoadingStation.addWaypoint(2.5, 2.25, 180, 0, 10, false);
 		return nearCargoLoadingStation;
-	}
-
-	private FishyPath getNearCargoRightToLoadingStationSlow() {
-		FishyPath nearCargoLoadingStation = new FishyPath(config, "CR1-LSR-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
-		nearCargoLoadingStation.addWaypoint(21.7, 9, 89.99, 0, 0);
-		nearCargoLoadingStation.addWaypoint(23, 4, 180-30, 0, 4, true);
-		nearCargoLoadingStation.addWaypoint(2.5, 2.25, 180, 0, 7, false);
-		return nearCargoLoadingStation;
-	}
-
-	private FishyPath getLSRToCargoNear() {
-		FishyPath rightNearCargoShip = new FishyPath(config, "LSR-CR1", DrivetrainSubsystem.WHEELBASE_FEET);
-		rightNearCargoShip.addWaypoint(2.5, 2.25, 180, 0, 0);
-		rightNearCargoShip.addWaypoint(23, 4, 180-40, 0, 10, true);
-		rightNearCargoShip.addWaypoint(21.7, 9, 89.99, 0, 8.5, false);
-		return rightNearCargoShip;
-	}
-
-	private FishyPath getLSRToCargoNearSlow() {
-		FishyPath rightNearCargoShip = new FishyPath(config, "LSR-CR1-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
-		rightNearCargoShip.addWaypoint(2.5, 2.25, 180, 0, 0);
-		rightNearCargoShip.addWaypoint(23, 4, 180-40, 0, 4, true);
-		rightNearCargoShip.addWaypoint(21.7, 9, 89.99, 0, 4, false);
-		return rightNearCargoShip;
-	}
-
-	private FishyPath getLSRToCargoMid() {
-		FishyPath rightNearCargoShip = new FishyPath(config, "LSR-CR2", DrivetrainSubsystem.WHEELBASE_FEET);
-		rightNearCargoShip.addWaypoint(2.5, 2.25, 180, 0, 0);
-		rightNearCargoShip.addWaypoint(20, 7, 180, 10, 10, true);
-		rightNearCargoShip.addWaypoint(23, 4, 180-89, 0, 10, true);
-		rightNearCargoShip.addWaypoint(23.5, 9, 180-89, 0, 8.5, false);
-		return rightNearCargoShip;
-	}
-
-	private FishyPath getLSRToCargoMidSlow() {
-		FishyPath rightNearCargoShip = new FishyPath(config, "LSR-CR2-Slow", DrivetrainSubsystem.WHEELBASE_FEET);
-		rightNearCargoShip.addWaypoint(2.5, 2.25, 180, 0, 0);
-		rightNearCargoShip.addWaypoint(20, 7, 180, 4, 4, true);
-		rightNearCargoShip.addWaypoint(23, 4, 180-89, 0, 4, true);
-		rightNearCargoShip.addWaypoint(23.5, 9, 180-89, 0, 4, false);
-		return rightNearCargoShip;
-	}
-
-	private FishyPath getFarCargoLeftToLoadingStation() {
-		FishyPath farCargoLoadingStation = new FishyPath(config, "CL2-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
-		farCargoLoadingStation.addWaypoint(24, 20, 0, 0, 0);
-		farCargoLoadingStation.addWaypoint(2.5, 24.75, 0, 0, 10, false);
-		return farCargoLoadingStation;
 	}
 
 	private FishyPath getFarCargoRightToLoadingStation() {
@@ -657,3 +624,45 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		// FishyPath anglePath = new FishyPath(config, "angle", DrivetrainSubsystem.WHEELBASE_FEET);
 		// anglePath.addWaypoint(24, 24, 45, 0, 0);
 		// anglePath.addWaypoint(15, 15, 45, 0, 11.5);
+
+
+
+
+
+
+
+
+
+
+		// private FishyPath getMidCargoLeft() {
+		// 	FishyPath leftNearCargoShip = new FishyPath(config, "HAB1L-CL2", DrivetrainSubsystem.WHEELBASE_FEET);
+	
+		// 	leftNearCargoShip.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
+		// 	leftNearCargoShip.addWaypointRelative(4.5, 0, 0, 4, 4, true);
+		// 	leftNearCargoShip.addWaypoint(17, 18, -170, 6, 6, true);
+		// 	leftNearCargoShip.addWaypoint(24.5, 22, -120, 0, 6, true);
+		// 	leftNearCargoShip.addWaypoint(23.12, 17.5, -91, 0, 3, false);
+	
+		// 	return leftNearCargoShip;
+		// }
+	
+		// private FishyPath getMidCargoToLSL() {
+		// 	FishyPath leftNearCargoShip = new FishyPath(config, "CL2-LSL", DrivetrainSubsystem.WHEELBASE_FEET);
+		// 	leftNearCargoShip.addWaypoint(23.12, 17.5, -91, 0, 0);
+	
+		// 	leftNearCargoShip.addWaypoint(25.5, 22.5, -150, 0, 4, true);
+		// 	leftNearCargoShip.addWaypoint(6, 25, -180, 4, 6, false);
+		// 	leftNearCargoShip.addWaypoint(1, 25, -180, 0, 4, false);
+	
+		// 	return leftNearCargoShip;
+		// }
+	
+		// private FishyPath getLSLToCargoNear() {
+		// 	FishyPath leftNearCargoShip = new FishyPath(config, "LSL-CL1", DrivetrainSubsystem.WHEELBASE_FEET);
+		// 	leftNearCargoShip.addWaypoint(1, 25, -180, 0, 0);
+		// 	leftNearCargoShip.addWaypoint(8, 25, -180, 6, 6, true);
+		// 	// leftNearCargoShip.addWaypoint(17, 20, -180, 8, 9, true);
+		// 	leftNearCargoShip.addWaypoint(23.5, 23.5, -150, 0, 6, true);
+		// 	leftNearCargoShip.addWaypoint(21, 17.5, -91, 0, 4, false);
+		// 	return leftNearCargoShip;
+		// }
