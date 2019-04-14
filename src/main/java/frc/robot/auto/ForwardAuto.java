@@ -8,6 +8,8 @@
 package frc.robot.auto;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.commands.DeployHatchCommand;
+import frc.robot.commands.GyroPIDCommand;
 import frc.robot.commands.MotionProfileCommand;
 import frc.robot.commands.semiauto.AutoIntakeHatch;
 import edu.wpi.first.wpilibj.command.Command;
@@ -37,6 +39,21 @@ public class ForwardAuto extends CommandGroup {
     // addSequential(new AutoIntakeHatch());
     if (close) {
       addSequential(new MotionProfileCommand("HABM-CF-close", false));
+      /*addParallel(new DeployHatchCommand());
+      addSequential(new MotionProfileCommand("CLF-LSL-Slow", true));
+      addParallel(new Command(){
+        @Override
+        protected void initialize() {
+          super.initialize();
+          Robot.hatch.hatchDeployIn();
+        }
+        @Override
+        protected boolean isFinished() {
+          return true;
+        }
+      });
+      addSequential(new MotionProfileCommand("LSL-CL1-Slow", true));
+      */
     }
     else {
       addSequential(new MotionProfileCommand("HABM-CF", false));

@@ -19,12 +19,14 @@ public class CargoShipSide extends CommandGroup {
    */
   public CargoShipSide(boolean isRight) {
     if(isRight) {
-      addSequential(new MotionProfileCommand("HAB1R-CR1", true));
+      addSequential(new MotionProfileCommand("HAB1R-CR1-Slow", true));
+      // addSequential(new MotionProfileCommand("CR1-LSR-Slow", true));
+      // addSequential(new MotionProfileCommand("LSR-CR2-Slow", true));
+
     } else {
-      addSequential(new MotionProfileCommand("HAB1L-CL1", true));
-      addSequential(new GyroPIDCommand(-90, 2));
-      addSequential(new GyroPIDCommand(0, 2));
-      addSequential(new MotionProfileCommand("CL1-LSL", false));
+      addSequential(new MotionProfileCommand("HAB1L-CL1-Slow", true, 180));
+      // addSequential(new MotionProfileCommand("CL1-LSL-Slow", true, 180));
+      // addSequential(new MotionProfileCommand("LSL-CL2-Slow", true, 180));
     }
     addSequential(new Command() {
       @Override
