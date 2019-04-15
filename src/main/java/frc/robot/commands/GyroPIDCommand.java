@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.util.FishyMath;
+import frc.robot.util.pid.AdvancedPIDController;
 
 public class GyroPIDCommand extends Command {
 
@@ -26,7 +27,7 @@ public class GyroPIDCommand extends Command {
 
   double targetAngle;
 
-  PIDController pidController;
+  AdvancedPIDController pidController;
 
   public GyroPIDCommand(double targetAngle, double timeout) {
     // Use requires() here to declare subsystem dependencies
@@ -44,7 +45,7 @@ public class GyroPIDCommand extends Command {
 
     onTargetTime = null;
 
-    pidController = new PIDController(0.015, 0.0, 0.22, new PIDSource() {
+    pidController = new AdvancedPIDController(0.015, 0.003, 0.22, new PIDSource() {
       @Override
       public void setPIDSourceType(PIDSourceType pidSource) {}
       @Override
@@ -57,17 +58,11 @@ public class GyroPIDCommand extends Command {
     }, new PIDOutput(){
       @Override
       public void pidWrite(double output) {
-        // IZone implementation
-        if(Math.abs(pidController.getError()) < 15) {
-          pidController.setI(0.00025);
-        }
-        else {
-          pidController.setI(0.0);
-        }
         Robot.gyro.gyroPIDOutput = output;
       }
-    }, 0.01);
+    });
     pidController.setAbsoluteTolerance(3);
+    pidController.setAbsoluteIZone(15);
     pidController.setInputRange(-180.0f, 180.0f);
     pidController.setOutputRange(-1, 1);
     pidController.setContinuous(true);
@@ -96,7 +91,7 @@ public class GyroPIDCommand extends Command {
       if(onTargetTime == null) {
         onTargetTime = time.get();
       }
-      else if (time.get() > onTargetTime + 0.2) {
+      else if (time.get() > onTargetTime + 0.3) {
         return true;
       }
     }
@@ -109,7 +104,6 @@ public class GyroPIDCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    pidController.setI(0.0);
     pidController.disable();
     Robot.drive.rawDrive(0, 0);
   }
