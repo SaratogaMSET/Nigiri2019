@@ -199,7 +199,9 @@ public class MotionProfileCommand extends FishyCommand {
     Robot.drive.motors[3].set(ControlMode.PercentOutput, 0.0);
     logger.drain();
     logger.flush();
-    Robot.gyro.gyro.setAngleAdjustment(0.0);
+
+    //***********THINKING SOMETHING DON'T LEAVE HERE**************** */
+    // Robot.gyro.gyro.setAngleAdjustment(0.0);
     motionProfileControlLoop.stopLoop();
   }
 

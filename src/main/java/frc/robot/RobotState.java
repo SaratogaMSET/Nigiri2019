@@ -72,7 +72,7 @@ public class RobotState {
     }
 
     public static boolean isLiftCargoState(LiftPositions current) {
-        if(current != LiftPositions.HATCH_MID && current != LiftPositions.HATCH_HIGH && current != LiftPositions.AUTO_CARGO_SHIP_HATCH) {
+        if(current != LiftPositions.HATCH_MID && current != LiftPositions.HATCH_HIGH && current != LiftPositions.LOW_HATCH) {
             return true;
         } else if(current == LiftPositions.LOW && hatchPositionState == HatchPositionState.HATCH_IN) {
             return true;
