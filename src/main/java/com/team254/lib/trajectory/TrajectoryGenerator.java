@@ -54,7 +54,7 @@ public class TrajectoryGenerator {
 			return null;
 		}
 
-		Trajectory traj = new Trajectory(time + (goalVel == 0.0 ? 3 : 1));
+		Trajectory traj = new Trajectory(time);
 
 		double currentPosition = start_pos;
 		double currentVelocity = start_vel * ((isReverse) ? -1.0 : 1.0);
@@ -111,17 +111,6 @@ public class TrajectoryGenerator {
 			}
 
 			currentPosition += empirical_velocity * dt;
-		}
-		if(goalVel == 0.0) {
-			for(int i = 1; i <= 2; i++) {
-				Trajectory.Segment current = new Trajectory.Segment();
-				current.pos = currentPosition;
-				current.vel = 0.0;
-				current.acc = 0.0;
-				current.dt = dt;
-				current.isReverse = isReverse;
-				traj.setSegment(time + i, current);
-			}
 		}
 		
 		System.out.println("Missing distance: " + (goalPosition - currentPosition));

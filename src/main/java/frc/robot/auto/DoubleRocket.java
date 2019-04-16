@@ -26,7 +26,7 @@ public class DoubleRocket extends CommandGroup {
    */
   public DoubleRocket(boolean isLeft) {
     
-    addParallel(new PathTrigger(0.0, -1, -1, 179, new AutoIntakeHatch()));
+    // addParallel(new PathTrigger(0.0, -1, -1, 179, new AutoIntakeHatch()));
     
 
 
@@ -34,16 +34,16 @@ public class DoubleRocket extends CommandGroup {
     // right -21.30
     // gyro 13.12
     addSequential(new MotionProfileCommand("DoubleRocketFast", 180.0));
-    addParallel(new HatchMid());
+    // addParallel(new HatchMid());
     addSequential(new GyroPIDCommand(33, 10.0));
-    addParallel(new PathTrigger(0, -18.77, -19.81, -150, new DeployHatchCommand()));
+    // addParallel(new PathTrigger(0, -18.77, -19.81, -150, new DeployHatchCommand()));
     addSequential(new MotionProfileCommand("DoubleRocketFast2", 180.0));
     addSequential(new GyroPIDCommand(-30, 10.0));
     addParallel(new Command(){
       @Override
       protected void initialize() {
         super.initialize();
-        Robot.hatch.hatchDeployIn();
+        // Robot.hatch.hatchDeployIn();
       }
       @Override
       // i think we should run a pure pursuit
@@ -51,7 +51,7 @@ public class DoubleRocket extends CommandGroup {
         return true;
       }
     });
-    addParallel(new MoveLiftCommand(LiftPositions.LOW, 1.2));
+    // addParallel(new MoveLiftCommand(LiftPositions.LOW, 1.2));
     addSequential(new MotionProfileCommand("DoubleRocketFast3", 180.0, -0.04));
     addSequential(new GyroPIDCommand(64.0, 10.0));
 

@@ -27,6 +27,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
     public static void main(String[] args) {
 		new FishyPathCreator().generatePaths();
+		System.out.println(FishyMath.rpm2talonunits(FishyMath.fps2rpm(14.0)));
 	}
 
 	private FishyPathCreator() {
@@ -436,7 +437,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "DoubleRocketFast", DrivetrainSubsystem.WHEELBASE_FEET);
 		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
 		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 8, 8, true);
-		twoHatchRocketLeft.addWaypoint(22.87, 23.78, -180 + 60, 0, 11, 8, true);
+		twoHatchRocketLeft.addWaypoint(22.87, 24.05, -180 + 60, 0, 11, 8, true);
 
 		return twoHatchRocketLeft;
 	}

@@ -420,7 +420,7 @@ public class Robot extends TimedRobot {
       // new DoubleCargoShip(true).start();
       // new TestTalonVelocity(10.0).start();
       // new TestDTMaxVA(20.0).start();
-      // new MotionProfileCommand("TurnScaling", 0.0).start();
+      // new MotionProfileCommand("StraightFastLong", 0.0).start();
       // new GyroPIDCommand(90.0, 10.0).start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);

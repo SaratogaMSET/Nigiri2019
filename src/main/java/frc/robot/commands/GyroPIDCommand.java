@@ -45,7 +45,7 @@ public class GyroPIDCommand extends Command {
 
     onTargetTime = null;
 
-    pidController = new AdvancedPIDController(0.015, 0.003, 0.22, new PIDSource() {
+    pidController = new AdvancedPIDController(0.01, 0.000, 0.002, new PIDSource() {
       @Override
       public void setPIDSourceType(PIDSourceType pidSource) {}
       @Override
