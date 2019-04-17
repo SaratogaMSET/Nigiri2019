@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.commands.semiauto.AutoIntakeHatch;
+import frc.robot.commands.test.TestDTMaxVA;
+import frc.robot.commands.test.TestTalonVelocity;
+import frc.robot.commands.test.TuneMotionProfile;
 import frc.robot.subsystems.AutoSelector.Side;
 import frc.robot.subsystems.AutoSelector.Control;
 
@@ -26,7 +29,7 @@ public class SelectAuto extends CommandGroup {
     if(control == Control.TELEOP) {
       addSequential(new AutoIntakeHatch());
     } else {
-      addParallel(new AutoIntakeHatch());
+      // addParallel(new AutoIntakeHatch());
       addSequential(Robot.autoCommand);
     }
     addSequential(new Command() {
@@ -54,49 +57,68 @@ public class SelectAuto extends CommandGroup {
         break;
       case 2:
         if(side == Side.LEFT) {
-          Robot.autoCommand = new NearRocket(false);
-          SmartDashboard.putString("current Auto", "near rocket Left");
+          Robot.autoCommand = new IanAssistedDrive(false, true);
+          SmartDashboard.putString("current Auto", "back rocket no deploy left");
         } else {
-          Robot.autoCommand = new NearRocket(true);
-          SmartDashboard.putString("current Auto", "double rocket Right");
+          Robot.autoCommand = new IanAssistedDrive(true, true);
+          SmartDashboard.putString("current Auto", "back rocket no deploy right");
         }
         break;
       case 3:
-        // addSequential(Robot.closeCargoShip);
+        Robot.autoCommand = new DoubleCargoShip(false);
+        SmartDashboard.putString("current Auto", "double cargo");
         break;
       case 4:
-        // addSequential(Robot.cargoShipAuto);
+        Robot.autoCommand = new DoubleCargoShip(true);
+        SmartDashboard.putString("current Auto", "double cargo slow");
         break;
       case 5:
         if(side == Side.LEFT) {
-          // addSequential(Robot.cargoSideLeft);
+          Robot.autoCommand = new TestDTMaxVA(20);
+          SmartDashboard.putString("current Auto", "TestDTMaxVA");
         } else {
-          // addSequential(Robot.cargoSideRight);
+          Robot.autoCommand = new TestTalonVelocity(20);
+          SmartDashboard.putString("current Auto", "TestTalonVelocity");
         }
         break;
       case 6:
-        // addSequential(Robot.testDTMaxVA);
+        if(side == Side.LEFT) {
+          Robot.autoCommand = new TuneMotionProfile("StraightFastLong");
+          SmartDashboard.putString("current Auto", "StraightFastLong");
+        } else {
+          Robot.autoCommand = new TuneMotionProfile("StraightFastLongReverse");
+          SmartDashboard.putString("current Auto", "StraightFastLongReverse");
+        }
         break;
       case 7:
-        // addSequential(Robot.testTalonVel);
+        if(side == Side.LEFT) {
+          Robot.autoCommand = new TuneMotionProfile("TurnScaling");
+          SmartDashboard.putString("current Auto", "TurnScaling");
+        } else {
+          Robot.autoCommand = new TuneMotionProfile("TurnScalingReverse");
+          SmartDashboard.putString("current Auto", "TurnScalingReverse");
+        }
         break;
       case 8:
         if(side == Side.LEFT) {
-          // addSequential(Robot.backRocketLeftSlow);
+          Robot.autoCommand = new TuneMotionProfile("StraightSlowLong");
+          SmartDashboard.putString("current Auto", "StraightSlowLong");
         } else {
-          // addSequential(Robot.backRocketRightSlow);
+          Robot.autoCommand = new TuneMotionProfile("StraightSlowLongReverse");
+          SmartDashboard.putString("current Auto", "StraightSlowLongReverse");
         }
         break;
       case 9:
         if(side == Side.LEFT) {
-          // addSequential(Robot.cargoSideFarLeft);
-          Robot.secondLeg = new CL2xLSL();
+          Robot.autoCommand = new TuneMotionProfile("StraightFastShort");
+          SmartDashboard.putString("current Auto", "StraightFastShort");
         } else {
-          // addSequential(Robot.backRocketRightSlow);
+          Robot.autoCommand = new TuneMotionProfile("StraightFastShortReverse");
+          SmartDashboard.putString("current Auto", "StraightFastShortReverse");
         }
         break;
       case 10:
-        SmartDashboard.putString("current Auto", "10");
+
         break;
     }
   }
