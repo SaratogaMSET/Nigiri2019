@@ -519,7 +519,7 @@ public class Robot extends TimedRobot {
           autoTime.reset();
           autoTime.start();
         } else {
-          if(autoTime.get() > 2) {
+          if(autoTime.get() > 0.5) {
             SelectAuto.chooseAuto(autoNumber, autoSide);
             currentAuto = new AutoSelectorValue(autoSide, autoNumber);
             autoTime.stop();
@@ -774,7 +774,7 @@ public class Robot extends TimedRobot {
       else {
         if(visionFixCommand != null) visionFixCommand.cancel();
         if(gholdTest != null) gholdTest.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 18.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }
