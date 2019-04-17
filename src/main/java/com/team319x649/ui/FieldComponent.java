@@ -82,6 +82,8 @@ public class FieldComponent extends JPanel {
                 drawRobot(segment, g, Color.GRAY, 1);
             }
         }
+        Segment segment = path.getTrajectory().getSegment(path.getTrajectory().getNumSegments() - 1);
+        drawPoint(segment.x, segment.y, g, Color.cyan, 9);
     }
 
     private void drawWaypoints(Graphics g) {

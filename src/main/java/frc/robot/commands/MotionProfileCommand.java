@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathGenerator;
 import com.team254.lib.trajectory.TrajectoryFollower;
@@ -36,15 +37,17 @@ public class MotionProfileCommand extends FishyCommand {
 
   double previous_heading = 0.0;
 
-  public static final double CONST_kP_gyro_doubletraction = -0.007;
-  public static final double CONST_kP_gyro_omnitraction = -0.007;
+  public static final double CONST_kP_gyro_doubletraction = -0.00;
+  public static final double CONST_kP_gyro_omnitraction = -0.00;
+
+  public static final double CONST_kA = 0.001;
 
   public static double kP_gyro_doubletraction;
   public static double kP_gyro_omnitraction;
 
   double heading_offset = 0.0;
 
-  private ControlLoop motionProfileControlLoop = new ControlLoop(0.05) {
+  private ControlLoop motionProfileControlLoop = new ControlLoop(0.02) {
     @Override
     public boolean init() {
       return true;
@@ -73,16 +76,19 @@ public class MotionProfileCommand extends FishyCommand {
 
         log("Left TPos", leftFollower.getSegment().pos);
         log("Right TPos", rightFollower.getSegment().pos);
-        log("LX", leftFollower.getSegment().x);
-        log("LY", leftFollower.getSegment().y);
+        // log("LX", leftFollower.getSegment().x);
+        // log("LY", leftFollower.getSegment().y);
 
-        log("RX", rightFollower.getSegment().x);
-        log("RY", rightFollower.getSegment().y);
+        // log("RX", rightFollower.getSegment().x);
+        // log("RY", rightFollower.getSegment().y);
+
+        double rdist = Robot.drive.getRightEncoderDistance();
+        double ldist = Robot.drive.getLeftEncoderDistance();
 
         double leftSpeedRPM, rightSpeedRPM;
 
-        leftSpeedRPM = leftFollower.calculateTargetRPM(Robot.drive.getLeftEncoderDistance());
-        rightSpeedRPM = rightFollower.calculateTargetRPM(Robot.drive.getRightEncoderDistance());
+        leftSpeedRPM = leftFollower.calculateTargetRPM(ldist);
+        rightSpeedRPM = rightFollower.calculateTargetRPM(rdist);
 
         double heading = -FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle());
         double desiredHeading = FishyMath.boundThetaNeg180to180(FishyMath.r2d(leftFollower.getHeading()));
@@ -101,22 +107,22 @@ public class MotionProfileCommand extends FishyCommand {
         log("Right Actual", Robot.drive.getRightEncoderVelocity());
         log("Left Actual", Robot.drive.getLeftEncoderVelocity());
 
-        double left = leftSpeedRPM + turn;
-        double right = rightSpeedRPM - turn;
+        double left = leftSpeedRPM;
+        double right = rightSpeedRPM;
 
         double canTimeStart = Timer.getFPGATimestamp();
-        Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right));
-        Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left));
+        Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right), DemandType.ArbitraryFeedForward, CONST_kA * rightFollower.getSegment().acc - turn);
+        Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left), DemandType.ArbitraryFeedForward, CONST_kA * leftFollower.getSegment().acc + turn);
         double canTimeEnd = Timer.getFPGATimestamp();
 
-        log("Left Setpoint", left);
-        log("Right Setpoint", right);
+        // log("Left Setpoint", left);
+        // log("Right Setpoint", right);
         log("Heading Diff", headingDiff);
-        log("Target Heading", desiredHeading);
-        log("Actual Heading", heading);
-        log("T %", turn/left);
-        log("Left APos", Robot.drive.getLeftEncoderDistance());
-        log("Right APos", Robot.drive.getRightEncoderDistance());
+        // log("Target Heading", desiredHeading);
+        // log("Actual Heading", heading);
+        log("T %", turn);
+        log("Left APos", ldist);
+        log("Right APos", rdist);
         log("CAN Time(ms)", (canTimeEnd - canTimeStart)*1000.0);
 
         logger.write();
@@ -216,8 +222,8 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    leftFollower.configure(0.4, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(0.8, 0.0, Robot.drive.getRightEncoderDistance());
+    leftFollower.configure(0.0, 0.0, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(0.0, 0.0, Robot.drive.getRightEncoderDistance());
 
     Robot.gyro.gyro.setAngleAdjustment(heading_offset);
 

@@ -1,6 +1,8 @@
 package com.team254.lib.trajectory;
 
 import com.team254.lib.trajectory.Trajectory.Segment;
+import com.team254.lib.trajectory.TrajectoryGenerator.Config;
+import com.team254.lib.trajectory.TrajectoryGenerator.Strategy;
 
 import frc.robot.util.FishyMath;
 
@@ -54,29 +56,38 @@ public class PathGenerator {
 		}
 
 		// Generate a smooth trajectory over the total distance.
+		Config segmentConfig = new Config();
+		segmentConfig.dt = config.dt;
+		segmentConfig.max_acc = path.getWaypoint(1).maxAccel;
+		segmentConfig.max_vel = path.getWaypoint(1).maxVelocity;
+		segmentConfig.max_jerk = config.max_jerk;
 		Trajectory traj = TrajectoryGenerator.generate(
-				config,
-				0.0,
-				0.0,
-				spline_lengths[0],
-				path.getWaypoint(1).endVelocity,
-				path.getWaypoint(1).maxVelocity,
-				path.getWaypoint(1).maxAccel,
-				path.getWaypoint(1).isReverse);
+			segmentConfig, 
+			TrajectoryGenerator.AutomaticStrategy, 
+			0.0, 
+			0.0, 
+			path.getWaypoint(0).theta,
+			spline_lengths[0], 
+			path.getWaypoint(1).endVelocity, 
+			path.getWaypoint(1).theta,
+			path.getWaypoint(1).isReverse);
 		double distance = spline_lengths[0];
 		for (int i = 2; i < path.num_waypoints_; ++i) {
 			distance += spline_lengths[i - 1];
+			segmentConfig.max_acc = path.getWaypoint(i).maxAccel;
+			segmentConfig.max_vel = path.getWaypoint(i).maxVelocity;
+
 			traj.append(
-					TrajectoryGenerator.generate(
-							config,
-							traj.getSegment(traj.getNumSegments() - 1).vel,
-							traj.getSegment(traj.getNumSegments() - 1).pos + traj.getSegment(traj.getNumSegments() - 1).vel * config.dt,
-							distance,
-							path.getWaypoint(i).endVelocity,
-							path.getWaypoint(i).maxVelocity,
-							path.getWaypoint(i).maxAccel,
-							path.getWaypoint(i).isReverse));
-							// System.out.println(traj);
+				TrajectoryGenerator.generate(
+					segmentConfig, 
+					TrajectoryGenerator.AutomaticStrategy, 
+					traj.getSegment(traj.getNumSegments() - 1).pos,
+					traj.getSegment(traj.getNumSegments() - 1).vel,
+					traj.getSegment(traj.getNumSegments() - 1).heading,
+					distance, 
+					path.getWaypoint(i).endVelocity, 
+					path.getWaypoint(i).theta,
+					path.getWaypoint(i).isReverse));
 		}
 
 		// Assign headings based on the splines.

@@ -27,14 +27,15 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
     public static void main(String[] args) {
 		new FishyPathCreator().generatePaths();
+		System.out.println("HELLo");
 	}
 
 	private FishyPathCreator() {
 		// DO NOT TOUCH
-		config.dt = 0.05;
+		config.dt = 0.02;
 		config.max_acc = 10.0; // Robot max acceleration in FPS^2
 		config.max_vel = 14.0; // Robot max velocity in FPS
-		config.max_jerk = 0.0;
+		config.max_jerk = 100.0;
 	}
 
     @Override
@@ -137,7 +138,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		headingTesting.addWaypoint(20.0, 20.0, -135);
 		headingTesting.addWaypoint(10.0, 10.0, -150, 0, 10);
 
-		return asList(straightSlowShort, straightSlowLong, straightFastShort, straightFastLong, straightSlowShortRevese, straightSlowLongReverse, straightFastShortReverse, straightFastLongReverse, turnScaling, turnScalingReverse, speedTesting, headingTesting);
+		return asList(straightFastLong, straightSlowLong, turnScaling);
 	}
 
 
@@ -511,9 +512,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 	private FishyPath getDoubleRocketFast() {
 		FishyPath twoHatchRocketLeft = new FishyPath(config, "DoubleRocketFast", DrivetrainSubsystem.WHEELBASE_FEET);
-		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, Math.PI, 0, 0));
-		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 8, 8, true);
-		twoHatchRocketLeft.addWaypoint(22.87, 23.78, -180 + 60, 0, 11, 8, true);
+		twoHatchRocketLeft.addWaypoint(new Waypoint(5.5, 17.354167, 0, 0, 0));
+		twoHatchRocketLeft.addWaypointRelative(4.5, 0, 0, 4, 4);
+		twoHatchRocketLeft.addWaypoint(22.87, 23.78, 60, 0, 11);
 
 		return twoHatchRocketLeft;
 	}
