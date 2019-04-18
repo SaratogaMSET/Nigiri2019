@@ -56,6 +56,7 @@ import frc.robot.subsystems.LiftSubsystem.LiftPositions;
 import frc.robot.subsystems.LiftSubsystem.PIDConstants;
 import frc.robot.util.FishyMath;
 import frc.robot.util.Logging;
+import frc.robot.util.pid.TalonPIDSetter;
 import frc.robot.RobotState;
 // import sun.util.logging.PlatformLogger.Level;
 import frc.robot.commands.semiauto.climb.MoveJackCommand;
@@ -236,6 +237,10 @@ public class Robot extends TimedRobot {
     autoTime = new Timer();
     currentAuto = new AutoSelectorValue(autoSelector.getSide(), autoSelector.getAutoPotNumber());
     changedAuto = currentAuto;
+    
+    SmartDashboard.putData(new TalonPIDSetter("RIGHT", Robot.drive.motors[0]));
+    SmartDashboard.putData(new TalonPIDSetter("LEFT", Robot.drive.motors[3]));
+
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -417,10 +422,10 @@ public class Robot extends TimedRobot {
       drive.resetEncoders();
       // doubleRocket.start();
       // new SelectAuto().start();
-      new DoubleCargoShip(false).start();
+      // new DoubleCargoShip(false).start();
       // new TestTalonVelocity(10.0).start();
-      // new TestDTMaxVA(20.0).start();
-      // new MotionProfileCommand("TurnScaling", 0.0).start();
+      new TestDTMaxVA(20.0).start();
+      // new MotionProfileCommand("StraightSlowLong", 0.0).start();
       // new GyroPIDCommand(90.0, 10.0).start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);

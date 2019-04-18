@@ -41,8 +41,8 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
     @Override
     protected List<FishyPath> getPaths() {
 		List<FishyPath> paths = new ArrayList<>();
-		// paths.addAll(getConfigArcs());
-		paths.addAll(generateTeamPaths());
+		paths.addAll(getConfigArcs());
+		// paths.addAll(generateTeamPaths());
         return paths;
 	}
 
@@ -92,9 +92,9 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 		straightSlowShort.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
 		straightSlowShort.addWaypointRelative(5, 0, 0, 0, 4);
 
-		FishyPath straightSlowLong = new FishyPath(config, "StrightSlowLong", 2.23);
+		FishyPath straightSlowLong = new FishyPath(config, "StraightSlowLong", 2.23);
 		straightSlowLong.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		straightSlowLong.addWaypointRelative(20, 0, 0, 0, 4);
+		straightSlowLong.addWaypointRelative(15, 0, 0, 0, 4, 10);
 
 		FishyPath straightFastShort = new FishyPath(config, "StraightFastShort", 2.23);
 		straightFastShort.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
@@ -102,7 +102,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 
 		FishyPath straightFastLong = new FishyPath(config, "StraightFastLong", DrivetrainSubsystem.WHEELBASE_FEET);
 		straightFastLong.addWaypoint(new Waypoint(2, 13.5, 0, 0, 0));
-		straightFastLong.addWaypointRelative(20, 0, 0, 0, 12, 12, false);
+		straightFastLong.addWaypointRelative(15, 0, 0, 0, 10, 10, false);
 
 		FishyPath straightSlowShortRevese = new FishyPath(config, "StraightSlowShortRevese", 2.23);
 		straightSlowShortRevese.addWaypoint(new Waypoint(2, 13.5, Math.PI, 0, 0));

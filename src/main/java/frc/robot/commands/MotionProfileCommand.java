@@ -40,7 +40,7 @@ public class MotionProfileCommand extends FishyCommand {
   public static final double CONST_kP_gyro_doubletraction = -0.00;
   public static final double CONST_kP_gyro_omnitraction = -0.00;
 
-  public static final double CONST_kA = 0.001;
+  public static final double CONST_kA = 0.000;
 
   public static double kP_gyro_doubletraction;
   public static double kP_gyro_omnitraction;

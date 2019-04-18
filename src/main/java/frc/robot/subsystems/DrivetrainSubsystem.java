@@ -80,10 +80,10 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
     motors[0].config_kF(0, 0.22, 200);
-    motors[0].config_kP(0, 0.5, 200);
-    motors[0].config_kI(0, 0.006, 200);
+    motors[0].config_kP(0, 0.0, 200);
+    motors[0].config_kI(0, 0.0, 200);
     motors[0].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))), 200);
-    motors[0].config_kD(0, 5.0, 200);
+    motors[0].config_kD(0, 0.0, 200);
     motors[0].configAllowableClosedloopError(0, 0, 200);
     motors[0].configClosedLoopPeriod(0, 1, 200);
     motors[0].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
@@ -97,10 +97,10 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
     motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
     motors[3].config_kF(0, 0.22);
-    motors[3].config_kP(0, 0.5);
-    motors[3].config_kI(0, 0.006);
+    motors[3].config_kP(0, 0.0);
+    motors[3].config_kI(0, 0.0);
     motors[3].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))));
-    motors[3].config_kD(0, 5.0);
+    motors[3].config_kD(0, 0.0);
     motors[3].configAllowableClosedloopError(0, 0, 200);
     motors[3].configClosedLoopPeriod(0, 1, 200);
     motors[3].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);

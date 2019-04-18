@@ -9,9 +9,11 @@ import frc.robot.util.FishyMath;
 public class TalonPIDSetter extends SendableBase {
     private TalonSRX talon;
     double kf, kp, ki, kd, izone;
+    String name;
 
-    public TalonPIDSetter(TalonSRX talon) {
+    public TalonPIDSetter(String name, TalonSRX talon) {
         this.talon = talon;
+        this.name = name;
     }
 
     public void setFF(double kf) {
@@ -59,9 +61,18 @@ public class TalonPIDSetter extends SendableBase {
         return izone;
     }
 
+    public void setPIDName(String s) {
+
+    }
+
+    public String getPIDName() {
+        return name;
+    }
+
     
     @Override
     public void initSendable(SendableBuilder builder) {
+        builder.addStringProperty("NAME", this::getPIDName, this::setPIDName);
         builder.addDoubleProperty("kF", this::getFF, this::setFF);
         builder.addDoubleProperty("kP", this::getP, this::setP);
         builder.addDoubleProperty("kI", this::getI, this::setI);
