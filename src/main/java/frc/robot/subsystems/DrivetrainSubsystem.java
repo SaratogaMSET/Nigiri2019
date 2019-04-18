@@ -79,7 +79,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
     }
 
     motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[0].config_kF(0, 0.22, 200);
+    motors[0].config_kF(0, 0.21, 200);
     motors[0].config_kP(0, 0.0, 200);
     motors[0].config_kI(0, 0.0, 200);
     motors[0].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))), 200);
@@ -96,7 +96,7 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
 
 
     motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[3].config_kF(0, 0.22);
+    motors[3].config_kF(0, 0.18);
     motors[3].config_kP(0, 0.0);
     motors[3].config_kI(0, 0.0);
     motors[3].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))));

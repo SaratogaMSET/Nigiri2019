@@ -108,6 +108,9 @@ public class TrajectoryGenerator {
 		System.out.println(strategy);
 		System.out.println(goal_vel);
 
+		start_vel = Math.abs(start_vel);
+		goal_vel = Math.abs(goal_vel);
+
 	  Trajectory traj;
 	  if (strategy == StepStrategy) {
 		double impulse = ((goal_pos - start_pos) / config.max_vel) / config.dt;
@@ -117,7 +120,7 @@ public class TrajectoryGenerator {
 		// velocity.
 		int time = (int) (Math.floor(impulse));
 		traj = secondOrderFilter(start_pos, 1, 1, config.dt, config.max_vel,
-				config.max_vel, impulse, time, TrapezoidalIntegration);
+				config.max_vel, impulse, time, TrapezoidalIntegration, isReverse);
   
 	  } else if (strategy == TrapezoidalStrategy) {
 		// How fast can we go given maximum acceleration and deceleration?
@@ -153,7 +156,7 @@ public class TrajectoryGenerator {
 				// + start_discount + end_discount
 				;
 		traj = secondOrderFilter(start_pos, f1_length, 1, config.dt, start_vel,
-				adjusted_max_vel, impulse, time, TrapezoidalIntegration);
+				adjusted_max_vel, impulse, time, TrapezoidalIntegration, isReverse);
   
 	  } else if (strategy == SCurvesStrategy) {
 		// How fast can we go given maximum acceleration and deceleration?
@@ -171,7 +174,7 @@ public class TrajectoryGenerator {
 		double impulse = ((goal_pos - start_pos) / adjusted_max_vel) / config.dt;
 		int time = (int) (Math.ceil(f1_length + f2_length + impulse));
 		traj = secondOrderFilter(start_pos, f1_length, f2_length, config.dt, 0,
-				adjusted_max_vel, impulse, time, TrapezoidalIntegration);
+				adjusted_max_vel, impulse, time, TrapezoidalIntegration, isReverse);
 	  } else {
 		return null;
 	  }
@@ -184,10 +187,6 @@ public class TrajectoryGenerator {
 				* (traj.segments_[i].pos)
 				/ traj.segments_[traj.getNumSegments() - 1].pos;
 		}
-		
-		// if(isReverse) {
-		// 	traj.scale(-1.0);
-		// }
   
 	  return traj;
 	}
@@ -201,7 +200,8 @@ public class TrajectoryGenerator {
 			double max_vel,
 			double total_impulse,
 			int length,
-			IntegrationMethod integration) {
+			IntegrationMethod integration,
+			boolean isReverse) {
 	  if (length <= 0) {
 		return null;
 	  }
@@ -210,7 +210,7 @@ public class TrajectoryGenerator {
 	  Trajectory.Segment last = new Trajectory.Segment();
 	  // First segment is easy
 	  last.pos = start_pos;
-	  last.vel = start_vel;
+	  last.vel = start_vel;// * ((isReverse ? -1.0 : 1.0));
 	  last.acc = 0;
 	  last.jerk = 0;
 	  last.dt = dt;
@@ -255,6 +255,9 @@ public class TrajectoryGenerator {
   
 		// Velocity is the normalized sum of f2 * the max velocity
 		traj.segments_[i].vel = f2 / f2_length * max_vel;
+		if(isReverse) {
+			traj.segments_[i].vel *= -1.0;
+		}
   
 		if (integration == RectangularIntegration) {
 		  traj.segments_[i].pos = traj.segments_[i].vel * dt + last.pos;

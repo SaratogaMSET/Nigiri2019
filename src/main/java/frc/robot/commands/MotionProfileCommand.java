@@ -7,6 +7,7 @@
 
 package frc.robot.commands;
 
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.team254.lib.trajectory.Path;
@@ -17,6 +18,7 @@ import com.team319x649.trajectory.FishyPath;
 import com.team319x649.trajectory.FishyPathGenerator;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,17 +39,19 @@ public class MotionProfileCommand extends FishyCommand {
 
   double previous_heading = 0.0;
 
-  public static final double CONST_kP_gyro_doubletraction = -0.00;
-  public static final double CONST_kP_gyro_omnitraction = -0.00;
+  Preferences pref = Preferences.getInstance();
 
-  public static final double CONST_kA = 0.000;
+  public static final double CONST_kP_gyro_doubletraction = -0.001;
+  public static final double CONST_kP_gyro_omnitraction = -0.001;
+
+  public static final double CONST_kA = 0.018;
 
   public static double kP_gyro_doubletraction;
   public static double kP_gyro_omnitraction;
 
   double heading_offset = 0.0;
 
-  private ControlLoop motionProfileControlLoop = new ControlLoop(0.02) {
+  private ControlLoop motionProfileControlLoop = new ControlLoop(0.05) {
     @Override
     public boolean init() {
       return true;
@@ -101,8 +105,16 @@ public class MotionProfileCommand extends FishyCommand {
           gyroConstant = kP_gyro_doubletraction;
         }
 
-        double avgSpeed = Math.abs((leftSpeedRPM + rightSpeedRPM)/2.0);
+
+        double rvel = Robot.drive.getRightEncoderVelocity();
+        double lvel = Robot.drive.getLeftEncoderVelocity();
+
+        double avgSpeed = Math.abs((rvel + lvel)/2.0);
         double turn = gyroConstant * headingDiff * avgSpeed;
+        if(Math.abs(rvel) < 2.0) {
+          turn = 0;
+        }
+
 
         log("Right Actual", Robot.drive.getRightEncoderVelocity());
         log("Left Actual", Robot.drive.getLeftEncoderVelocity());
@@ -127,16 +139,23 @@ public class MotionProfileCommand extends FishyCommand {
 
         logger.write();
 
+        SmartDashboard.putNumber("Right Velocity", rvel);
+        SmartDashboard.putNumber("Left Velocity", lvel);
+
       }
     }
   };
 
   public MotionProfileCommand(String pathName) {
     this(pathName, false, 0.0);
+    kP_gyro_doubletraction = CONST_kP_gyro_doubletraction;
+    kP_gyro_omnitraction = CONST_kP_gyro_omnitraction;
   }
 
   public MotionProfileCommand(String pathName, boolean robotStartedBackwards) {
     this(pathName, robotStartedBackwards, 0.0);
+    kP_gyro_doubletraction = CONST_kP_gyro_doubletraction;
+    kP_gyro_omnitraction = CONST_kP_gyro_omnitraction;
   }
 
   public MotionProfileCommand(String pathName, double heading_offset) {
@@ -156,6 +175,8 @@ public class MotionProfileCommand extends FishyCommand {
     path = FishyPathGenerator.importPath(pathName);
     this.robotStartedBackwards = robotStartedBackwards;
     this.heading_offset = heading_offset;
+    kP_gyro_doubletraction = CONST_kP_gyro_doubletraction;
+    kP_gyro_omnitraction = CONST_kP_gyro_omnitraction;
   }
 
   private MotionProfileCommand() {
@@ -222,8 +243,14 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    leftFollower.configure(0.0, 0.0, Robot.drive.getLeftEncoderDistance());
-    rightFollower.configure(0.0, 0.0, Robot.drive.getRightEncoderDistance());
+    double path_kp = pref.getDouble("path_kp", 0);
+    double path_kd = pref.getDouble("path_kd", 0);
+
+    SmartDashboard.putNumber("path_kp", path_kp);
+    SmartDashboard.putNumber("path_kd", path_kd);
+
+    leftFollower.configure(path_kp, path_kd, Robot.drive.getLeftEncoderDistance());
+    rightFollower.configure(path_kp, path_kd, Robot.drive.getRightEncoderDistance());
 
     Robot.gyro.gyro.setAngleAdjustment(heading_offset);
 

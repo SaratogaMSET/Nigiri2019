@@ -24,10 +24,10 @@ public class TunePIDFValues extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    double kp = prefs.getDouble("kp", 0.5);
-    double ki = prefs.getDouble("ki", 0.006);
-    double kd = prefs.getDouble("kd", 5);
-    double kf = prefs.getDouble("ki", 0.22);
+    double kp = prefs.getDouble("kp", 0.0);
+    double ki = prefs.getDouble("ki", 0.0);
+    double kd = prefs.getDouble("kd", 0);
+    double kf = prefs.getDouble("kf", 0.0);
 
     SmartDashboard.putNumber("Set kp", kp);
     SmartDashboard.putNumber("Set ki", ki);

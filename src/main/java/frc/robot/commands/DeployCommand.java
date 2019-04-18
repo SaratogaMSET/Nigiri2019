@@ -43,7 +43,7 @@ public class DeployCommand extends Command {
     } else if (pos == LiftPositions.CARGO_ROCKET_LEVEL_THREE) {
       new DeployCargoCommand(-0.8).start();
     } else if(pos == LiftPositions.CARGO_SHIP) {
-      new DeployCargoCommand(-0.5).start();
+      new DeployCargoCommand(-0.7).start();
     } else {
       if(RobotState.hatchPositionState == HatchPositionState.HATCH_IN) {
         new DeployCargoCommand(-power).start();

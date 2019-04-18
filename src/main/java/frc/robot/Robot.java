@@ -427,12 +427,14 @@ public class Robot extends TimedRobot {
       gyro.resetGyro();
       drive.resetEncoders();
       // doubleRocket.start();
-      // new SelectAuto().start();
+      new SelectAuto().start();
       // new DoubleCargoShip(false).start();
       // new TestTalonVelocity(10.0).start();
       // new TestDTMaxVA(20.0).start();
       // new MotionProfileCommand("StraightSlowLong", 0.0).start();
       // new GyroPIDCommand(90.0, 10.0).start();
+      // new TuneMotionProfile("StrightSlowLong").start();
+      // new MotionProfileCommand("StrightSlowLong").start();
     } else {
       Robot.drive.rawDrive(0.0, 0.0);
       drive.changeBrakeCoast(false);
@@ -801,8 +803,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
     SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
-    SmartDashboard.putNumber("Right Velocity", drive.getRightEncoderVelocity());
-    SmartDashboard.putNumber("Left Velocity", drive.getLeftEncoderVelocity());
+    // SmartDashboard.putNumber("Right Velocity", drive.getRightEncoderVelocity());
+    // SmartDashboard.putNumber("Left Velocity", drive.getLeftEncoderVelocity());
 
     //***************************************************** LIFT */
     SmartDashboard.putNumber("Lift Encoder Raw", lift.getRawEncoder());

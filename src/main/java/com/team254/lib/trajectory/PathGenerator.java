@@ -82,7 +82,7 @@ public class PathGenerator {
 					segmentConfig, 
 					TrajectoryGenerator.AutomaticStrategy, 
 					traj.getSegment(traj.getNumSegments() - 1).pos,
-					traj.getSegment(traj.getNumSegments() - 1).vel,
+					Math.abs(traj.getSegment(traj.getNumSegments() - 1).vel),
 					traj.getSegment(traj.getNumSegments() - 1).heading,
 					distance, 
 					path.getWaypoint(i).endVelocity, 
@@ -99,7 +99,7 @@ public class PathGenerator {
 
 			boolean found_spline = false;
 			while (!found_spline) {
-				double cur_pos_relative = cur_pos - cur_spline_start_pos;
+				double cur_pos_relative = Math.abs(cur_pos - cur_spline_start_pos);
 				if (cur_pos_relative <= spline_lengths[cur_spline]) {
 					double percentage = splines[cur_spline].getPercentageForDistance(cur_pos_relative);
 					traj.getSegment(i).heading = splines[cur_spline].angleAt(percentage);
