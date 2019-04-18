@@ -58,10 +58,10 @@ public class SelectAuto extends CommandGroup {
       case 2:
         if(side == Side.LEFT) {
           Robot.autoCommand = new IanAssistedDrive(false, true);
-          SmartDashboard.putString("current Auto", "back rocket no deploy left");
+          SmartDashboard.putString("current Auto", "back rocket no deploy left slow");
         } else {
           Robot.autoCommand = new IanAssistedDrive(true, true);
-          SmartDashboard.putString("current Auto", "back rocket no deploy right");
+          SmartDashboard.putString("current Auto", "back rocket no deploy right slow");
         }
         break;
       case 3:
@@ -101,8 +101,8 @@ public class SelectAuto extends CommandGroup {
         break;
       case 8:
         if(side == Side.LEFT) {
-          Robot.autoCommand = new TuneMotionProfile("StraightSlowLong");
-          SmartDashboard.putString("current Auto", "StraightSlowLong");
+          Robot.autoCommand = new TuneMotionProfile("StrightSlowLong");
+          SmartDashboard.putString("current Auto", "StrightSlowLong");
         } else {
           Robot.autoCommand = new TuneMotionProfile("StraightSlowLongReverse");
           SmartDashboard.putString("current Auto", "StraightSlowLongReverse");
@@ -118,7 +118,13 @@ public class SelectAuto extends CommandGroup {
         }
         break;
       case 10:
-
+        if(side == Side.LEFT) {
+          Robot.autoCommand = new IanAssistedDrive(false, false);
+          SmartDashboard.putString("current Auto", "back rocket no deploy left");
+        } else {
+          Robot.autoCommand = new IanAssistedDrive(true, false);
+          SmartDashboard.putString("current Auto", "back rocket no deploy right");
+        }
         break;
     }
   }

@@ -44,6 +44,8 @@ import frc.robot.commands.test.LedTest;
 import frc.robot.commands.test.LiftTest;
 import frc.robot.commands.test.TestDTMaxVA;
 import frc.robot.commands.test.TestTalonVelocity;
+import frc.robot.commands.test.TuneMotionProfile;
+
 import frc.robot.commands.vision.*;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.AutoSelector.AutoSelectorValue;
@@ -241,6 +243,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(new TalonPIDSetter("RIGHT", Robot.drive.motors[0]));
     SmartDashboard.putData(new TalonPIDSetter("LEFT", Robot.drive.motors[3]));
 
+    SelectAuto.chooseAuto(autoSelector.getAutoPotNumber(), autoSelector.getSide());
   }
    /**
    * This function is called every robot packet, no matter the mode. Use
@@ -367,6 +370,9 @@ public class Robot extends TimedRobot {
     autoControl = true;
     autoTime.stop();
 
+    // Robot.autoCommand = new TuneMotionProfile("StraightFastShort");
+
+
     isManualAuto = false;
     init(autoControl);
   }
@@ -424,7 +430,7 @@ public class Robot extends TimedRobot {
       // new SelectAuto().start();
       // new DoubleCargoShip(false).start();
       // new TestTalonVelocity(10.0).start();
-      new TestDTMaxVA(20.0).start();
+      // new TestDTMaxVA(20.0).start();
       // new MotionProfileCommand("StraightSlowLong", 0.0).start();
       // new GyroPIDCommand(90.0, 10.0).start();
     } else {
@@ -779,7 +785,7 @@ public class Robot extends TimedRobot {
       else {
         if(visionFixCommand != null) visionFixCommand.cancel();
         if(gholdTest != null) gholdTest.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 18.0));
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
         Robot.gyro.driverGyroPID.enable();
         drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
       }

@@ -72,8 +72,8 @@ public class RobotMap {
   }
 
   public static class AutoSelector {
-    public static final int CONTROL = 12; //Actual port
-    public static final int SIDE = 13; //Actual port
+    public static final int CONTROL = 10; //Actual port
+    public static final int SIDE = 12; //Actual port
     public static final int ROTARY = 0; //A0
 }
 

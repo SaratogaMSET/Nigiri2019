@@ -49,7 +49,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   public static class LiftEncoderConstants {
     public static final int CLIMB_HAB_TWO = 3300;
     public static final int CLIMB_HAB_TWO_TOL = 5000;
-    public static final int CLIMB_HAB_THREE = 13750;
+    public static final int CLIMB_HAB_THREE = 13650;
     public static final int CLIMB_HAB_THREE_TOL = 15000;
     public static final double LIFT_TICKS_PER_JACK_TICK = 1.2/1.75; //for every tick of jack go this much lift
     public static final double DISTANCE_PER_PULSE = 1.75 * 2 * Math.PI / 4096.0;
@@ -60,15 +60,15 @@ public class LiftSubsystem extends Subsystem implements ILogger {
 
   public static class LiftDistanceConstants {
     public static final double TRUE_BOTTOM = -0.25;
-    public static final double LOW_HATCH = 5;
+    public static final double LOW_HATCH = 2;
     public static final double INTAKE = 0;
     public static final double CARGO_SHIP = 30;
     public static final double CARGO_ROCKET_LEVEL_ONE = 18.5;
     public static final double CARGO_ROCKET_LEVEL_TWO = 46.04;
     public static final double CARGO_ROCKET_LEVEL_THREE = 67.5;
     public static final double CARGO_LOADING_STATION = 32.5;
-    public static final double HATCH_MID = 27.88 + 4;
-    public static final double HATCH_HIGH = 54.4 + 4;
+    public static final double HATCH_MID = 27.88 + 2;
+    public static final double HATCH_HIGH = 54.4 + 2;
     public static final double PREP_CLIMB_1 = 31.7;
     public static final double PREP_CLIMB_2 = 28.23;
     public static final double AUTO_CARGO_SHIP_HATCH = 9;

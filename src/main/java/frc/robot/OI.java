@@ -323,11 +323,11 @@ public class OI {
     }
 
     public boolean getRightTrigger() {
-      return (gamepad.getRawAxis(3) > 0.5 ? true : false);
+      return (gamepad.getRawAxis(3) > 0.2 ? true : false);
     }
 
     public boolean getLeftTrigger() {
-      return (gamepad.getRawAxis(2) > 0.5 ? true : false);
+      return (gamepad.getRawAxis(2) > 0.2 ? true : false);
     }
 
     public int getPOV() {
