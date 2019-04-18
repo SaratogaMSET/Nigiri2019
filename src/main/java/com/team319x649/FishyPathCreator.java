@@ -52,8 +52,7 @@ public class FishyPathCreator extends AbstractFishyPathCreator {
 	 * @return the list of team paths to generate
 	 */
 	private List<FishyPath> generateTeamPaths() {
-		return asList(getIanAssistPathLeft(), getIanAssistPathRight());
-		// return asList(getDoubleRocketFast(), getDoubleRocketFast2(), getDoubleRocketFast3());
+		return asList(getDoubleRocketFast(), getDoubleRocketFast2(), getDoubleRocketFast3());
 		// return asList(getHAB1LxROCKLFxLOADLxROCKLF());
 
 		// return asList(getMidCargoLeft(), getMidCargoToLSL(), getLSLToCargoNear());
