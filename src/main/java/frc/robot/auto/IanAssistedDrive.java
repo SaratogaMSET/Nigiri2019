@@ -19,18 +19,18 @@ public class IanAssistedDrive extends CommandGroup {
   public IanAssistedDrive(boolean isRightSide, boolean isSlow) {
     if(isSlow) {
       if(isRightSide) {
-        addSequential(new MotionProfileCommand("SlowIanAssistRocketRight", true));
+        addSequential(new MotionProfileCommand("SlowIanAssistRocketRight", true, 180));
       }
       else {
-        addSequential(new MotionProfileCommand("SlowIanAssistRocketLeft", true));
+        addSequential(new MotionProfileCommand("SlowIanAssistRocketLeft", true, 180));
       }
     }
     else {
       if(isRightSide) {
-        addSequential(new MotionProfileCommand("IanAssistRocketRight", true));
+        addSequential(new MotionProfileCommand("IanAssistRocketRight", true, 0));
       }
       else {
-        addSequential(new MotionProfileCommand("IanAssistRocketLeft", true));
+        addSequential(new MotionProfileCommand("IanAssistRocketLeft", true, 0));
       }
     }
     

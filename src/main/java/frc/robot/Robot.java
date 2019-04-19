@@ -196,7 +196,7 @@ public class Robot extends TimedRobot {
 
     drive.changeBrakeCoast(false);
     lift.resetEncoder();
-    jack.resetJackEncoder();
+    // jack.resetJackEncoder();
 
     time = new Timer();
     //LOOP COUNT
@@ -239,9 +239,6 @@ public class Robot extends TimedRobot {
     autoTime = new Timer();
     currentAuto = new AutoSelectorValue(autoSelector.getSide(), autoSelector.getAutoPotNumber());
     changedAuto = currentAuto;
-    
-    SmartDashboard.putData(new TalonPIDSetter("RIGHT", Robot.drive.motors[0]));
-    SmartDashboard.putData(new TalonPIDSetter("LEFT", Robot.drive.motors[3]));
 
     SelectAuto.chooseAuto(autoSelector.getAutoPotNumber(), autoSelector.getSide());
   }
@@ -276,8 +273,8 @@ public class Robot extends TimedRobot {
     smartdashboardTesting();
 
     // DEBUG
-    SmartDashboard.putNumber("GYRO", Robot.gyro.getGyroAngle());
-    SmartDashboard.putNumber("LEFT ENCODER", Robot.drive.getLeftEncoderDistance());
+    // SmartDashboard.putNumber("GYRO", Robot.gyro.getGyroAngle());
+    // SmartDashboard.putNumber("LEFT ENCODER", Robot.drive.getLeftEncoderDistance());
 
     // lift.smartdashCurrent();
     // jack.smartdas                                                hCurrent();
@@ -303,10 +300,19 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
 
     // Safety Checks
-    if(!jack.isJackAtTop() && !isClimb){
+    if(jack.getJackEncoder() > 150){
+      if(!isClimb) {
+        jack.setJackMotor(-0.08);
+        SmartDashboard.putNumber("Jack Stall Power", 0.08);
+      } 
       // jack.setJackMotorMP(JackSubsystem.JackEncoderConstants.UP_STATE);
       if(jack.isJackAtTop()) {
         jack.resetJackEncoder();
+      }
+    } else if(jack.getJackEncoder() < 150) {
+      if(!isClimb) {
+        jack.setJackMotor(0);
+        SmartDashboard.putNumber("Jack Stall Power", 0.0);
       }
     }
 
@@ -523,7 +529,7 @@ public class Robot extends TimedRobot {
     }
 
     if(autoSelector.getControl() == Control.AUTO) {
-      SmartDashboard.putBoolean("In the Selector", true);
+      // SmartDashboard.putBoolean("In the Selector", true);
       autoSide = autoSelector.getSide();
       autoNumber = autoSelector.getAutoPotNumber();
       if(!currentAuto.equals(autoSide, autoNumber)) {
@@ -719,7 +725,7 @@ public class Robot extends TimedRobot {
           else {
             new MoveJackCommand(JackSubsystem.JackEncoderConstants.UP_STATE,3).start();
           }
-          isClimb = false;
+          // isClimb = false;
         }
 
 
@@ -755,7 +761,7 @@ public class Robot extends TimedRobot {
       RobotState.isManualLift = true;
       int sign = oi.gamePad.getLeftJoystickY() > 0 ? 1 : -1;
       double pow = Math.pow(oi.gamePad.getLeftJoystickY()/2, 2) * sign;
-      SmartDashboard.putNumber("Manual Lift Power", pow);
+      // SmartDashboard.putNumber("Manual Lift Power", pow);
       if(lift.getBottomHal() && pow < 0){
         pow = 0;
       }
@@ -797,12 +803,11 @@ public class Robot extends TimedRobot {
 
 
   public void smartdashboardTesting() {
-    SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
     //***************************************************** DRIVE */
     SmartDashboard.putNumber("Left Encoder Raw", drive.getRawLeftEncoder());
-    SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
+    // SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Raw", drive.getRawRightEncoder());
-    SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
+    // SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
     // SmartDashboard.putNumber("Right Velocity", drive.getRightEncoderVelocity());
     // SmartDashboard.putNumber("Left Velocity", drive.getLeftEncoderVelocity());
 
@@ -816,15 +821,15 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Lift Motor Voltage", lift.getVoltageMainMotor());
 
     //***************************************************** INTAKE */
-    SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());
-    SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
-    SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
-    SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
-    cargoIntake.smartdashboard();
+    // SmartDashboard.putBoolean("Up/Down Sol State", cargoIntake.getIntakeSolState());
+    // SmartDashboard.putBoolean("Mid State Sol State", cargoIntake.getMidStateSolState());
+    // SmartDashboard.putBoolean("In Hal", cargoIntake.getInHal());
+    // SmartDashboard.putBoolean("Out Hal", cargoIntake.getOutHal());
+    // cargoIntake.smartdashboard();
 
     //***************************************************** JACK */
-    SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());
-    SmartDashboard.putBoolean("Jack Stored Hal", jack.isJackAtBottom());
+    // SmartDashboard.putBoolean("Jack Deployed Hal", jack.isJackAtTop());
+    // SmartDashboard.putBoolean("Jack Stored Hal", jack.isJackAtBottom());
     SmartDashboard.putNumber("Jack Encoder", jack.getJackEncoder());
 
     //***************************************************** HATCH */

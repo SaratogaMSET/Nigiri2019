@@ -72,19 +72,23 @@ public class PathGenerator {
 			path.getWaypoint(1).theta,
 			path.getWaypoint(1).isReverse);
 		double distance = spline_lengths[0];
+		System.out.println("DISTANCE SEG 0: " + distance);
 		for (int i = 2; i < path.num_waypoints_; ++i) {
-			distance += spline_lengths[i - 1];
 			segmentConfig.max_acc = path.getWaypoint(i).maxAccel;
 			segmentConfig.max_vel = path.getWaypoint(i).maxVelocity;
 
+			distance = spline_lengths[i - 1];
+			double startPos = traj.getSegment(traj.getNumSegments() - 1).pos + traj.getSegment(traj.getNumSegments() - 1).vel * 0;
+			
+			System.out.println("DISTANCE SEGMENT " + (i-1) + ": " + distance);
 			traj.append(
 				TrajectoryGenerator.generate(
 					segmentConfig, 
 					TrajectoryGenerator.AutomaticStrategy, 
-					traj.getSegment(traj.getNumSegments() - 1).pos,
+					startPos,
 					Math.abs(traj.getSegment(traj.getNumSegments() - 1).vel),
 					traj.getSegment(traj.getNumSegments() - 1).heading,
-					distance, 
+					startPos + distance, 
 					path.getWaypoint(i).endVelocity, 
 					path.getWaypoint(i).theta,
 					path.getWaypoint(i).isReverse));
@@ -95,13 +99,18 @@ public class PathGenerator {
 		double cur_spline_start_pos = 0;
 		double length_of_splines_finished = 0;
 		for (int i = 0; i < traj.getNumSegments(); ++i) {
-			double cur_pos = traj.getSegment(i).pos;
+			double cur_pos = Math.abs(traj.getSegment(i).pos);
 
 			boolean found_spline = false;
 			while (!found_spline) {
+				System.out.println(cur_pos);
+				System.out.println(cur_spline_start_pos);
 				double cur_pos_relative = Math.abs(cur_pos - cur_spline_start_pos);
+				System.out.println(cur_pos_relative);
+
 				if (cur_pos_relative <= spline_lengths[cur_spline]) {
 					double percentage = splines[cur_spline].getPercentageForDistance(cur_pos_relative);
+					System.out.println("PCT: \t" + percentage + "%%%");
 					traj.getSegment(i).heading = splines[cur_spline].angleAt(percentage);
 					double[] coords = splines[cur_spline].getXandY(percentage);
 					traj.getSegment(i).x = coords[0];
@@ -118,6 +127,8 @@ public class PathGenerator {
 					traj.getSegment(i).y = coords[1];
 					found_spline = true;
 				}
+				System.out.println();
+
 			}
 		}
 

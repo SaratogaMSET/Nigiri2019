@@ -108,9 +108,6 @@ public class TrajectoryGenerator {
 		System.out.println(strategy);
 		System.out.println(goal_vel);
 
-		start_vel = Math.abs(start_vel);
-		goal_vel = Math.abs(goal_vel);
-
 	  Trajectory traj;
 	  if (strategy == StepStrategy) {
 		double impulse = ((goal_pos - start_pos) / config.max_vel) / config.dt;
@@ -210,7 +207,7 @@ public class TrajectoryGenerator {
 	  Trajectory.Segment last = new Trajectory.Segment();
 	  // First segment is easy
 	  last.pos = start_pos;
-	  last.vel = start_vel;// * ((isReverse ? -1.0 : 1.0));
+	  last.vel = start_vel * ((isReverse ? -1.0 : 1.0));
 	  last.acc = 0;
 	  last.jerk = 0;
 	  last.dt = dt;

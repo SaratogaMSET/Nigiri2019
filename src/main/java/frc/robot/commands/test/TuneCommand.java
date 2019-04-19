@@ -7,20 +7,17 @@
 
 package frc.robot.commands.test;
 
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.MotionProfileCommand;
 
-public class TuneMotionProfile extends CommandGroup {
+public class TuneCommand extends CommandGroup {
   /**
    * Add your docs here.
    */
-  public TuneMotionProfile(String pathName) {
+  public TuneCommand(Command c) {
     addSequential(new TunePIDFValues());
-    addSequential(new MotionProfileCommand(pathName));
+    addSequential(c);
   }
 
-  public TuneMotionProfile(String pathName, double offset) {
-    addSequential(new TunePIDFValues());
-    addSequential(new MotionProfileCommand(pathName, offset));
-  }
 }

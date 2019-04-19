@@ -15,6 +15,7 @@ import frc.robot.commands.semiauto.AutoIntakeHatch;
 import frc.robot.commands.test.TestDTMaxVA;
 import frc.robot.commands.test.TestTalonVelocity;
 import frc.robot.commands.test.TuneMotionProfile;
+import frc.robot.commands.test.TunePIDFValues;
 import frc.robot.subsystems.AutoSelector.Side;
 import frc.robot.subsystems.AutoSelector.Control;
 
@@ -23,7 +24,8 @@ public class SelectAuto extends CommandGroup {
    * Add your docs here.
    */
   public SelectAuto() {
-    
+    addSequential(new TunePIDFValues());
+
     Control control = Robot.autoSelector.getControl();
 
     if(control == Control.TELEOP) {
@@ -86,7 +88,7 @@ public class SelectAuto extends CommandGroup {
           Robot.autoCommand = new TuneMotionProfile("StraightFastLong");
           SmartDashboard.putString("current Auto", "StraightFastLong");
         } else {
-          Robot.autoCommand = new TuneMotionProfile("StraightFastLongReverse");
+          Robot.autoCommand = new TuneMotionProfile("StraightFastLongReverse", 180);
           SmartDashboard.putString("current Auto", "StraightFastLongReverse");
         }
         break;
@@ -104,7 +106,7 @@ public class SelectAuto extends CommandGroup {
           Robot.autoCommand = new TuneMotionProfile("StrightSlowLong");
           SmartDashboard.putString("current Auto", "StrightSlowLong");
         } else {
-          Robot.autoCommand = new TuneMotionProfile("StraightSlowLongReverse");
+          Robot.autoCommand = new TuneMotionProfile("StraightSlowLongReverse", 180);
           SmartDashboard.putString("current Auto", "StraightSlowLongReverse");
         }
         break;
@@ -113,7 +115,7 @@ public class SelectAuto extends CommandGroup {
           Robot.autoCommand = new TuneMotionProfile("StraightFastShort");
           SmartDashboard.putString("current Auto", "StraightFastShort");
         } else {
-          Robot.autoCommand = new TuneMotionProfile("StraightFastShortReverse");
+          Robot.autoCommand = new TuneMotionProfile("StraightFastShortReverse", 180);
           SmartDashboard.putString("current Auto", "StraightFastShortReverse");
         }
         break;

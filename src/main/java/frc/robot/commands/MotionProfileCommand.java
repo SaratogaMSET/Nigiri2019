@@ -243,7 +243,7 @@ public class MotionProfileCommand extends FishyCommand {
   public void configurePath() {
     Robot.drive.changeBrakeCoast(false);
 
-    double path_kp = pref.getDouble("path_kp", 0);
+    double path_kp = pref.getDouble("path_kp", 1.1);
     double path_kd = pref.getDouble("path_kd", 0);
 
     SmartDashboard.putNumber("path_kp", path_kp);
