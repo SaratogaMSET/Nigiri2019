@@ -17,14 +17,14 @@ public class RobotMap {
 
   public static final int JOYSTICK_DRIVE_VERTICAL = 0;
   public static final int JOYSTICK_DRIVE_HORIZONTAL = 1;
-  public static final int OPERATOR_JOYSTICK = 2; 
+  public static final int OPERATOR_JOYSTICK = 2;
   public static final int JOYSTICK_GAMEPAD = 3;
   public static final int BUTTON_BOARD_RIGHT = 3;
   public static final int BUTTON_BOARD_LEFT = 4;
- 
+
   public static class Drivetrain {
     // Right: 20, 17, 16 Left: 11, 7, 6
-    public static final int[] DRIVETRAIN_MOTOR_PORTS = {20, 17, 16, 11, 7, 6};
+    public static final int[] DRIVETRAIN_MOTOR_PORTS = { 20, 17, 16, 11, 7, 6 };
     public static final int[] DRIVE_RIGHT_ENCODER = { 2, 3 };
     public static final int[] DRIVE_LEFT_ENCODER = { 12, 13 };
   }
@@ -42,6 +42,7 @@ public class RobotMap {
     public static final int IR_SENSOR = 1;
     public static final int INTAKE_SOL = 5;
   }
+
   public static class Jacks {
     public static final int JACK_MOTOR = 12;
     public static final int JACK_DRIVE_MOTOR = 14;
@@ -72,10 +73,10 @@ public class RobotMap {
   }
 
   public static class AutoSelector {
-    public static final int CONTROL = 10; //Actual port
-    public static final int SIDE = 12; //Actual port
-    public static final int ROTARY = 0; //A0
-}
+    public static final int CONTROL = 10; // Actual port
+    public static final int SIDE = 12; // Actual port
+    public static final int ROTARY = 0; // A0
+  }
 
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.
