@@ -19,9 +19,9 @@ public class PrepareClimb3 extends CommandGroup {
    * Add your docs here.
    */
   public PrepareClimb3() {
-    addSequential(new MoveLiftCommand(LiftPositions.LOW, 2));
+    addSequential(new MoveLiftCommand(LiftPositions.LOW, 5));
     addSequential(new RunLiftTillZero(0.3));
-    addSequential(new MoveLiftCommand(LiftPositions.PREP_CLIMB_1,2));
+    addSequential(new MoveLiftCommand(LiftPositions.PREP_CLIMB_1,5));
     addSequential(new DeployClimbForks(true,0.1));
     addSequential(new MoveLiftCommand(LiftPositions.PREP_CLIMB_2,2));
     addSequential(new DeployClimbForks(false,0.1));

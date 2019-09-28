@@ -72,7 +72,7 @@ public class PathGenerator {
 			path.getWaypoint(1).theta,
 			path.getWaypoint(1).isReverse);
 		double distance = spline_lengths[0];
-		System.out.println("DISTANCE SEG 0: " + distance);
+		// System.out.println("DISTANCE SEG 0: " + distance);
 		for (int i = 2; i < path.num_waypoints_; ++i) {
 			segmentConfig.max_acc = path.getWaypoint(i).maxAccel;
 			segmentConfig.max_vel = path.getWaypoint(i).maxVelocity;
@@ -80,7 +80,7 @@ public class PathGenerator {
 			distance = spline_lengths[i - 1];
 			double startPos = traj.getSegment(traj.getNumSegments() - 1).pos + traj.getSegment(traj.getNumSegments() - 1).vel * 0;
 			
-			System.out.println("DISTANCE SEGMENT " + (i-1) + ": " + distance);
+			// System.out.println("DISTANCE SEGMENT " + (i-1) + ": " + distance);
 			traj.append(
 				TrajectoryGenerator.generate(
 					segmentConfig, 
@@ -103,14 +103,14 @@ public class PathGenerator {
 
 			boolean found_spline = false;
 			while (!found_spline) {
-				System.out.println(cur_pos);
-				System.out.println(cur_spline_start_pos);
+				// System.out.println(cur_pos);
+				// System.out.println(cur_spline_start_pos);
 				double cur_pos_relative = Math.abs(cur_pos - cur_spline_start_pos);
-				System.out.println(cur_pos_relative);
+				// System.out.println(cur_pos_relative);
 
 				if (cur_pos_relative <= spline_lengths[cur_spline]) {
 					double percentage = splines[cur_spline].getPercentageForDistance(cur_pos_relative);
-					System.out.println("PCT: \t" + percentage + "%%%");
+					// System.out.println("PCT: \t" + percentage + "%%%");
 					traj.getSegment(i).heading = splines[cur_spline].angleAt(percentage);
 					double[] coords = splines[cur_spline].getXandY(percentage);
 					traj.getSegment(i).x = coords[0];
@@ -127,8 +127,6 @@ public class PathGenerator {
 					traj.getSegment(i).y = coords[1];
 					found_spline = true;
 				}
-				System.out.println();
-
 			}
 		}
 
@@ -187,7 +185,6 @@ public class PathGenerator {
 	  Trajectory[] output = new Trajectory[2];
 	  output[0] = input.copy();
 	  output[1] = input.copy();
-	  System.out.println(input);
 	  Trajectory left = output[0];
 	  Trajectory right = output[1];
 

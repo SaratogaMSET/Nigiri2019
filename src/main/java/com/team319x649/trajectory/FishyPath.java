@@ -11,22 +11,28 @@ public class FishyPath {
 	private WaypointSequence waypointSequence;
 	private String name;
 	private double wheelbase;
+	private boolean robotStartedBackwards;
+
 	private Path path;
 
 	public FishyPath(Config config, String name, double wheelbaseFeet) {
 		this(config, name, wheelbaseFeet, false);
 	}
 
-	public FishyPath(Config config, String name, double wheelbaseFeet, boolean driveBackwards) {
+	public FishyPath(Config config, String name, double wheelbaseFeet, boolean robotStartedBackwards) {
 		this.name = name;
 		this.config = config;
 		this.waypointSequence = new WaypointSequence(10);
 		this.wheelbase = wheelbaseFeet;
+		this.robotStartedBackwards = robotStartedBackwards;
 	}
 
 	public FishyPath(FishyPath toCopy) {
 		config = toCopy.config;
 		waypointSequence = toCopy.waypointSequence;
+		this.name = toCopy.name;
+		this.wheelbase = toCopy.wheelbase;
+		this.robotStartedBackwards = toCopy.robotStartedBackwards;
 	}
 
 	public boolean isExportEnabled() {
@@ -146,9 +152,10 @@ public class FishyPath {
 	}
 
 	public Path getPath() {
-		if(path == null) {
-			return FishyPathGenerator.makePath(this);
+		if(this.path == null) {
+			this.path = FishyPathGenerator.makePath(this);
+			this.path.offsetHeading(this.robotStartedBackwards ? Math.PI : 0.0);
 		}
-		return path;
+		return this.path;
 	}
 }

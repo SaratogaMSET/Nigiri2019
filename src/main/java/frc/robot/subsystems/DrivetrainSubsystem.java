@@ -16,6 +16,8 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.SparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Encoder;
@@ -26,7 +28,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.util.FishyMath;
+import frc.robot.util.drivers.LazySparkMax;
+import frc.robot.util.drivers.SparkMaxFactory;
+import frc.robot.util.pid.AdvancedPIDController;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -48,115 +57,156 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   // motors[0] is the right master, motors [1,2] right followers
   // motors[3] is the left master, motors [4,5] left followers
 
-  // NEED TO RETUNE EVERY TIME ROBOT CHANGES
-  // These are the values that go into path code PIDVA
-  public static final double ROBOT_TRUE_MAX_VELOCITY = 12.0; // ft/s
-
   // wouldn't want to tip, now would we?
   // these are the values that go into pathfinder
-  public static final double ROBOT_TARGET_MAX_VELOCITY = 9.0; // ft/s
-  public static final double ROBOT_TARGET_MAX_ACCELERATION = 16.0; // ft/s^2
+  public static final double ROBOT_TARGET_MAX_VELOCITY = 14.0; // ft/s
+  public static final double ROBOT_TARGET_MAX_ACCELERATION = 20.0; // ft/s^2
 
-  public TalonSRX[] motors;
+  public LazySparkMax leftMaster, rightMaster, leftSlave, rightSlave;
+  public TalonSRX leftEncoderSRX, rightEncoderSRX; 
 
   public boolean isPathRunning;
   public int motor;
-
 
   public static final double WHEEL_DIAMETER = (4.06/12.0); // feet
   public static final int TICKS_PER_REV = 4096;
   public static final double WHEELBASE_FEET = 2.1804; // feet
   public static final double EMPIRICAL_WHEELBASE_FEET = 2.1804; // feet
 
+  public double pidInputPower = 0.0;
+  public PIDController joystickPID = new PIDController(0.04, 0.0, 0.005, 0.5, new PIDSource(){
+      @Override
+      public double pidGet() {
+          return pidInputPower;
+          // return MAX_VEL * OI.getInstance().driver.getArcadeLeft();
+      }
+      @Override
+      public void setPIDSourceType(PIDSourceType pidSource) {}
+      @Override
+      public PIDSourceType getPIDSourceType() {return PIDSourceType.kRate;}
+  }, new PIDOutput(){
+      @Override
+      public void pidWrite(double output) {
+        pidInputPower = output;
+      }
+  }, 0.02);
+
+
   public DrivetrainSubsystem() {
-    motors = new TalonSRX[6];
-    for (int i = 0; i < motors.length; i++) {
-      motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
-      motors[i].configNominalOutputForward(0.08, 200);
-      motors[i].configNominalOutputReverse(-0.08, 200);
-      motors[i].configPeakOutputForward(1, 200);
-      motors[i].configPeakOutputReverse(-1, 200);
-    }
+    leftMaster = SparkMaxFactory.createDefaultSparkMax(1);
+    configureSpark(leftMaster, true, true);
 
-    motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[0].config_kF(0, 0.17, 200);
-    motors[0].config_kP(0, 0.0, 200);
-    motors[0].config_kI(0, 0.0, 200);
-    motors[0].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))), 200);
-    motors[0].config_kD(0, 0.0, 200);
-    motors[0].configAllowableClosedloopError(0, 0, 200);
-    motors[0].configClosedLoopPeriod(0, 1, 200);
-    motors[0].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
-    motors[0].configVelocityMeasurementWindow(16, 200);
-    motors[0].selectProfileSlot(0, 0);
-    // motors[0].config_kF(0, 0.23);
-    // motors[0].config_kP(0, 2.2);
-    // motors[0].config_kI(0, 0.00);
-    // motors[0].config_kD(0, 45.0);
+    leftSlave = SparkMaxFactory.createPermanentSlaveSparkMax(2, leftMaster);
+    configureSpark(leftSlave, true, true);
+
+    rightMaster = SparkMaxFactory.createDefaultSparkMax(3);
+    configureSpark(rightMaster, false, true);
+
+    rightSlave = SparkMaxFactory.createPermanentSlaveSparkMax(4, rightMaster);
+    configureSpark(rightSlave, false, true);
 
 
-    motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
-    motors[3].config_kF(0, 0.17);
-    motors[3].config_kP(0, 0.0);
-    motors[3].config_kI(0, 0.0);
-    motors[3].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))));
-    motors[3].config_kD(0, 0.0);
-    motors[3].configAllowableClosedloopError(0, 0, 200);
-    motors[3].configClosedLoopPeriod(0, 1, 200);
-    motors[3].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
-    motors[3].configVelocityMeasurementWindow(16, 200);
-    motors[3].selectProfileSlot(0, 0);
+    leftEncoderSRX = new TalonSRX(23);
+    leftEncoderSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    leftEncoderSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
+    leftEncoderSRX.configVelocityMeasurementWindow(16);
 
 
-    // follow right master
-    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
-    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());
+    rightEncoderSRX = new TalonSRX(10);
+    rightEncoderSRX.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    rightEncoderSRX.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms);
+    rightEncoderSRX.configVelocityMeasurementWindow(16);
 
-    // follow left master
-    motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
-    motors[5].set(ControlMode.Follower, motors[3].getDeviceID());
 
-    // invert right side DT motors
-    motors[0].setInverted(true);
-    motors[3].setInverted(false);
+    joystickPID.setInputRange(-1, 1);
+    joystickPID.setOutputRange(-1, 1);
+    joystickPID.setAbsoluteTolerance(0.01);
+    joystickPID.setContinuous(false);
+    joystickPID.disable();
+    // motors = new TalonSRX[6];
+    // for (int i = 0; i < motors.length; i++) {
+    //   motors[i] = new TalonSRX(RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS[i]);
+    //   motors[i].configNominalOutputForward(0.08, 200);
+    //   motors[i].configNominalOutputReverse(-0.08, 200);
+    //   motors[i].configPeakOutputForward(1, 200);
+    //   motors[i].configPeakOutputReverse(-1, 200);
+    // }
 
-    motors[1].setInverted(InvertType.FollowMaster);
-    motors[2].setInverted(InvertType.FollowMaster);
-    motors[4].setInverted(InvertType.FollowMaster);
-    motors[5].setInverted(InvertType.FollowMaster);
+    // motors[0].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+    // motors[0].config_kF(0, 0.17, 200);
+    // motors[0].config_kP(0, 0.0, 200);
+    // motors[0].config_kI(0, 0.0, 200);
+    // motors[0].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))), 200);
+    // motors[0].config_kD(0, 0.0, 200);
+    // motors[0].configAllowableClosedloopError(0, 0, 200);
+    // motors[0].configClosedLoopPeriod(0, 1, 200);
+    // motors[0].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
+    // motors[0].configVelocityMeasurementWindow(16, 200);
+    // motors[0].selectProfileSlot(0, 0);
+    // // motors[0].config_kF(0, 0.23);
+    // // motors[0].config_kP(0, 2.2);
+    // // motors[0].config_kI(0, 0.00);
+    // // motors[0].config_kD(0, 45.0);
+
+
+    // motors[3].configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 200);
+    // motors[3].config_kF(0, 0.17);
+    // motors[3].config_kP(0, 0.0);
+    // motors[3].config_kI(0, 0.0);
+    // motors[3].config_IntegralZone(0, (int) (FishyMath.rpm2talonunits(FishyMath.fps2rpm(1.0))));
+    // motors[3].config_kD(0, 0.0);
+    // motors[3].configAllowableClosedloopError(0, 0, 200);
+    // motors[3].configClosedLoopPeriod(0, 1, 200);
+    // motors[3].configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, 200);
+    // motors[3].configVelocityMeasurementWindow(16, 200);
+    // motors[3].selectProfileSlot(0, 0);
+
+
+    // // follow right master
+    // motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
+    // motors[2].set(ControlMode.Follower, motors[0].getDeviceID());
+
+    // // follow left master
+    // motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
+    // motors[5].set(ControlMode.Follower, motors[3].getDeviceID());
+
+    // // invert right side DT motors
+    // motors[0].setInverted(true);
+    // motors[3].setInverted(false);
+
+    // motors[1].setInverted(InvertType.FollowMaster);
+    // motors[2].setInverted(InvertType.FollowMaster);
+    // motors[4].setInverted(InvertType.FollowMaster);
+    // motors[5].setInverted(InvertType.FollowMaster);
   }
+
+  private void configureSpark(LazySparkMax sparkMax, boolean left, boolean master) {
+    sparkMax.setInverted(!left);
+    sparkMax.enableVoltageCompensation(12.0);
+}
 
   public void changeBrakeCoast(boolean isBrake) {
     if (isBrake) {
-      motors[0].setNeutralMode(NeutralMode.Brake);
-      motors[1].setNeutralMode(NeutralMode.Brake);
-      motors[2].setNeutralMode(NeutralMode.Brake);
-      motors[3].setNeutralMode(NeutralMode.Brake);
-      motors[4].setNeutralMode(NeutralMode.Brake);
-      motors[5].setNeutralMode(NeutralMode.Brake);
+      leftMaster.setIdleMode(IdleMode.kBrake);
+      rightMaster.setIdleMode(IdleMode.kBrake);
+      rightSlave.setIdleMode(IdleMode.kBrake);
+      leftSlave.setIdleMode(IdleMode.kBrake);
     }
     else {
-      motors[0].setNeutralMode(NeutralMode.Coast);
-      motors[1].setNeutralMode(NeutralMode.Coast);
-      motors[2].setNeutralMode(NeutralMode.Coast);
-      motors[3].setNeutralMode(NeutralMode.Coast);
-      motors[4].setNeutralMode(NeutralMode.Coast);
-      motors[5].setNeutralMode(NeutralMode.Coast);
+      leftMaster.setIdleMode(IdleMode.kCoast);
+      rightMaster.setIdleMode(IdleMode.kCoast);
+      rightSlave.setIdleMode(IdleMode.kCoast);
+      leftSlave.setIdleMode(IdleMode.kCoast);
     }
   }
 
   public void rawDrive(double left, double right) {
-    motors[1].set(ControlMode.Follower, motors[0].getDeviceID());
-    motors[2].set(ControlMode.Follower, motors[0].getDeviceID());
-    motors[4].set(ControlMode.Follower, motors[3].getDeviceID());
-    motors[5].set(ControlMode.Follower, motors[3].getDeviceID());
-
-    motors[0].set(ControlMode.PercentOutput, right);
-    motors[3].set(ControlMode.PercentOutput, left);
+    leftMaster.set(left);
+    rightMaster.set(right);
   }
 
   public int getRawLeftEncoder() {
-    return motors[3].getSelectedSensorPosition();
+    return leftEncoderSRX.getSelectedSensorPosition();
   }
 
   public void driveFwdRotate(double fwd, double rot){
@@ -169,28 +219,28 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public int getRawRightEncoder() {
-    return motors[0].getSelectedSensorPosition();
+    return rightEncoderSRX.getSelectedSensorPosition();
   }
 
   public synchronized double getRightEncoderVelocity() {
-    return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(motors[0].getSelectedSensorVelocity()));
+    return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(rightEncoderSRX.getSelectedSensorVelocity()));
   }
 
   public synchronized double getLeftEncoderVelocity() {
-    return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(motors[3].getSelectedSensorVelocity()));
+    return FishyMath.rpm2fps(FishyMath.talaonunits2rpm(leftEncoderSRX.getSelectedSensorVelocity()));
   }
 
   public synchronized double getRightEncoderDistance() {
-    return (motors[0].getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
+    return (rightEncoderSRX.getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
   }
 
   public synchronized double getLeftEncoderDistance() {
-    return (motors[3].getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
+    return (leftEncoderSRX.getSelectedSensorPosition() / (double) TICKS_PER_REV) * WHEEL_DIAMETER * Math.PI;
   }
 
   public void resetEncoders() {
-    motors[0].setSelectedSensorPosition(0);
-    motors[3].setSelectedSensorPosition(0);
+    leftEncoderSRX.setSelectedSensorPosition(0);
+    rightEncoderSRX.setSelectedSensorPosition(0);
   }
 
   public void testDrivetrain(double fwd, boolean changeMotor, boolean resetEncoders) {
@@ -219,22 +269,20 @@ public class DrivetrainSubsystem extends Subsystem implements ILogger {
   }
 
   public void testMotor(int num, double fwd) {
-    motors[num].set(ControlMode.PercentOutput, fwd);
+    // motors[num].set(ControlMode.PercentOutput, fwd);
   }
 
   public void testAllMotors(double fwd) {
-    motors[0].set(ControlMode.PercentOutput, fwd);
-    motors[1].set(ControlMode.PercentOutput, fwd);
-    motors[2].set(ControlMode.PercentOutput, fwd);
-    motors[3].set(ControlMode.PercentOutput, fwd);
-    motors[4].set(ControlMode.PercentOutput, fwd);
-    motors[5].set(ControlMode.PercentOutput, fwd);
+    leftMaster.set(fwd);
+    leftSlave.set(fwd);
+    rightMaster.set(fwd);
+    rightSlave.set(fwd);
   }
 
   public void resetControlMode() {
-    for (int i = 0; i < motors.length; i++) {
-      motors[i].set(ControlMode.PercentOutput, 0);
-    }
+    // for (int i = 0; i < motors.length; i++) {
+    //   motors[i].set(ControlMode.PercentOutput, 0);
+    // }
   }
 
   @Override

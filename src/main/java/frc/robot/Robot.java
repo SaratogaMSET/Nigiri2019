@@ -14,6 +14,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 
@@ -178,7 +179,7 @@ public class Robot extends TimedRobot {
     gyro = new GyroSubsystem();
     lift = new LiftSubsystem();
     hatch = new HatchSubsystem();
-    compressor = new Compressor(4);
+    compressor = new Compressor(RobotMap.PCM);
     prefs = Preferences.getInstance();
     drive.changeBrakeCoast(false);
 
@@ -234,7 +235,7 @@ public class Robot extends TimedRobot {
     visionFixCommand = new VisionFixCommand();
     gholdTest = new GyroRotationalHoldCommand();
 
-    // doubleRocket = new DoubleRocket(true);
+    doubleRocket = new DoubleRocket(true);
 
     autoTime = new Timer();
     currentAuto = new AutoSelectorValue(autoSelector.getSide(), autoSelector.getAutoPotNumber());
@@ -300,7 +301,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Match Time", Timer.getMatchTime());
 
     // Safety Checks
-    if(jack.getJackEncoder() > 150){
+    if(jack.getJackEncoder() > 100){
       if(!isClimb) {
         jack.setJackMotor(-0.08);
         SmartDashboard.putNumber("Jack Stall Power", 0.08);
@@ -309,7 +310,7 @@ public class Robot extends TimedRobot {
       if(jack.isJackAtTop()) {
         jack.resetJackEncoder();
       }
-    } else if(jack.getJackEncoder() < 150) {
+    } else if(jack.getJackEncoder() < 50) {
       if(!isClimb) {
         jack.setJackMotor(0);
         SmartDashboard.putNumber("Jack Stall Power", 0.0);
@@ -322,7 +323,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Left Encoder", Robot.drive.getLeftEncoderDistance());
     // SmartDashboard.putNumber("Raw Left Encoder", Robot.drive.getRawLeftEncoder());
 
-    // SmartDashboard.putNumber("Gyro Angle", Robot.gyro.getGyroAngle());
+    SmartDashboard.putNumber("Gyro Angle", Robot.gyro.getGyroAngle());
 
     SmartDashboard.putNumber("ZZ ROBOT X", RobotPose.getX());
     SmartDashboard.putNumber("ZZ ROBOT Y", RobotPose.getY());
@@ -432,8 +433,8 @@ public class Robot extends TimedRobot {
     if(auto) {
       gyro.resetGyro();
       drive.resetEncoders();
-      // doubleRocket.start();
-      new SelectAuto().start();
+      doubleRocket.start();
+      // new SelectAuto().start();
       // new DoubleCargoShip(false).start();
       // new TestTalonVelocity(10.0).start();
       // new TestDTMaxVA(20.0).start();
@@ -449,6 +450,7 @@ public class Robot extends TimedRobot {
 
       compressor.setClosedLoopControl(true);
       compressor.start();
+
       time.reset();
       time.start();
       if (isLogging) {
@@ -488,6 +490,8 @@ public class Robot extends TimedRobot {
     // gyro.gyroPIDController.setSetpoint(90.0);
     // gyro.gyroPIDController.enable();
 
+    testDTMaxVA.start();
+
   }
 
   /**
@@ -518,6 +522,9 @@ public class Robot extends TimedRobot {
     if(isLogging) {
       Logging.closeWriter();
     }
+
+    Robot.gyro.driverGyroPID.disable();
+
   }
 
   @Override
@@ -793,9 +800,19 @@ public class Robot extends TimedRobot {
       else {
         if(visionFixCommand != null) visionFixCommand.cancel();
         if(gholdTest != null) gholdTest.cancel();
-        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.boundThetaNeg180to180(Robot.gyro.getGyroAngle() + oi.driver.getDriverHorizontal() * 20.0));
+        
+        // TUNED VALUE
+        Robot.gyro.driverGyroPID.setSetpoint(FishyMath.d2r(oi.driver.getDriverHorizontal() * 120.0));
         Robot.gyro.driverGyroPID.enable();
-        drive.driveFwdRotate(oi.driver.getDriverVertical(), Robot.gyro.driverPIDOutput);
+
+        Robot.drive.joystickPID.setSetpoint(oi.driver.getDriverVertical());
+        Robot.drive.joystickPID.enable();
+
+        SmartDashboard.putNumber("GYRO SPEED", FishyMath.r2d(gyro.gyro.getRate()));
+        SmartDashboard.putNumber("JOY VERT", Robot.drive.pidInputPower);
+
+        drive.driveFwdRotate(Robot.drive.pidInputPower, Robot.gyro.driverPIDOutput);
+        // drive.rawDrive(Robot.gyro.driverPIDOutput, -Robot.gyro.driverPIDOutput);
       }
     }
 

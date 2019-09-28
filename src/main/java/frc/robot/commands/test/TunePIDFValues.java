@@ -34,15 +34,15 @@ public class TunePIDFValues extends Command {
     SmartDashboard.putNumber("Set kd", kd);
     SmartDashboard.putNumber("Set kf", kf);
 
-    Robot.drive.motors[0].config_kP(0, kp, 200);
-    Robot.drive.motors[0].config_kI(0, ki, 200);
-    Robot.drive.motors[0].config_kD(0, kd, 200);
-    Robot.drive.motors[0].config_kF(0, kf, 200);
+    // Robot.drive.motors[0].config_kP(0, kp, 200);
+    // Robot.drive.motors[0].config_kI(0, ki, 200);
+    // Robot.drive.motors[0].config_kD(0, kd, 200);
+    // Robot.drive.motors[0].config_kF(0, kf, 200);
 
-    Robot.drive.motors[3].config_kP(0, kp, 200);
-    Robot.drive.motors[3].config_kI(0, ki, 200);
-    Robot.drive.motors[3].config_kD(0, kd, 200);
-    Robot.drive.motors[3].config_kF(0, kf, 200);
+    // Robot.drive.motors[3].config_kP(0, kp, 200);
+    // Robot.drive.motors[3].config_kI(0, ki, 200);
+    // Robot.drive.motors[3].config_kD(0, kd, 200);
+    // Robot.drive.motors[3].config_kF(0, kf, 200);
   }
 
   // Called repeatedly when this Command is scheduled to run

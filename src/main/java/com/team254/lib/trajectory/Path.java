@@ -45,6 +45,7 @@ public class Path {
 	}
 	
 	public void offsetHeading(double theta_rad) {
+		getTrajectory().offsetHeading(theta_rad);
 		getLeftTrajectory().offsetHeading(theta_rad);
 		getRightTrajectory().offsetHeading(theta_rad);
 	}

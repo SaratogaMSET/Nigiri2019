@@ -22,11 +22,16 @@ public class RobotMap {
   public static final int BUTTON_BOARD_RIGHT = 3;
   public static final int BUTTON_BOARD_LEFT = 4;
 
+  public static final int PCM = 61;
+
+
   public static class Drivetrain {
     // Right: 20, 17, 16 Left: 11, 7, 6
-    public static final int[] DRIVETRAIN_MOTOR_PORTS = { 20, 17, 16, 11, 7, 6 };
+    public static final int[] DRIVETRAIN_LEFT_MOTOR = { 1, 2 };
+    public static final int[] DRIVETRAIN_RIGHT_MOTOR = { 3, 4 };
+
     public static final int[] DRIVE_RIGHT_ENCODER = { 2, 3 };
-    public static final int[] DRIVE_LEFT_ENCODER = { 12, 13 };
+    public static final int[] DRIVE_LEFT_ENCODER = { 0, 1 };
   }
 
   public static class Lift {

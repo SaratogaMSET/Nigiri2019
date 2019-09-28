@@ -81,8 +81,8 @@ public class PurePursuitCommand extends FishyCommand {
             left = (right * leftToRightRatio);
         }
 
-        Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(right)));
-        Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(left)));
+        // Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(right)));
+        // Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(left)));
     }
 
     // Make this return true when this Command no longer needs to run execute()

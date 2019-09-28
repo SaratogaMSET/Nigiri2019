@@ -78,12 +78,14 @@ public class JackSubsystem extends Subsystem {
     jackMotor.configPeakCurrentLimit(60,30);
     jackMotor.enableCurrentLimit(true);
     jackMotor.selectProfileSlot(0, 0);
-    forkDeploy = new Solenoid(4, RobotMap.Jacks.FORK_DEPLOY);
-    buddyClimbForkDeploy = new Solenoid(4, RobotMap.Jacks.BUDDY_CLIMB_DEPLOY_SOLENOID);
+    forkDeploy = new Solenoid(RobotMap.PCM, RobotMap.Jacks.FORK_DEPLOY);
+    buddyClimbForkDeploy = new Solenoid(RobotMap.PCM, RobotMap.Jacks.BUDDY_CLIMB_DEPLOY_SOLENOID);
     jackDriveMotor = new TalonSRX(RobotMap.Jacks.JACK_DRIVE_MOTOR);
     botHal = new DigitalInput(RobotMap.Jacks.DOWN_HAL);
     topHal = new DigitalInput(RobotMap.Jacks.UP_HAL);
     releaseForks(false);
+
+    jackMotor.setSelectedSensorPosition(0);
   }
 
   public void setJackDriveMotor(double pow){
@@ -96,6 +98,7 @@ public class JackSubsystem extends Subsystem {
     buddyClimbForkDeploy.set(isOut);
   }
   public void setJackMotor(double pow){
+    jackMotor.setNeutralMode(NeutralMode.Brake);
     jackMotor.set(ControlMode.PercentOutput, pow);
   }
   public int getJackEncoder(){

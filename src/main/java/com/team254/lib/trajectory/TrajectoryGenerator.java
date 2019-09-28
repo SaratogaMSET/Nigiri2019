@@ -128,7 +128,7 @@ public class TrajectoryGenerator {
 				Math.sqrt(config.max_acc * (goal_pos - start_pos) - start_discount
 						- end_discount));
 
-	System.out.println("ADJ MAXVEL: " + adjusted_max_vel);
+	// System.out.println("ADJ MAXVEL: " + adjusted_max_vel);
 
 		double t_rampup = (adjusted_max_vel - start_vel) / config.max_acc;
 		double x_rampup = start_vel * t_rampup + .5 * config.max_acc
@@ -138,7 +138,7 @@ public class TrajectoryGenerator {
 				* config.max_acc * t_rampdown * t_rampdown;
 		double x_cruise = (goal_pos - start_pos) - x_rampdown - x_rampup;
 
-		System.out.println("X RD: " + x_rampdown);
+		// System.out.println("X RD: " + x_rampdown);
 
   
 		// The +.5 is to round to nearest
@@ -220,8 +220,8 @@ public class TrajectoryGenerator {
 	  for (int i = 0; i < length; ++i) {
 		// Apply input
 		double input = Math.min(total_impulse, 1);
-		System.out.println("INPUT: " + input);
-		System.out.println("IMPULSE: " + total_impulse);
+		// System.out.println("INPUT: " + input);
+		// System.out.println("IMPULSE: " + total_impulse);
 		if (input < 1) {
 		  // The impulse is over, so decelerate
 		  input -= 1;

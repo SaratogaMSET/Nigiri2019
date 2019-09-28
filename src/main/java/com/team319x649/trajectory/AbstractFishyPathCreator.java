@@ -19,7 +19,7 @@ public abstract class AbstractFishyPathCreator {
 	 * Generate the path files, to include config paths, display the paths in GUIS, and 
 	 * move the files into the robot code project
 	 */
-	protected void generatePaths() {
+	protected void  generatePaths() {
 		generatePathFiles(getPaths());
 	}
 
@@ -30,7 +30,8 @@ public abstract class AbstractFishyPathCreator {
 
 	private void generatePathFiles(List<FishyPath> paths) {
 		for (FishyPath path : paths) {
-			Path p = FishyPathGenerator.makePath(path);
+			Path p = path.getPath();
+			System.out.println(p.getTrajectory());
 			FishyPathGenerator.exportPathToTextFile("src/main/java/frc/paths/" + path.getName(), p);
 			PathViewer.showPath(path, p);
 		}

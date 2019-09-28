@@ -55,8 +55,8 @@ public class TestTalonVelocity extends FishyCommand {
     log("Right Pos", Robot.drive.getRightEncoderDistance());
     log("Left Pos", Robot.drive.getLeftEncoderDistance());
 
-    Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(TARGET_VEL)));
-    Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(TARGET_VEL)));
+    // Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(TARGET_VEL)));
+    // Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(FishyMath.fps2rpm(TARGET_VEL)));
 
     logger.write();
 

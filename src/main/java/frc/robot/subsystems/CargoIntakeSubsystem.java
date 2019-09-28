@@ -58,8 +58,8 @@ public class CargoIntakeSubsystem extends Subsystem {
     rightIntake = new TalonSRX(RobotMap.CargoIntake.RIGHT_INTAKE);
     frontIntake = new TalonSRX(RobotMap.CargoIntake.BACK_INTAKE);
 
-    intakeSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[0]);
-    intakeMidSol = new Solenoid(4, RobotMap.CargoIntake.INTAKE_SOL[1]);
+    intakeSol = new Solenoid(RobotMap.PCM, RobotMap.CargoIntake.INTAKE_SOL[0]);
+    intakeMidSol = new Solenoid(RobotMap.PCM, RobotMap.CargoIntake.INTAKE_SOL[1]);
     
     outHal = new DigitalInput(RobotMap.CargoIntake.INTAKE_DOWN_HAL);
     inHal = new DigitalInput(RobotMap.CargoIntake.INTAKE_UP_HAL);

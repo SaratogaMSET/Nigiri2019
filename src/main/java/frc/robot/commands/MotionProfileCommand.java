@@ -41,10 +41,10 @@ public class MotionProfileCommand extends FishyCommand {
 
   Preferences pref = Preferences.getInstance();
 
-  public static final double CONST_kP_gyro_doubletraction = -0.001;
-  public static final double CONST_kP_gyro_omnitraction = -0.001;
+  public static final double CONST_kP_gyro_doubletraction = 0.001;
+  public static final double CONST_kP_gyro_omnitraction = 0.001;
 
-  public static final double CONST_kA = 0.025;
+  public static final double CONST_kA = 0.0/DrivetrainSubsystem.ROBOT_TARGET_MAX_ACCELERATION;
 
   public static double kP_gyro_doubletraction;
   public static double kP_gyro_omnitraction;
@@ -119,19 +119,22 @@ public class MotionProfileCommand extends FishyCommand {
         log("Right Actual", Robot.drive.getRightEncoderVelocity());
         log("Left Actual", Robot.drive.getLeftEncoderVelocity());
 
-        double left = leftSpeedRPM;
-        double right = rightSpeedRPM;
-
         double canTimeStart = Timer.getFPGATimestamp();
-        Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right), DemandType.ArbitraryFeedForward, CONST_kA * rightFollower.getSegment().acc - turn);
-        Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left), DemandType.ArbitraryFeedForward, CONST_kA * leftFollower.getSegment().acc + turn);
+        // Robot.drive.motors[0].set(ControlMode.Velocity, FishyMath.rpm2talonunits(right), DemandType.ArbitraryFeedForward, CONST_kA * rightFollower.getSegment().acc - turn);
+        // Robot.drive.motors[3].set(ControlMode.Velocity, FishyMath.rpm2talonunits(left), DemandType.ArbitraryFeedForward, CONST_kA * leftFollower.getSegment().acc + turn);
         double canTimeEnd = Timer.getFPGATimestamp();
+
+        double left_fps = FishyMath.rpm2fps(leftSpeedRPM);
+        double right_fps = FishyMath.rpm2fps(rightSpeedRPM);
+
+        Robot.drive.rawDrive((left_fps/DrivetrainSubsystem.ROBOT_TARGET_MAX_VELOCITY) + CONST_kA * leftFollower.getSegment().acc + turn,
+                            (right_fps/DrivetrainSubsystem.ROBOT_TARGET_MAX_VELOCITY) + CONST_kA * rightFollower.getSegment().acc - turn);
 
         // log("Left Setpoint", left);
         // log("Right Setpoint", right);
         log("Heading Diff", headingDiff);
-        // log("Target Heading", desiredHeading);
-        // log("Actual Heading", heading);
+        log("Target Heading", desiredHeading);
+        log("Actual Heading", heading);
         log("T %", turn);
         log("Left APos", ldist);
         log("Right APos", rdist);
@@ -222,8 +225,9 @@ public class MotionProfileCommand extends FishyCommand {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    Robot.drive.motors[0].set(ControlMode.PercentOutput, 0.0);
-    Robot.drive.motors[3].set(ControlMode.PercentOutput, 0.0);
+    // Robot.drive.motors[0].set(ControlMode.PercentOutput, 0.0);
+    // Robot.drive.motors[3].set(ControlMode.PercentOutput, 0.0);
+    Robot.drive.rawDrive(0.0, 0.0);
     logger.drain();
     logger.flush();
 

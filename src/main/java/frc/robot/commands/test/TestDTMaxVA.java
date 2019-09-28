@@ -40,7 +40,7 @@ public class TestDTMaxVA extends FishyCommand {
   @Override
   protected void initialize() {
     time.start();
-    Robot.drive.changeBrakeCoast(false);
+    Robot.drive.changeBrakeCoast(true);
     Robot.drive.rawDrive(1.0, 1.0);
   }
 

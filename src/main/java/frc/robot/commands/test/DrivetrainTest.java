@@ -32,8 +32,8 @@ public class DrivetrainTest extends CommandGroup {
     // a CommandGroup containing them would require both the chassis and the
     // arm.
     int timeout = 5;
-    for (int motorPort : RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS) {
-      addSequential(new MotorTestCommand(motorPort, timeout));
-    }
+    // for (int motorPort : RobotMap.Drivetrain.DRIVETRAIN_MOTOR_PORTS) {
+    //   addSequential(new MotorTestCommand(motorPort, timeout));
+    // }
   }
 }

@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.PIDController;
@@ -14,7 +17,9 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.robot.util.FishyMath;
 
 /**
@@ -41,10 +46,10 @@ public class GyroSubsystem extends Subsystem implements ILogger {
 
   // PID
   public PIDController gyroPIDController;
-  public Double gyroPIDOutput; // Normalized output (-1.0 to 1.0) to feed. CLOCKWISE  power output. A positive value means that the robot needs to turn to the right to hit the angle target.
+  public Double gyroPIDOutput = 0.0; // Normalized output (-1.0 to 1.0) to feed. CLOCKWISE  power output. A positive value means that the robot needs to turn to the right to hit the angle target.
 
   public PIDController driverGyroPID;
-  public double driverPIDOutput; 
+  public Double driverPIDOutput = 0.0; 
 
   public GyroSubsystem() {
     gyro = new AHRS(SPI.Port.kMXP);
@@ -76,30 +81,66 @@ public class GyroSubsystem extends Subsystem implements ILogger {
     gyroPIDController.setContinuous(true);
     gyroPIDController.disable();
 
-    driverGyroPID = new PIDController(0.03, 0.0, 0.0, 
+    driverGyroPID = new PIDController(0.0002, 0.0, 0.01, 1.0/(2*Math.PI),
     new PIDSource(){
       @Override
       public void setPIDSourceType(PIDSourceType pidSource) {}
       @Override
-      public PIDSourceType getPIDSourceType() { return PIDSourceType.kDisplacement; }
+      public PIDSourceType getPIDSourceType() { return PIDSourceType.kRate; }
     
       @Override
       public double pidGet() {
-        return FishyMath.boundThetaNeg180to180(gyro.getAngle());
+        return gyro.getRate();
       }
     }, new PIDOutput(){
       @Override
       public void pidWrite(double output) {
         driverPIDOutput = output;
       }
-    }, 0.01);
-    driverGyroPID.setInputRange(-180.0f, 180.0f);
+    }, 0.05);
+    driverGyroPID.setInputRange(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     driverGyroPID.setOutputRange(-1.0, 1.0);
-    driverGyroPID.setAbsoluteTolerance(5.0);
-    driverGyroPID.setContinuous(true);
+    driverGyroPID.setAbsoluteTolerance(1.0);
+    driverGyroPID.setContinuous(false);
     driverGyroPID.disable();
 
-    Shuffleboard.getTab("Drivetrain").add("GYRO PID", gyroPIDController);
+    Shuffleboard.getTab("Drivetrain").add("GYRO ANGLE PID", gyroPIDController);
+    Shuffleboard.getTab("Drivetrain").add("DRIVER GYRO PID", driverGyroPID);
+    Shuffleboard.getTab("Drivetrain").add("GYRO OUTPUT", new Sendable(){
+    
+      @Override
+      public void setSubsystem(String subsystem) {}
+    
+      @Override
+      public void setName(String name) {}
+    
+      @Override
+      public void initSendable(SendableBuilder builder) {
+        // TODO Auto-generated method stub
+        builder.addDoubleProperty("OUTPUT", new DoubleSupplier(){
+        
+          @Override
+          public double getAsDouble() {
+            // TODO Auto-generated method stub
+            return driverPIDOutput;
+          }
+        }, null);
+        
+      }
+    
+      @Override
+      public String getSubsystem() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public String getName() {
+        // TODO Auto-generated method stub
+        return "OUTPUT";
+      }
+    });
+
   }
 
   public double getFusedHeading() {

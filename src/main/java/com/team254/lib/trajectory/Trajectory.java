@@ -1,5 +1,7 @@
 package com.team254.lib.trajectory;
 
+import frc.robot.util.FishyMath;
+
 /**
  * Implementation of a Trajectory using arrays as the underlying storage
  * mechanism.
@@ -72,7 +74,7 @@ public class Trajectory {
 	
 	public void offsetHeading(double theta_rad) {
 		for (Segment segment : segments_) {
-			segment.heading += theta_rad;
+			segment.heading = FishyMath.boundThetaNegPiToPi(segment.heading + theta_rad);
 		}
 	}
 	
@@ -158,11 +160,11 @@ public class Trajectory {
 		for (int i = 0; i < getNumSegments(); ++i) {
 			Trajectory.Segment segment = getSegment(i);
 			str += i + "\t";
-			str += segment.pos + "\t";
-			str += segment.vel + "\t";
-			str += segment.acc + "\t";
-			str += segment.jerk + "\t";
-			str += segment.heading + "\t";
+			str += Math.round(100.0 * segment.pos)/100.0 + "\t";
+			str += Math.round(100.0 * segment.vel)/100.0 + "\t";
+			str += Math.round(100.0 * segment.acc)/100.0 + "\t";
+			str += Math.round(100.0 * segment.jerk)/100.0 + "\t";
+			str += Math.round(1.0 * FishyMath.r2d(segment.heading))/1.0 + "\t";
 			str += "\n";
 		}
 
