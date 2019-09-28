@@ -59,7 +59,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
   }
 
   public static class LiftDistanceConstants {
-    public static final double TRUE_BOTTOM = -0.25;
+    public static final double TRUE_BOTTOM = 0.2;
     public static final double LOW_HATCH = 2;
     public static final double INTAKE = 0;
     public static final double CARGO_SHIP = 30;
@@ -140,6 +140,7 @@ public class LiftSubsystem extends Subsystem implements ILogger {
     motor3.setNeutralMode(NeutralMode.Coast);
 
     motor1.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    motor1.setSelectedSensorPosition(0);
     
     isMoving = false;
     lastBottomHal = false;
